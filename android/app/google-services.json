@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "769176418060",
+    "project_id": "sintir-2f0be",
+    "storage_bucket": "sintir-2f0be.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:769176418060:android:bed9337fd11ff52c837b29",
+        "android_client_info": {
+          "package_name": "com.example.sintir"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "769176418060-1205tv1mu7qohs1122hm6h91hdbplcch.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sintir",
+            "certificate_hash": "11710e009c84949f412229f463796b54464b7267"
+          }
+        },
+        {
+          "client_id": "769176418060-smo79qpqjcab1k21is8sod904kpai4f8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqFN733F9JsJf88OE-d-3GtddIzDiXNPA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "769176418060-smo79qpqjcab1k21is8sod904kpai4f8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "769176418060-jl97he6j82c8q91v3i5be8ngjlkvdb6u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sintir"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:769176418060:android:8172044f64c6a10c837b29",
+        "android_client_info": {
+          "package_name": "com.example.sintir_dashboard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "769176418060-smo79qpqjcab1k21is8sod904kpai4f8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqFN733F9JsJf88OE-d-3GtddIzDiXNPA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "769176418060-smo79qpqjcab1k21is8sod904kpai4f8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "769176418060-jl97he6j82c8q91v3i5be8ngjlkvdb6u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sintir"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
