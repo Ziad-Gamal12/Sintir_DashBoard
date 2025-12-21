@@ -42,9 +42,9 @@ class Assets {
   /// assets/Icons/MisionIcon.png
   static const String assetsIconsMisionIcon = "assets/Icons/MisionIcon.png";
 
-  /// Assets for assetsIconsSVGIconsApple
-  /// assets/Icons/SVG_Icons/apple.svg
-  static const String assetsIconsSVGIconsApple = "assets/Icons/SVG_Icons/apple.svg";
+  /// Assets for assetsIconsSVGIconsAppLogo
+  /// assets/Icons/SVG_Icons/AppLogo.svg
+  static const String assetsIconsSVGIconsAppLogo = "assets/Icons/SVG_Icons/AppLogo.svg";
 
   /// Assets for assetsIconsSVGIconsArrowLeftBack
   /// assets/Icons/SVG_Icons/arrowLeftBack.svg
@@ -85,14 +85,6 @@ class Assets {
   /// Assets for assetsIconsSVGIconsCheckedIcon
   /// assets/Icons/SVG_Icons/Checked_icon.svg
   static const String assetsIconsSVGIconsCheckedIcon = "assets/Icons/SVG_Icons/Checked_icon.svg";
-
-  /// Assets for assetsIconsSVGIconsChoosignStateTeacherIcon
-  /// assets/Icons/SVG_Icons/ChoosignStateTeacherIcon.svg
-  static const String assetsIconsSVGIconsChoosignStateTeacherIcon = "assets/Icons/SVG_Icons/ChoosignStateTeacherIcon.svg";
-
-  /// Assets for assetsIconsSVGIconsChoosingStateStudentIcon
-  /// assets/Icons/SVG_Icons/ChoosingStateStudentIcon.svg
-  static const String assetsIconsSVGIconsChoosingStateStudentIcon = "assets/Icons/SVG_Icons/ChoosingStateStudentIcon.svg";
 
   /// Assets for assetsIconsSVGIconsCustomFileIcon
   /// assets/Icons/SVG_Icons/CustomFileIcon.svg

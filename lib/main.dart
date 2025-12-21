@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -13,12 +15,16 @@ import 'package:sintir_dashboard/Core/Themes/theme_cubit.dart';
 import 'package:sintir_dashboard/Core/Utils/App_router.dart';
 import 'package:sintir_dashboard/Core/widgets/PrivacyWrapper.dart';
 import 'package:sintir_dashboard/firebase_options.dart';
+import 'package:sintir_dashboard/generated/l10n.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final appDocDir = await getApplicationDocumentsDirectory();
   final storage = await HydratedStorage.build(
-    storageDirectory: HydratedStorageDirectory(appDocDir.path),
+    storageDirectory: kIsWeb
+        ? HydratedStorageDirectory.web
+        : HydratedStorageDirectory(
+            (await getApplicationDocumentsDirectory()).path,
+          ),
   );
   HydratedBloc.storage = storage;
   await Future.wait([
@@ -26,6 +32,7 @@ void main() async {
     Hive.initFlutter(),
     Hive_Services.init(),
   ]);
+
   Bloc.observer = Custom_Blocobserver();
   setup_Getit();
   runApp(const Portal(child: PrivacyWrapper(child: SintirDashboard())));
@@ -40,17 +47,17 @@ class SintirDashboard extends StatelessWidget {
       create: (_) => ThemeCubit(),
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) {
-          MaterialApp.router(
+          return MaterialApp.router(
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
             themeMode: themeMode,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
+            localizationsDelegates: [
+              S.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: [const Locale('en'), const Locale('ar')],
+            supportedLocales: S.delegate.supportedLocales,
             locale: Locale("ar"),
             debugShowCheckedModeBanner: false,
             routerConfig: App_router.router,
