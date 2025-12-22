@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sintir_dashboard/Core/Helper/AppPadding.dart';
 import 'package:sintir_dashboard/Core/Services/FireBase/FirebaseAuth_Service.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
+import 'package:sintir_dashboard/Core/widgets/AppCopyrightLabel.dart';
+import 'package:sintir_dashboard/Core/widgets/AppVersionLabel.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/SignInView.dart';
 import 'package:sintir_dashboard/Features/Splash/Presentation/Views/Widgets/SplashAppLogo.dart';
 import 'package:sintir_dashboard/Features/Splash/Presentation/Views/Widgets/SplashViewBodyDescription.dart';
@@ -26,9 +29,9 @@ class _SplashViewBodyState extends State<SplashViewBody> {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: KHorizontalPadding,
-          vertical: KVerticalPadding,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppPadding.horizontal(context),
+          vertical: AppPadding.vertical(context),
         ),
         child: Column(
           crossAxisAlignment: .center,
@@ -43,19 +46,9 @@ class _SplashViewBodyState extends State<SplashViewBody> {
             const Spacer(),
             SplashViewBodyLoadingWidget(),
             SizedBox(height: 12),
-            Text(
-              "جميع الحقوق محفوظة لموقع سينتير 2026",
-              style: AppTextStyles(
-                context,
-              ).regular10.copyWith(color: Colors.grey),
-            ),
+            AppCopyrightLabel(),
             SizedBox(height: 8),
-            Text(
-              currentVersion,
-              style: AppTextStyles(
-                context,
-              ).regular10.copyWith(color: Colors.grey),
-            ),
+            AppVersionLabel(version: currentVersion),
           ],
         ),
       ),

@@ -55,92 +55,78 @@ class AppTheme {
     brightness: Brightness.dark,
     fontFamily: "Cairo",
     primaryColor: KMainColor,
-    scaffoldBackgroundColor: const Color(0xFF121212),
+    scaffoldBackgroundColor: const Color(0xFF151D2C),
     useMaterial3: true,
 
     colorScheme: const ColorScheme.dark().copyWith(
       primary: KMainColor,
       secondary: KSecondaryColor,
-      surface: const Color(0xFF1E1E1E),
+      surface: const Color(0xFF1C2637),
       onSurface: Colors.white,
     ),
 
     // APP BAR
     appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFF1E1E1E),
+      backgroundColor: Color(0xFF151D2C),
       elevation: 0,
       foregroundColor: Colors.white,
       centerTitle: true,
     ),
 
-    // CARDS
-    cardColor: const Color(0xFF1E1E1E),
-
-    // ICONS
-    iconTheme: const IconThemeData(color: Colors.white70, size: 22),
-
-    // TEXTS
-    textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: Colors.white),
-      bodyMedium: TextStyle(color: Colors.white70),
-      bodySmall: TextStyle(color: Colors.white54),
-      titleMedium: TextStyle(color: Colors.white),
-      titleLarge: TextStyle(color: Colors.white),
+    cardColor: const Color(0xFF1C2637),
+    cardTheme: CardThemeData(
+      color: const Color(0xFF1C2637),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: Colors.white.withOpacity(0.05),
+        ), // إطار خفيف جداً بدل الظل
+      ),
     ),
 
-    // INPUTS
+    // INPUTS - لون داكن جداً للحقول
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0xFF2A2A2A),
+      fillColor: const Color(0xFF0F1520),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
       ),
-      hintStyle: const TextStyle(color: Colors.white54),
-      labelStyle: const TextStyle(color: Colors.white70),
-      prefixIconColor: Colors.white60,
-      suffixIconColor: Colors.white60,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.white.withOpacity(0.03)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: KMainColor.withOpacity(0.5)),
+      ),
+      hintStyle: const TextStyle(color: Colors.white38, fontSize: 13),
+      labelStyle: const TextStyle(color: Colors.white60),
     ),
 
     // DIVIDERS
     dividerTheme: DividerThemeData(
-      color: Colors.white.withOpacity(0.12),
-      thickness: 1,
+      color: Colors.white.withOpacity(0.05),
+      thickness: 0.8,
     ),
 
-    // BUTTONS
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: KMainColor,
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        padding: const EdgeInsets.symmetric(vertical: 14),
-      ),
-    ),
-
-    textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(foregroundColor: KMainColor),
+    // TEXTS
+    textTheme: const TextTheme(
+      bodyLarge: TextStyle(color: Colors.white),
+      bodyMedium: TextStyle(
+        color: Color(0xFFB0B8C4),
+      ), // لون رمادي مزرق للنصوص الثانوية
+      bodySmall: TextStyle(color: Color(0xFF8E99A8)),
     ),
 
     // BOTTOM NAVIGATION
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: Color(0xFF1E1E1E),
+      backgroundColor: Color(0xFF151D2C),
       selectedItemColor: KMainColor,
-      unselectedItemColor: Colors.white54,
+      unselectedItemColor: Colors.white30,
       type: BottomNavigationBarType.fixed,
-    ),
-
-    // FLOATING BUTTON
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: KMainColor,
-      foregroundColor: Colors.white,
-    ),
-
-    bottomSheetTheme: const BottomSheetThemeData(
-      backgroundColor: Color(0xFF1E1E1E),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      elevation: 0,
     ),
   );
 }

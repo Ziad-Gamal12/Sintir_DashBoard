@@ -119,7 +119,7 @@ class AuthRepoImpl implements AuthRepo {
     try {
       await user.delete();
     } catch (e) {
-      // الصمت هنا مقبول لأننا نحاول التنظيف فقط
+      throw CustomException(message: "حدث خطاء ، يرجى المحاولة لاحقاً");
     }
   }
 
@@ -158,9 +158,24 @@ class AuthRepoImpl implements AuthRepo {
 
       switch (userEntity.status) {
         case BackendEndpoints.activeStatus:
-          await storeUserLocally(userJson);
-          return const Right(null);
-
+          if (userEntity.role.toLowerCase() ==
+                  BackendEndpoints.adminRole.toLowerCase() ||
+              userEntity.role.toLowerCase() ==
+                  BackendEndpoints.coursesManagerrRole.toLowerCase() ||
+              userEntity.role.toLowerCase() ==
+                  BackendEndpoints.usersManagerrRole.toLowerCase() ||
+              userEntity.role.toLowerCase() ==
+                  BackendEndpoints.supportRole.toLowerCase()) {
+            await storeUserLocally(userJson);
+            return const Right(null);
+          } else {
+            return Left(
+              ServerFailure(
+                message:
+                    "عذراً، هذا الحساب لا يملك صلاحيات الوصول للوحة التحكم. يرجى مراجعة المسؤول.",
+              ),
+            );
+          }
         case BackendEndpoints.blockedStatus:
           return Left(
             ServerFailure(message: "هذا الحساب محظور، يرجى التواصل مع الإدارة"),

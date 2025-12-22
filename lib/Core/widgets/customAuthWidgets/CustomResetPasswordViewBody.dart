@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/Managers/Custom_reset_password_cubit/Custom_reset_password_cubit.dart';
-import 'package:sintir_dashboard/Core/widgets/AwesomeDialog.dart';
+import 'package:sintir_dashboard/Core/widgets/AppDialogs.dart';
 import 'package:sintir_dashboard/Core/widgets/customAuthWidgets/CustomResetPasswordViewBodyBlocBuilder.dart';
 
 class CustomResetPasswordViewBody extends StatelessWidget {
@@ -15,15 +15,15 @@ class CustomResetPasswordViewBody extends StatelessWidget {
     return BlocConsumer<CustomResetPasswordCubit, CustomResetPasswordState>(
       listener: (context, state) {
         if (state is CustomResetPasswordSuccess) {
-          successdialog(
-            context: context,
-            SuccessMessage: "تم أرسال رابط تغيير كلمه المرور بنجاح",
-            btnOkOnPress: () {
+          AppDialogs.success(
+            context,
+            "تم أرسال رابط تغيير كلمه المرور بنجاح",
+            onTap: () {
               GoRouter.of(context).pop();
             },
-          ).show();
+          );
         } else if (state is CustomResetPasswordFailure) {
-          errordialog(context, state.errmessage).show();
+          AppDialogs.error(context, state.errmessage);
         }
       },
       builder: (context, state) {

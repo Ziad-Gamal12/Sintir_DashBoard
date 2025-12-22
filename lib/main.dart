@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_portal/flutter_portal.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -13,7 +12,6 @@ import 'package:sintir_dashboard/Core/Services/get_it_Service.dart';
 import 'package:sintir_dashboard/Core/Themes/app_theme.dart';
 import 'package:sintir_dashboard/Core/Themes/theme_cubit.dart';
 import 'package:sintir_dashboard/Core/Utils/App_router.dart';
-import 'package:sintir_dashboard/Core/widgets/PrivacyWrapper.dart';
 import 'package:sintir_dashboard/firebase_options.dart';
 import 'package:sintir_dashboard/generated/l10n.dart';
 
@@ -35,7 +33,7 @@ void main() async {
 
   Bloc.observer = Custom_Blocobserver();
   setup_Getit();
-  runApp(const Portal(child: PrivacyWrapper(child: SintirDashboard())));
+  runApp(SintirDashboard());
 }
 
 class SintirDashboard extends StatelessWidget {

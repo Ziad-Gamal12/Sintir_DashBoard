@@ -9,6 +9,8 @@ import 'package:sintir_dashboard/Core/Services/FireBase/firebaseStorageService.d
 import 'package:sintir_dashboard/Core/Services/PickerAssetsServiceMobile.dart';
 import 'package:sintir_dashboard/Core/Services/StorageService.dart';
 import 'package:sintir_dashboard/Core/Services/picker_assets_interface.dart';
+import 'package:sintir_dashboard/Features/Auth/Data/repos/AuthRepoImpl.dart';
+import 'package:sintir_dashboard/Features/Auth/Domain/Repos/AuthRepo.dart';
 
 final getIt = GetIt.instance;
 
@@ -22,4 +24,10 @@ void setup_Getit() {
   );
   getIt.registerSingleton<StorageService>(getIt<FireBaseStorageService>());
   getIt.registerSingleton<DataBaseService>(FirebaseFirestoreservice());
+  getIt.registerLazySingleton<AuthRepo>(
+    () => AuthRepoImpl(
+      authService: getIt<FirebaseAuthService>(),
+      databaseservice: getIt<DataBaseService>(),
+    ),
+  );
 }

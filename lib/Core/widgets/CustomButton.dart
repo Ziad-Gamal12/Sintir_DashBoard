@@ -25,7 +25,7 @@ class Custombutton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      height: 46,
+      height: 62,
       minWidth: double.infinity,
       shape: RoundedRectangleBorder(
         side: side ?? BorderSide.none,
