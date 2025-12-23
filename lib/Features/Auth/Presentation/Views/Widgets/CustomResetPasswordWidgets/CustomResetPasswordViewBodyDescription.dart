@@ -10,7 +10,7 @@ class CustomResetPasswordViewBodyDescription extends StatelessWidget {
       width: double.infinity,
       child: Text(
         "أدخل بريدك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور الخاصة بك.",
-        style: AppTextStyles(context).semiBold14,
+        style: AppTextStyles(context).regular11,
         textAlign: TextAlign.center,
       ),
     );

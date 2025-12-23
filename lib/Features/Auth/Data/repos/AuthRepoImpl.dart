@@ -1,10 +1,12 @@
 // ignore_for_file: file_names, depend_on_referenced_packages
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mobile_device_identifier/mobile_device_identifier.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStorePaginateResponse.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStoreRequirmentsEntity.dart';
 import 'package:sintir_dashboard/Core/Services/DataBaseService.dart';
@@ -300,9 +302,40 @@ class AuthRepoImpl implements AuthRepo {
   @override
   Future<String> getDeviceId() async {
     try {
-      String? mobileDeviceIdentifier = await MobileDeviceIdentifier()
-          .getDeviceId();
-      return mobileDeviceIdentifier ?? '';
+      var deviceInfo = DeviceInfoPlugin();
+
+      if (kIsWeb) {
+        var webInfo = await deviceInfo.webBrowserInfo;
+        return "${webInfo.vendor}${webInfo.userAgent}${webInfo.hardwareConcurrency}";
+      }
+
+      if (Platform.isIOS) {
+        var iosDeviceInfo = await deviceInfo.iosInfo;
+        return iosDeviceInfo.identifierForVendor ?? '';
+      }
+
+      if (Platform.isAndroid) {
+        var androidDeviceInfo = await deviceInfo.androidInfo;
+        return androidDeviceInfo.id; // Unique ID for the app/device pair
+      }
+
+      // 3. Handle Desktop Platforms
+      if (Platform.isWindows) {
+        var windowsDeviceInfo = await deviceInfo.windowsInfo;
+        return windowsDeviceInfo.deviceId;
+      }
+
+      if (Platform.isLinux) {
+        var linuxDeviceInfo = await deviceInfo.linuxInfo;
+        return linuxDeviceInfo.machineId ?? '';
+      }
+
+      if (Platform.isMacOS) {
+        var macosDeviceInfo = await deviceInfo.macOsInfo;
+        return macosDeviceInfo.systemGUID ?? '';
+      }
+
+      return 'unknown_device';
     } catch (e) {
       return '';
     }
@@ -311,7 +344,6 @@ class AuthRepoImpl implements AuthRepo {
   Future<Either<Failure, void>> updateDeviceId({required String uid}) async {
     try {
       final deviceId = await getDeviceId();
-
       await databaseservice.updateData(
         requirements: FireStoreRequirmentsEntity(
           collection: BackendEndpoints.usersCollectionName,

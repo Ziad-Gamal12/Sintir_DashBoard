@@ -8,16 +8,34 @@ class CustomRadioWidget extends StatelessWidget {
     required this.onchange,
     required this.groupValue,
   });
+
   final String value;
   final String groupValue;
   final ValueChanged<String?> onchange;
+
   @override
   Widget build(BuildContext context) {
-    return Radio(
-      activeColor: KMainColor,
-      value: value,
-      groupValue: groupValue,
-      onChanged: onchange,
+    return Theme(
+      data: Theme.of(
+        context,
+      ).copyWith(unselectedWidgetColor: Colors.white.withOpacity(0.3)),
+      child: Radio<String>(
+        activeColor: KMainColor,
+        fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+          if (states.contains(WidgetState.selected)) {
+            return KMainColor;
+          }
+          return Colors.white.withOpacity(0.4);
+        }),
+        overlayColor: WidgetStateProperty.all(KMainColor.withOpacity(0.1)),
+        value: value,
+        groupValue: groupValue,
+        onChanged: onchange,
+        visualDensity: const VisualDensity(
+          horizontal: VisualDensity.minimumDensity,
+          vertical: VisualDensity.minimumDensity,
+        ),
+      ),
     );
   }
 }

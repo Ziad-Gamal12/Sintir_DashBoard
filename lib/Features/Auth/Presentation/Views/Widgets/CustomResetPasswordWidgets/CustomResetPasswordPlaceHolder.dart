@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:sintir_dashboard/Core/Helper/ResponsiveLayout%20.dart';
-import 'package:sintir_dashboard/Features/Auth/Domain/Entities/SignInAuthFeatureEntity.dart';
+import 'package:sintir_dashboard/Features/Auth/Domain/Entities/reset_password_feature_entity.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/AuthFeatureTile.dart';
-import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/SignInWIdgets/CustomSignInFeatureListTIle.dart';
+import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/CustomResetPasswordWidgets/CustomResetFeatureHeader.dart';
 import 'package:sintir_dashboard/constant.dart';
 
-class SignInWelcomePlaceHolder extends StatelessWidget {
-  const SignInWelcomePlaceHolder({super.key});
+class ResetPasswordWelcomePlaceholder extends StatelessWidget {
+  const ResetPasswordWelcomePlaceholder({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final features = SignInAuthFeatureEntity.getItems();
+    final features = ResetPasswordFeatureEntity.getItems();
+
     return ResponsiveLayout(
       mobile: const SizedBox.shrink(),
       tablet: const SizedBox.shrink(),
@@ -30,7 +31,7 @@ class SignInWelcomePlaceHolder extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CustomSignInFeatureListTIle()
+            const CustomResetFeatureHeader()
                 .animate()
                 .fadeIn(duration: 600.ms)
                 .slideX(begin: -0.2),

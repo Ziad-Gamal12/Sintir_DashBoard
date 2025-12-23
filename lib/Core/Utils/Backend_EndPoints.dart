@@ -17,7 +17,6 @@ class BackendEndpoints {
   static String coursesManagerrRole = "CoursesManager";
   static String usersManagerrRole = "UsersManager";
   static String supportRole = "Support";
-
   static String courseSectionItemsCollectionName = "Items";
   static String videoNotesSubCollection = "VideoNotes";
   static String addTeacherDataCollectionName = "Teachers";

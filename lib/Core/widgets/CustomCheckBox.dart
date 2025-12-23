@@ -18,7 +18,6 @@ class _CustomcheckboxState extends State<Customcheckbox> {
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return InkWell(
       onTap: () {
         isChecked = !isChecked;

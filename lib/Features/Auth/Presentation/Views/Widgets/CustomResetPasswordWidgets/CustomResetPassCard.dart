@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomEmailTextField.dart';
-import 'package:sintir_dashboard/Core/widgets/customAuthWidgets/CustomResetPasswordViewBodyActionButton.dart';
+import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/CustomResetPasswordWidgets/CustomResetPasswordViewBodyActionButton.dart';
 
 class CustomResetPassCard extends StatefulWidget {
   const CustomResetPassCard({super.key, required this.emailController});
@@ -19,18 +19,12 @@ class _CustomResetPassCardState extends State<CustomResetPassCard> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    ThemeData theme = Theme.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isDarkMode
-              ? [Colors.grey.withOpacity(.2), Colors.grey.withOpacity(.1)]
-              : [Colors.white.withOpacity(.8), Colors.white.withOpacity(.6)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: Colors.blue.withOpacity(.2)),
         boxShadow: [

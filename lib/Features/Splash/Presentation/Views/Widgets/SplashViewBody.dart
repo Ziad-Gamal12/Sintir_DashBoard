@@ -6,6 +6,7 @@ import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/AppCopyrightLabel.dart';
 import 'package:sintir_dashboard/Core/widgets/AppVersionLabel.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/SignInView.dart';
+import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/DashboardView.dart';
 import 'package:sintir_dashboard/Features/Splash/Presentation/Views/Widgets/SplashAppLogo.dart';
 import 'package:sintir_dashboard/Features/Splash/Presentation/Views/Widgets/SplashViewBodyDescription.dart';
 import 'package:sintir_dashboard/Features/Splash/Presentation/Views/Widgets/SplashViewBodyLoadingWidget.dart';
@@ -60,9 +61,7 @@ class _SplashViewBodyState extends State<SplashViewBody> {
     Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
       if (isLogin) {
-        // GoRouter.of(context).go(
-
-        // );
+        GoRouter.of(context).go(DashboardView.routeName);
       } else {
         GoRouter.of(context).go(SignInView.routeName);
       }

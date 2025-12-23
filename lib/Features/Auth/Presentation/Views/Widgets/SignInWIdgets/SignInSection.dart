@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/widgets/AppCopyrightLabel.dart';
 import 'package:sintir_dashboard/Core/widgets/AppDialogs.dart';
 import 'package:sintir_dashboard/Core/widgets/AppVersionLabel.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomEmailTextField.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomPasswordTextField.dart';
-import 'package:sintir_dashboard/Features/Auth/Presentation/Managers/cubit/sign_in_cubit.dart';
+import 'package:sintir_dashboard/Features/Auth/Presentation/Managers/SignInCubit/sign_in_cubit.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/SignInWIdgets/DonotHaveAccountLabel.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/SignInWIdgets/ForgetPasswordLabel.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/SignInWIdgets/SignInButton.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/SignInWIdgets/SignInHeader.dart';
+import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/DashboardView.dart';
 import 'package:sintir_dashboard/constant.dart';
 
 class SignInSection extends StatefulWidget {
@@ -38,7 +40,11 @@ class _SignInSectionState extends State<SignInSection> {
       child: BlocListener<SignInCubit, SignInState>(
         listener: (context, state) {
           if (state is SignInSuccess) {
-            AppDialogs.success(context, "تم تسجيل الدخول بنجاح");
+            AppDialogs.success(
+              context,
+              "تم تسجيل الدخول بنجاح",
+              onTap: () => GoRouter.of(context).go(DashboardView.routeName),
+            );
           } else if (state is SignInFailure) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               AppDialogs.error(context, state.errMessage);

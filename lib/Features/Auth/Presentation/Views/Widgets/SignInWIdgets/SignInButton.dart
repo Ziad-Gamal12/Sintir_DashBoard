@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomButton.dart';
 import 'package:sintir_dashboard/Core/widgets/Custom_Loading_Widget.dart';
-import 'package:sintir_dashboard/Features/Auth/Presentation/Managers/cubit/sign_in_cubit.dart';
+import 'package:sintir_dashboard/Features/Auth/Presentation/Managers/SignInCubit/sign_in_cubit.dart';
 import 'package:sintir_dashboard/constant.dart';
 
 class SignInButton extends StatelessWidget {

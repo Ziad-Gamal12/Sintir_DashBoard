@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sintir_dashboard/Core/Utils/imageAssets.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
-import 'package:svg_flutter/svg_flutter.dart';
+import 'package:sintir_dashboard/Core/widgets/CustomBackButton.dart';
 
-class SignInHeader extends StatelessWidget {
-  const SignInHeader({super.key});
+class SignUpHeader extends StatelessWidget {
+  const SignUpHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,25 +12,21 @@ class SignInHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        SvgPicture.asset(
-          Assets.assetsIconsSVGIconsAppLogo,
-          height: 40,
-          width: 40,
-        ),
+        CustomBackButton(),
         SizedBox(width: 16),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
-              "مرحباً بعودتك !",
+              "إنشاء حساب جديد",
               style: AppTextStyles(
                 context,
               ).semiBold24.copyWith(color: theme.textTheme.bodyLarge!.color),
             ),
             const SizedBox(height: 12),
             Text(
-              "الرجاء إدخال بياناتك لتسجيل الدخول",
+              "الرجاء إدخال بياناتك لانشاء حساب جديد",
               style: AppTextStyles(
                 context,
               ).regular14.copyWith(color: const Color(0xFFB0B8C4)),

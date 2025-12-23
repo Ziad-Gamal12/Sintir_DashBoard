@@ -15,7 +15,7 @@ class UserEntity {
   String gender;
   final String profilePicurl;
   final String status;
-  final String role;
+  String role;
   final String joinedDate;
 
   UserEntity({
@@ -44,7 +44,7 @@ class UserEntity {
     phoneNumber: "empty",
     deviceId: "empty",
     gender: "empty",
-    profilePicurl: "https://cdn-icons-png.flaticon.com/128/149/149071.png",
+    profilePicurl: "https://cdn-icons-png.flaticon.com/128/15239/15239514.png",
     status: "empty",
     role: "empty",
     joinedDate: "empty",

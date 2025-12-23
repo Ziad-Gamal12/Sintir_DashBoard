@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
-import 'package:sintir_dashboard/Core/widgets/customAuthWidgets/CustomResetPassCard.dart';
-import 'package:sintir_dashboard/Core/widgets/customAuthWidgets/CustomResetPassIcon.dart';
-import 'package:sintir_dashboard/Core/widgets/customAuthWidgets/CustomResetPasswordViewBodyDescription.dart';
-import 'package:sintir_dashboard/Core/widgets/customAuthWidgets/CustomResetPasswordViewBodyPopUpButton.dart';
+import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/CustomResetPasswordWidgets/CustomResetPassCard.dart';
+import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/CustomResetPasswordWidgets/CustomResetPassIcon.dart';
+import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/CustomResetPasswordWidgets/CustomResetPasswordViewBodyDescription.dart';
+import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/CustomResetPasswordWidgets/CustomResetPasswordViewBodyPopUpButton.dart';
 
 class CustomResetPasswordViewBodyBlocBuilder extends StatefulWidget {
   const CustomResetPasswordViewBodyBlocBuilder({super.key});
@@ -55,15 +55,12 @@ class _CustomResetPasswordViewBodyBlocBuilderState
               child: Column(
                 children: [
                   const SizedBox(height: 40),
-
                   const CustomResetPassIcon(),
-
                   const SizedBox(height: 35),
-
                   // Title
                   Text(
                     "إعادة تعيين كلمة المرور",
-                    style: AppTextStyles(context).semiBold24,
+                    style: AppTextStyles(context).semiBold16,
                   ),
 
                   const SizedBox(height: 14),

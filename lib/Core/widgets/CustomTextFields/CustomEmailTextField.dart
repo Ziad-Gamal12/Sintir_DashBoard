@@ -11,7 +11,7 @@ class CustomEmailTextField extends StatelessWidget {
     this.onSaved,
     this.isIconVisible = true,
   });
-  final TextEditingController controller;
+  final TextEditingController? controller;
   ValueChanged<String?>? onSaved;
   bool isIconVisible;
   @override
