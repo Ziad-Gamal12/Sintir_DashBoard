@@ -11,7 +11,7 @@ import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/SignIn
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/SignInWIdgets/ForgetPasswordLabel.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/SignInWIdgets/SignInButton.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/SignInWIdgets/SignInHeader.dart';
-import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/DashboardView.dart';
+import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/ResponsiveDashboardView.dart';
 import 'package:sintir_dashboard/constant.dart';
 
 class SignInSection extends StatefulWidget {
@@ -43,7 +43,8 @@ class _SignInSectionState extends State<SignInSection> {
             AppDialogs.success(
               context,
               "تم تسجيل الدخول بنجاح",
-              onTap: () => GoRouter.of(context).go(DashboardView.routeName),
+              onTap: () =>
+                  GoRouter.of(context).go(ResponsiveDashboardView.routeName),
             );
           } else if (state is SignInFailure) {
             WidgetsBinding.instance.addPostFrameCallback((_) {

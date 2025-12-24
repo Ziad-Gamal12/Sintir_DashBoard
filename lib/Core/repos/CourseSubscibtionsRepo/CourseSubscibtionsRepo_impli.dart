@@ -9,9 +9,9 @@ import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart'
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/SubscriberEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseSubscribersEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStoreRequirmentsEntity.dart';
-import 'package:sintir_dashboard/Core/Entities/TransactionEntity.dart';
+import 'package:sintir_dashboard/Core/Entities/Transactions/TransactionEntity.dart';
 import 'package:sintir_dashboard/Core/Models/CourseModel.dart';
-import 'package:sintir_dashboard/Core/Models/TransactionModel.dart';
+import 'package:sintir_dashboard/Core/Models/Transactions/TransactionModel.dart';
 import 'package:sintir_dashboard/Core/Models/subscripersModel.dart';
 import 'package:sintir_dashboard/Core/Services/DataBaseService.dart';
 import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';

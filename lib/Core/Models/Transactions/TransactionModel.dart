@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sintir_dashboard/Core/Entities/TransactionEntity.dart';
+import 'package:sintir_dashboard/Core/Entities/Transactions/TransactionEntity.dart';
 
 class TransactionModel {
   final String? transactionId;

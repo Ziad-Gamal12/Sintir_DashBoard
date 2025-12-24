@@ -48,47 +48,48 @@ class AppTheme {
     ),
   );
 
-  // -----------------------------
-  // DARK THEME
-  // -----------------------------
   static final ThemeData dark = ThemeData(
     brightness: Brightness.dark,
     fontFamily: "Cairo",
     primaryColor: KMainColor,
-    scaffoldBackgroundColor: const Color(0xFF151D2C),
-    useMaterial3: true,
 
+    // Background: Neutral Deep Charcoal (No blue tint)
+    scaffoldBackgroundColor: const Color(0xFF0F0F12),
+
+    useMaterial3: true,
     colorScheme: const ColorScheme.dark().copyWith(
       primary: KMainColor,
       secondary: KSecondaryColor,
-      surface: const Color(0xFF1C2637),
+      // Surface: Slightly lighter charcoal for cards/modals
+      surface: const Color(0xFF18181C),
       onSurface: Colors.white,
     ),
 
     // APP BAR
     appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFF151D2C),
+      backgroundColor: Color(0xFF0F0F12),
       elevation: 0,
       foregroundColor: Colors.white,
       centerTitle: true,
     ),
 
-    cardColor: const Color(0xFF1C2637),
+    // CARD THEME
+    cardColor: const Color(0xFF18181C),
     cardTheme: CardThemeData(
-      color: const Color(0xFF1C2637),
+      color: const Color(0xFF18181C),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: Colors.white.withOpacity(0.05),
-        ), // إطار خفيف جداً بدل الظل
+        // Subtle border to define cards against the deep background
+        side: BorderSide(color: Colors.white.withOpacity(0.04)),
       ),
     ),
 
-    // INPUTS - لون داكن جداً للحقول
+    // INPUT DECORATION (Fields)
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0xFF0F1520),
+      // Input fields should be the deepest color or slightly different
+      fillColor: const Color(0xFF1F1F23),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
@@ -105,24 +106,22 @@ class AppTheme {
       labelStyle: const TextStyle(color: Colors.white60),
     ),
 
-    // DIVIDERS
+    // DIVIDERS: Soft neutral lines
     dividerTheme: DividerThemeData(
-      color: Colors.white.withOpacity(0.05),
+      color: Colors.white.withOpacity(0.06),
       thickness: 0.8,
     ),
 
-    // TEXTS
+    // TEXTS: Using neutral greys instead of blue-greys
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: Colors.white),
-      bodyMedium: TextStyle(
-        color: Color(0xFFB0B8C4),
-      ), // لون رمادي مزرق للنصوص الثانوية
-      bodySmall: TextStyle(color: Color(0xFF8E99A8)),
+      bodyMedium: TextStyle(color: Color(0xFFE0E0E0)), // Light Grey
+      bodySmall: TextStyle(color: Color(0xFFA0A0A0)), // Muted Grey
     ),
 
     // BOTTOM NAVIGATION
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: Color(0xFF151D2C),
+      backgroundColor: Color(0xFF0F0F12),
       selectedItemColor: KMainColor,
       unselectedItemColor: Colors.white30,
       type: BottomNavigationBarType.fixed,

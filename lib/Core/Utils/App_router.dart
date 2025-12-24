@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/CustomResetPasswordView.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/SignInView.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/SignUpView.dart';
-import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/DashboardView.dart';
+import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/ResponsiveDashboardView.dart';
 import 'package:sintir_dashboard/Features/Splash/Presentation/Views/SplashView.dart';
 
 class App_router {
@@ -26,8 +26,8 @@ class App_router {
         builder: (context, state) => const CustomResetPasswordView(),
       ),
       GoRoute(
-        path: DashboardView.routeName,
-        builder: (context, state) => const DashboardView(),
+        path: ResponsiveDashboardView.routeName,
+        builder: (context, state) => const ResponsiveDashboardView(),
       ),
     ],
   );

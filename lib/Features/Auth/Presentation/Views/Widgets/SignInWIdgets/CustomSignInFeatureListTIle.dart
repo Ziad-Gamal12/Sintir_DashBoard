@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
-import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/InfoHighlightIconCard.dart';
+import 'package:sintir_dashboard/Core/widgets/InfoHighlightIconCard.dart';
 
 class CustomSignInFeatureListTIle extends StatelessWidget {
   const CustomSignInFeatureListTIle({super.key});

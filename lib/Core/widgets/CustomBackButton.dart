@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/Utils/imageAssets.dart';
 import 'package:svg_flutter/svg.dart';
 
@@ -14,13 +15,13 @@ class CustomBackButton extends StatelessWidget {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: onTap,
+        onTap: onTap ?? () => GoRouter.of(context).pop(),
         child: Container(
           width: 40,
           height: 40,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05), // Subtle background
+            color: Colors.white.withOpacity(0.05),
             shape: BoxShape.circle,
           ),
           child: SvgPicture.asset(

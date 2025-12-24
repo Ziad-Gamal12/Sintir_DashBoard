@@ -3,11 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class CustomCachedNetworkImage extends StatelessWidget {
-  CustomCachedNetworkImage({
-    super.key,
-    required this.imageUrl,
-    this.fit,
-  });
+  CustomCachedNetworkImage({super.key, required this.imageUrl, this.fit});
   BoxFit? fit;
   final String imageUrl;
 
@@ -17,11 +13,9 @@ class CustomCachedNetworkImage extends StatelessWidget {
       imageUrl: imageUrl,
       placeholder: (context, url) {
         return const Skeletonizer(
-            enabled: true,
-            child: SizedBox(
-              height: double.infinity,
-              width: double.infinity,
-            ));
+          enabled: true,
+          child: SizedBox(height: double.infinity, width: double.infinity),
+        );
       },
       errorWidget: (context, url, error) {
         return const Icon(Icons.error, color: Colors.red, size: 30);

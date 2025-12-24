@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
-import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/InfoHighlightIconCard.dart';
+import 'package:sintir_dashboard/Core/widgets/InfoHighlightIconCard.dart';
 
 class AuthFeatureTile extends StatefulWidget {
   const AuthFeatureTile({
