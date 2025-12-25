@@ -1,6 +1,6 @@
 // ignore_for_file: file_names, depend_on_referenced_packages
 
-import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
@@ -63,6 +63,7 @@ class AuthRepoImpl implements AuthRepo {
         return const Right(null);
       }
     } on FirebaseAuthException catch (e) {
+      log(e.toString());
       await authService.signout();
       if (e.code == 'too-many-requests') {
         return Left(
@@ -76,6 +77,7 @@ class AuthRepoImpl implements AuthRepo {
       await authService.signout();
       return Left(ServerFailure(message: e.message));
     } catch (e, s) {
+      log(e.toString(), stackTrace: s);
       await authService.signout();
       return Left(_toFailure(e, s));
     }
@@ -127,12 +129,13 @@ class AuthRepoImpl implements AuthRepo {
 
   Future<void> storeUserLocally(Map<String, dynamic> userJson) async {
     try {
-      String userJsonString = jsonEncode(userJson);
-      await Hive_Services.stringSetter(
+      await Hive_Services.jsonSetter(
         key: BackendEndpoints.storeUserLocaly,
-        value: userJsonString,
+        value: userJson,
       );
     } catch (e) {
+      log(e.toString());
+
       throw CustomException(
         message: "حدث خطأ أثناء حفظ بيانات المستخدم محلياً",
       );
@@ -168,7 +171,7 @@ class AuthRepoImpl implements AuthRepo {
                   BackendEndpoints.usersManagerrRole.toLowerCase() ||
               userEntity.role.toLowerCase() ==
                   BackendEndpoints.supportRole.toLowerCase()) {
-            await storeUserLocally(userJson);
+            await storeUserLocally(UserModel.fromJson(userJson).toMap());
             return const Right(null);
           } else {
             return Left(
@@ -198,9 +201,13 @@ class AuthRepoImpl implements AuthRepo {
           );
       }
     } on CustomException catch (e) {
+      log(e.toString());
+
       await authService.signout();
       return Left(ServerFailure(message: e.message));
     } catch (e) {
+      log(e.toString());
+
       await authService.signout();
       return Left(_toFailure(e));
     }

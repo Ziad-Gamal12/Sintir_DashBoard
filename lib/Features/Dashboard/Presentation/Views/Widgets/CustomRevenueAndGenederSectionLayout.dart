@@ -19,6 +19,7 @@ class CustomRevenueAndGenederSectionLayout extends StatelessWidget {
           );
         } else {
           return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(flex: 3, child: const CustomRevenueSummaryCard()),
               const SizedBox(width: 16),

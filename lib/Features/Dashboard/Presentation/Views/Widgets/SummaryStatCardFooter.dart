@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:sintir_dashboard/Features/Dashboard/Domain/Entities/SummaryCardStatusEntity.dart';
+import 'package:sintir_dashboard/Features/Dashboard/Domain/Entities/AnalyticsResultEntity.dart';
 
 class SummaryStatCardFooter extends StatelessWidget {
   const SummaryStatCardFooter({
     super.key,
     required this.summaryCardStatusEntity,
   });
-  final SummaryCardStatusEntity summaryCardStatusEntity;
+  final AnalyticsResultEntity? summaryCardStatusEntity;
 
   @override
   Widget build(BuildContext context) {
-    final bool isUp = summaryCardStatusEntity.isIncreasing;
+    final bool isUp = summaryCardStatusEntity?.isIncreasing ?? false;
     final Color statusColor = isUp
         ? const Color(0xFF10B981)
         : const Color(0xFFEF4444);
@@ -32,7 +32,7 @@ class SummaryStatCardFooter extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            "${summaryCardStatusEntity.percentage.toStringAsFixed(1)}%",
+            "${summaryCardStatusEntity?.percentage} %",
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,

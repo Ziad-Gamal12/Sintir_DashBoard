@@ -7,20 +7,21 @@ class CustomSummaryCardGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<SummaryCardEntity> items = SummaryCardEntity.getSummaryCards();
+    final items = SummaryCardEntity.getSummaryCards();
 
     return SliverGrid(
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 360,
-
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
         mainAxisExtent: 145,
       ),
-      delegate: SliverChildBuilderDelegate(
-        childCount: items.length,
-        (context, index) => SummaryStatCard(summaryCardEntity: items[index]),
-      ),
+      delegate: SliverChildBuilderDelegate(childCount: items.length, (
+        context,
+        index,
+      ) {
+        return SummaryStatCard(summaryCardEntity: items[index]);
+      }),
     );
   }
 }

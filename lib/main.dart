@@ -12,8 +12,10 @@ import 'package:sintir_dashboard/Core/Services/get_it_Service.dart';
 import 'package:sintir_dashboard/Core/Themes/app_theme.dart';
 import 'package:sintir_dashboard/Core/Themes/theme_cubit.dart';
 import 'package:sintir_dashboard/Core/Utils/App_router.dart';
+import 'package:sintir_dashboard/constant.dart';
 import 'package:sintir_dashboard/firebase_options.dart';
 import 'package:sintir_dashboard/generated/l10n.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +29,7 @@ void main() async {
   HydratedBloc.storage = storage;
   await Future.wait([
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+    Supabase.initialize(url: supaBaseUrl, anonKey: supaAnonKey),
     Hive.initFlutter(),
     Hive_Services.init(),
   ]);

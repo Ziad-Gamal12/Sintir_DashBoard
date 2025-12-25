@@ -24,7 +24,7 @@ class _SignUpViewBodyState extends State<SignUpViewBody> {
     profilePicurl: "https://cdn-icons-png.flaticon.com/128/15239/15239514.png",
     status: BackendEndpoints.pendingStatus,
     role: "",
-    joinedDate: DateTime.now().toString(),
+    joinedDate: DateTime.now(),
     fullName: "",
   );
   @override

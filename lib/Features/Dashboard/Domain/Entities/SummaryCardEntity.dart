@@ -1,35 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sintir_dashboard/Features/Dashboard/Domain/Entities/SummaryCardType.dart';
 
 class SummaryCardEntity {
   final IconData icon;
   final Color color;
-  final String title;
-
+  final String label;
+  final SummaryCardType type;
   SummaryCardEntity({
     required this.icon,
     required this.color,
-    required this.title,
+    required this.label,
+    required this.type,
   });
 
   static List<SummaryCardEntity> getSummaryCards() => [
     SummaryCardEntity(
-      title: "إجمالي الدورات",
-      icon: FontAwesomeIcons.bookOpen,
+      label: "إجمالي الدخل",
+      icon: FontAwesomeIcons.dollarSign,
       color: const Color(0xFF6366F1),
+      type: SummaryCardType.revenue,
     ),
     SummaryCardEntity(
-      title: "إجمالي المستخدمين",
+      label: "إجمالي المستخدمين",
       icon: FontAwesomeIcons.users,
       color: const Color(0xFF10B981),
+      type: SummaryCardType.users,
     ),
     SummaryCardEntity(
-      title: "الدورات المباشرة",
+      label: "الدورات المباشرة",
       icon: FontAwesomeIcons.video,
       color: const Color(0xFFF59E0B),
+      type: SummaryCardType.courses,
     ),
     SummaryCardEntity(
-      title: "التذاكر المفتوحة",
+      label: "التذاكر المفتوحة",
+      type: SummaryCardType.tickets,
       icon: FontAwesomeIcons.ticket,
       color: const Color(0xFFEF4444),
     ),
