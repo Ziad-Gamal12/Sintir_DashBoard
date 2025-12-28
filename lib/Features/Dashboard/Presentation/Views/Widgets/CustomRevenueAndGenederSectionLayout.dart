@@ -4,26 +4,25 @@ import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/Widgets/C
 
 class CustomRevenueAndGenederSectionLayout extends StatelessWidget {
   const CustomRevenueAndGenederSectionLayout({super.key});
-
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 600) {
+        if (constraints.maxWidth < 900) {
           return Column(
             children: [
               const CustomRevenueSummaryCard(),
-              Divider(height: 32),
-              CustomGenderSummarySection(),
+              const SizedBox(height: 24),
+              const CustomGenderSummarySection(),
             ],
           );
         } else {
           return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(flex: 3, child: const CustomRevenueSummaryCard()),
-              const SizedBox(width: 16),
-              Expanded(child: CustomGenderSummarySection()),
+              const Expanded(flex: 4, child: CustomRevenueSummaryCard()),
+              const SizedBox(width: 24),
+              SizedBox(width: 350, child: const CustomGenderSummarySection()),
             ],
           );
         }

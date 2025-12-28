@@ -12,6 +12,8 @@ import 'package:sintir_dashboard/Core/Services/PickerAssetsServiceMobile.dart';
 import 'package:sintir_dashboard/Core/Services/StorageService.dart';
 import 'package:sintir_dashboard/Core/Services/SupabaseAnalyticsService.dart';
 import 'package:sintir_dashboard/Core/Services/picker_assets_interface.dart';
+import 'package:sintir_dashboard/Core/repos/CoursesRepo/CoursesRepo.dart';
+import 'package:sintir_dashboard/Core/repos/CoursesRepo/CoursesRepo_impl.dart';
 import 'package:sintir_dashboard/Core/repos/ResetPaswordRepo/ResetPaswordRepo.dart';
 import 'package:sintir_dashboard/Core/repos/ResetPaswordRepo/ResetPaswordRepoImp.dart';
 import 'package:sintir_dashboard/Features/Auth/Data/repos/AuthRepoImpl.dart';
@@ -47,6 +49,14 @@ void setup_Getit() {
   getIt.registerLazySingleton<DashbaordAnalyticsRepo>(
     () => DashbaordAnalyticsRepoImpl(
       supabaseAnalyticsService: getIt<SupabaseAnalyticsService>(),
+      dataBaseService: getIt<DataBaseService>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<Coursesrepo>(
+    () => CoursesrepoImpl(
+      databaseservice: getIt<DataBaseService>(),
+      storageService: getIt<StorageService>(),
     ),
   );
 }

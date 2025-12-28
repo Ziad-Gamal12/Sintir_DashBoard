@@ -21,12 +21,9 @@ class _CustomRevenueGraphState extends State<CustomRevenueGraph> {
     final Color secondaryTextColor = theme.textTheme.bodyMedium!.color!
         .withOpacity(0.6);
     final Color mainColor = theme.colorScheme.primary;
-
     if (widget.transactions.isEmpty) {
       return const Center(child: Text("لا يوجد بيانات"));
     }
-
-    // Process data for the last 6 transactions
     List<TransactionEntity> recentResults = widget.transactions.reversed
         .toList();
     List<TransactionEntity> displayedResults = recentResults.length > 6
@@ -50,7 +47,6 @@ class _CustomRevenueGraphState extends State<CustomRevenueGraph> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // --- NEW HEADER SECTION ---
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -83,7 +79,7 @@ class _CustomRevenueGraphState extends State<CustomRevenueGraph> {
 
         // --- THE CHART ---
         AspectRatio(
-          aspectRatio: 1.7,
+          aspectRatio: 1.5,
           child: Container(
             padding: const EdgeInsets.fromLTRB(10, 20, 25, 10),
             decoration: BoxDecoration(

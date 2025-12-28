@@ -14,7 +14,7 @@ class CustomSummaryCardGrid extends StatelessWidget {
         maxCrossAxisExtent: 360,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        mainAxisExtent: 145,
+        mainAxisExtent: 160,
       ),
       delegate: SliverChildBuilderDelegate(childCount: items.length, (
         context,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
-import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/Widgets/CustomGenderColoredCard.dart';
 
 class CustomGenderSummaryInfo extends StatelessWidget {
   const CustomGenderSummaryInfo({
@@ -9,59 +8,61 @@ class CustomGenderSummaryInfo extends StatelessWidget {
     required this.maleCount,
   });
 
-  final int femaleCount;
-  final int maleCount;
+  final double femaleCount;
+  final double maleCount;
 
   @override
   Widget build(BuildContext context) {
-    // Using Wrap instead of Row for better responsiveness
-    return Wrap(
-      spacing: 24,
-      runSpacing: 16,
-      alignment: WrapAlignment.center,
-      crossAxisAlignment: WrapCrossAlignment.center,
+    return Row(
       children: [
-        _buildGenderItem(
-          context,
-          label: "ذكور",
-          count: maleCount,
-          color: const Color(0xff2196F3),
+        Expanded(
+          child: _buildGenderCard(
+            context,
+            "ذكور",
+            maleCount,
+            const Color(0xff2196F3),
+          ),
         ),
-        _buildGenderItem(
-          context,
-          label: "إناث",
-          count: femaleCount,
-          color: const Color(0xffE91E63),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildGenderCard(
+            context,
+            "إناث",
+            femaleCount,
+            const Color(0xffE91E63),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildGenderItem(
-    BuildContext context, {
-    required String label,
-    required int count,
-    required Color color,
-  }) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CustomGenderColoredCard(color: color),
-        const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: AppTextStyles(
-                context,
-              ).regular14.copyWith(color: Colors.grey),
-            ),
-            Text(count.toString(), style: AppTextStyles(context).semiBold16),
-          ],
-        ),
-      ],
+  Widget _buildGenderCard(
+    BuildContext context,
+    String label,
+    double count,
+    Color color,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          Text(
+            label,
+            style: AppTextStyles(
+              context,
+            ).regular14.copyWith(color: color.withOpacity(0.8)),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            count.toInt().toString(),
+            style: AppTextStyles(context).semiBold16,
+          ),
+        ],
+      ),
     );
   }
 }

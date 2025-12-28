@@ -21,12 +21,10 @@ class CustomDrawerItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final Color effectiveActiveColor = isDark
-        ? Colors.white
-        : theme.primaryColor;
+    final Color effectiveActiveColor = isDark ? Colors.white : Colors.white;
     final Color effectiveInactiveColor = isDark
         ? const Color(0xFF8E99A8)
-        : Colors.grey;
+        : Colors.black54;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
@@ -34,7 +32,7 @@ class CustomDrawerItem extends StatelessWidget {
       decoration: BoxDecoration(
         color: isSelected
             ? (overrideColor?.withOpacity(0.15) ??
-                  KMainColor.withOpacity(isDark ? 0.15 : 1.0))
+                  KMainColor.withOpacity(isDark ? 0.15 : 0.65))
             : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         border: isSelected && isDark

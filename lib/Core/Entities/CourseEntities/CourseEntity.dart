@@ -27,18 +27,19 @@ class CourseEntity {
     this.contentcreaterentity,
   });
   factory CourseEntity.empty() => CourseEntity(
-    id: 'loading',
-    state: 'loading',
-    title: 'loading',
-    description: 'loading',
+    id: '41421231414',
+    state: "Published",
+    title: 'كورس تجريبي',
+    description: 'هذا وصف تجريبي للكورس',
+    contentcreaterentity: Contentcreaterentity.empty(),
     posterUrl:
         "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
-    price: 0,
-    language: 'loading',
-    subject: 'loading',
-    level: 'loading',
+    price: 120,
+    language: 'العربية',
+    subject: 'تطوير الويب',
+    level: 'مبتدئ',
     postedDate: DateTime.now(),
-    studentsCount: 0,
+    studentsCount: 3,
   );
   static List<CourseEntity> fakeCourses = List.generate(
     10,

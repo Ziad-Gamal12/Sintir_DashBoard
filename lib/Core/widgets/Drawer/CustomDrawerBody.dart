@@ -37,12 +37,7 @@ class _CustomDrawerBodyState extends State<CustomDrawerBody> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
-    const Color surfaceColor = Color(
-      0xFF1A1A1F,
-    ); // Slightly lighter for the user tile
-    final Color subtleDivider = Colors.white.withOpacity(
-      0.05,
-    ); // Very soft divider
+    final Color subtleDivider = theme.dividerColor.withOpacity(0.05);
 
     return Container(
       decoration: BoxDecoration(
@@ -119,14 +114,11 @@ class _CustomDrawerBodyState extends State<CustomDrawerBody> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        // Darker red tint for the background
-        color: const Color(0xFF2C1616),
-        border: Border.all(color: Colors.red.withOpacity(0.1)),
+        color: Colors.transparent,
+        border: Border.all(color: Colors.red.withOpacity(0.3)),
       ),
       child: InkWell(
-        onTap: () {
-          // Logout Logic
-        },
+        onTap: () {},
         borderRadius: BorderRadius.circular(12),
         child: CustomDrawerItem(
           isSelected: false,
@@ -134,7 +126,7 @@ class _CustomDrawerBodyState extends State<CustomDrawerBody> {
             icon: FontAwesomeIcons.rightFromBracket,
             title: "تسجيل الخروج",
           ),
-          overrideColor: Colors.redAccent.shade100,
+          overrideColor: Colors.red,
         ),
       ),
     );

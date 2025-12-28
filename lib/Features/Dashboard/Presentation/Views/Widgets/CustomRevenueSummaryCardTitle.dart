@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
-import 'package:sintir_dashboard/constant.dart';
 
 class CustomRevenueSummaryCardTitle extends StatelessWidget {
   const CustomRevenueSummaryCardTitle({super.key});
@@ -17,13 +16,7 @@ class CustomRevenueSummaryCardTitle extends StatelessWidget {
       ),
       subtitle: Text(
         "نظرة عامة على إيرادات المنصه أخر شهر",
-        style: AppTextStyles(
-          context,
-        ).regular11.copyWith(color: theme.textTheme.bodyLarge!.color),
-      ),
-      trailing: Text(
-        "التفاصيل",
-        style: AppTextStyles(context).regular11.copyWith(color: KMainColor),
+        style: AppTextStyles(context).regular11.copyWith(color: Colors.grey),
       ),
     );
   }
