@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/widgets/Drawer/CustomDrawerBody.dart';
+import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Views/Widgets/CoursesManagmentBody.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/Widgets/DashboardViewBody.dart';
 
 class CustomDesktopDashboardLayout extends StatefulWidget {
@@ -17,7 +18,7 @@ class _CustomDesktopDashboardLayoutState
 
   final List<Widget> screens = [
     const DashboardViewBody(),
-    const Center(child: Text("إدارة الدورات")),
+    const CoursesManagmentBody(),
     const Center(child: Text("إدارة المستخدمين")),
     const Center(child: Text("الدعم الفني")),
   ];

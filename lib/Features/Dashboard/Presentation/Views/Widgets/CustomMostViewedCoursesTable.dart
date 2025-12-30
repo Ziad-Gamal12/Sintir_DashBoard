@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/widgets/CourseTableWidgets/CustomCourseTable.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomErrorWidget.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Presentation/Managers/dashbaord_most_viewed_courses_cubit/dashbaord_most_viewed_courses_cubit.dart';
@@ -15,7 +14,6 @@ class CustomMostViewedCoursesTable extends StatefulWidget {
 
 class _CustomMostViewedCoursesTableState
     extends State<CustomMostViewedCoursesTable> {
-  List<CourseEntity> fetchedCourses = [];
   bool hasMore = true;
   void _fetchMoreCourses() {
     final dashbaordMostViewedCoursesCubit = context
@@ -36,6 +34,9 @@ class _CustomMostViewedCoursesTableState
       DashbaordMostViewedCoursesState
     >(
       builder: (context, state) {
+        final fetchedCourses = context
+            .read<DashbaordMostViewedCoursesCubit>()
+            .fetchedCourses;
         if (state is DashbaordFetchMostViewedCoursesFailure) {
           return Center(
             child: CustomErrorWidget(errormessage: state.errorMessage),
@@ -48,20 +49,13 @@ class _CustomMostViewedCoursesTableState
                 _fetchMoreCourses();
               },
               isLoading: state is DashbaordFetchMostViewedCoursesLoading,
-              courses: state is DashbaordFetchMostViewedCoursesSuccess
-                  ? fetchedCourses
-                  : [],
+              courses: fetchedCourses,
             ),
           );
         }
       },
       listener: (context, state) {
         if (state is DashbaordFetchMostViewedCoursesSuccess) {
-          if (state.resonseEntity.isPaginate) {
-            fetchedCourses.addAll(state.resonseEntity.courses);
-          } else {
-            fetchedCourses = state.resonseEntity.courses;
-          }
           hasMore = state.resonseEntity.hasMore;
         }
       },

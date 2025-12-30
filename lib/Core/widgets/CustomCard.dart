@@ -1,42 +1,41 @@
 import 'package:flutter/material.dart';
 
 class CustomCard extends StatelessWidget {
-  const CustomCard({super.key, required this.child});
+  const CustomCard({super.key, required this.child, this.padding});
+
   final Widget child;
+  final EdgeInsetsGeometry? padding;
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final bool isDarkMode = theme.brightness == Brightness.dark;
-
-    final Color containerColor = theme.cardColor;
-
-    final List<BoxShadow> boxShadows = isDarkMode
-        ? [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.4),
-              blurRadius: 10,
-              spreadRadius: 1,
-              offset: const Offset(2, 5),
-            ),
-          ]
-        : [
-            BoxShadow(
-              color: Colors.grey.shade200,
-              blurRadius: 50,
-              spreadRadius: 1,
-              offset: const Offset(5, 15),
-            ),
-          ];
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Color surfaceColor = theme.colorScheme.surface;
 
     return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          // Use theme-aware color instead of hardcoded Colors.white
-          color: containerColor,
-          // Use theme-aware shadows
-          boxShadow: boxShadows,
-          borderRadius: BorderRadius.circular(20),
+      padding:
+          padding ?? const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      decoration: BoxDecoration(
+        color: surfaceColor,
+        borderRadius: BorderRadius.circular(16), // Premium rounded corners
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withOpacity(0.04)
+              : Colors.black.withOpacity(0.05),
+          width: 1,
         ),
-        child: child);
+        gradient: isDark
+            ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  surfaceColor.withOpacity(1.0),
+                  const Color(0xFF121215),
+                ],
+              )
+            : null,
+      ),
+      child: child,
+    );
   }
 }

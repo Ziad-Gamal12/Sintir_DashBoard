@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/widgets/Drawer/CustomDrawerBody.dart';
+import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Views/ResponsiveCoursesManagmentView.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/ResponsiveDashboardView.dart';
 
 class CustomDrawer extends StatefulWidget {
@@ -49,19 +50,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
   void _handleNavigation(int index) {
     Navigator.pop(context);
-    switch (index) {
-      case 0:
-        GoRouter.of(context).push(ResponsiveDashboardView.routeName);
-        break;
-      case 1:
-        // Navigate to Courses
-        break;
-      case 2:
-        // Navigate to Users
-        break;
-      case 3:
-        // Navigate to Support
-        break;
+    if (index == 0) {
+      GoRouter.of(context).push(ResponsiveDashboardView.routeName);
+      return;
+    } else if (index == 1) {
+      GoRouter.of(context).push(ResponsiveCoursesManagmentView.routeName);
+      return;
     }
   }
 }

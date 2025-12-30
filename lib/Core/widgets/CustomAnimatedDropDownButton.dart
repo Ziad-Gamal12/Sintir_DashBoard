@@ -1,8 +1,8 @@
-import 'package:animated_custom_dropdown/custom_dropdown.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 
-class CustomAnimatedDropDownButton extends StatelessWidget {
+class CustomAnimatedDropDownButton extends StatefulWidget {
   const CustomAnimatedDropDownButton({
     super.key,
     required this.items,
@@ -14,82 +14,127 @@ class CustomAnimatedDropDownButton extends StatelessWidget {
   final ValueChanged<String?> onChanged;
   final String? hintText;
 
-  Future<List<String>> _getFakeRequestData(String query) async {
-    return await Future.delayed(const Duration(milliseconds: 300), () {
-      return items.where((e) {
-        return e.toLowerCase().contains(query.toLowerCase());
-      }).toList();
-    });
+  @override
+  State<CustomAnimatedDropDownButton> createState() =>
+      _CustomAnimatedDropDownButtonState();
+}
+
+class _CustomAnimatedDropDownButtonState
+    extends State<CustomAnimatedDropDownButton> {
+  String? selectedValue;
+  final TextEditingController textEditingController = TextEditingController();
+
+  @override
+  void dispose() {
+    textEditingController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final Color surfaceColor = isDarkMode
-        ? const Color(0xFF1E1E1E)
-        : Colors.white;
-    final Color borderColor = isDarkMode
-        ? Colors.white10
-        : const Color(0xFFE4E6E8);
-    final Color searchColor = isDarkMode
-        ? const Color(0xFF2A2A2A)
-        : const Color(0xFFF8F9FA);
+    const Color activeBlue = Color(0xFF4C86F9);
+    const Color borderColor = Color(0xFF2A2A2A);
+    const Color dropdownBg = Color(0xFF111111);
 
-    return CustomDropdown<String>.searchRequest(
-      futureRequest: _getFakeRequestData,
-      hintText: hintText ?? "اختر من القائمة",
-      headerBuilder: (context, selectedItem, enabled) => Text(
-        selectedItem,
-        style: AppTextStyles(
-          context,
-        ).semiBold14.copyWith(color: theme.textTheme.bodyLarge?.color),
-      ),
-      hintBuilder: (context, hint, enabled) => Text(
-        hint,
-        style: AppTextStyles(
-          context,
-        ).regular14.copyWith(color: theme.hintColor.withOpacity(0.5)),
-      ),
-      decoration: CustomDropdownDecoration(
-        closedShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(isDarkMode ? 0.2 : 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        expandedShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-        searchFieldDecoration: SearchFieldDecoration(
-          fillColor: searchColor,
-          prefixIcon: Icon(Icons.search, color: theme.hintColor, size: 20),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: borderColor),
-          ),
-          textStyle: AppTextStyles(context).regular14,
-          hintStyle: AppTextStyles(
+    return DropdownButtonHideUnderline(
+      child: DropdownButton2<String>(
+        isExpanded: true,
+        hint: Text(
+          widget.hintText ?? "اختر...",
+          style: AppTextStyles(
             context,
-          ).regular14.copyWith(color: theme.hintColor),
+          ).regular14.copyWith(color: Colors.white38),
         ),
-        expandedFillColor: surfaceColor,
-        closedFillColor: surfaceColor,
-        closedBorder: Border.all(color: borderColor, width: 1.2),
-        expandedBorder: Border.all(
-          color: theme.primaryColor.withOpacity(0.5),
-          width: 1.2,
+        items: widget.items
+            .map(
+              (String item) => DropdownMenuItem<String>(
+                value: item,
+                child: Text(
+                  item,
+                  style: AppTextStyles(
+                    context,
+                  ).regular14.copyWith(color: Colors.white),
+                ),
+              ),
+            )
+            .toList(),
+        value: selectedValue,
+        onChanged: (value) {
+          setState(() => selectedValue = value);
+          widget.onChanged(value);
+        },
+        buttonStyleData: ButtonStyleData(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: borderColor),
+            color: Colors.transparent,
+          ),
         ),
-        closedBorderRadius: BorderRadius.circular(14),
-        expandedBorderRadius: BorderRadius.circular(14),
+        iconStyleData: const IconStyleData(
+          icon: Icon(Icons.arrow_drop_down, color: Colors.white38),
+          iconSize: 24,
+        ),
+        dropdownStyleData: DropdownStyleData(
+          maxHeight: 250,
+          width: 200,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: dropdownBg,
+            border: Border.all(color: borderColor),
+          ),
+          elevation: 0,
+          offset: const Offset(0, -4),
+          scrollbarTheme: ScrollbarThemeData(
+            radius: const Radius.circular(40),
+            thickness: WidgetStateProperty.all(4),
+            thumbColor: WidgetStateProperty.all(activeBlue.withOpacity(0.3)),
+          ),
+        ),
+        menuItemStyleData: const MenuItemStyleData(
+          height: 45,
+          padding: EdgeInsets.symmetric(horizontal: 14),
+        ),
+        dropdownSearchData: DropdownSearchData(
+          searchController: textEditingController,
+          searchInnerWidgetHeight: 50,
+          searchInnerWidget: Container(
+            height: 50,
+            padding: const EdgeInsets.all(8),
+            child: TextFormField(
+              controller: textEditingController,
+              style: const TextStyle(color: Colors.white, fontSize: 13),
+              decoration: InputDecoration(
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 12,
+                ),
+                hintText: 'بحث...',
+                hintStyle: const TextStyle(color: Colors.white24, fontSize: 12),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide: const BorderSide(color: borderColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide: const BorderSide(color: activeBlue),
+                ),
+              ),
+            ),
+          ),
+          searchMatchFn: (item, searchValue) {
+            return item.value.toString().toLowerCase().contains(
+              searchValue.toLowerCase(),
+            );
+          },
+        ),
+        onMenuStateChange: (isOpen) {
+          if (!isOpen) {
+            textEditingController.clear();
+          }
+        },
       ),
-      items: items,
-      onChanged: onChanged,
     );
   }
 }
