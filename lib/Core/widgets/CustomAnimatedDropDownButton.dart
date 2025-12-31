@@ -1,6 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
+import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomSearchTextField.dart';
 
 class CustomAnimatedDropDownButton extends StatefulWidget {
   const CustomAnimatedDropDownButton({
@@ -32,9 +33,15 @@ class _CustomAnimatedDropDownButtonState
 
   @override
   Widget build(BuildContext context) {
-    const Color activeBlue = Color(0xFF4C86F9);
-    const Color borderColor = Color(0xFF2A2A2A);
-    const Color dropdownBg = Color(0xFF111111);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Pulling colors from your AppTheme for perfect consistency
+    final Color primaryColor = theme.primaryColor;
+    final Color borderColor = isDark
+        ? Colors.white.withOpacity(0.06)
+        : Colors.grey.shade300;
+    final Color dropdownBg = theme.colorScheme.surface;
 
     return DropdownButtonHideUnderline(
       child: DropdownButton2<String>(
@@ -43,7 +50,7 @@ class _CustomAnimatedDropDownButtonState
           widget.hintText ?? "اختر...",
           style: AppTextStyles(
             context,
-          ).regular14.copyWith(color: Colors.white38),
+          ).regular14.copyWith(color: isDark ? Colors.white38 : Colors.black38),
         ),
         items: widget.items
             .map(
@@ -51,9 +58,9 @@ class _CustomAnimatedDropDownButtonState
                 value: item,
                 child: Text(
                   item,
-                  style: AppTextStyles(
-                    context,
-                  ).regular14.copyWith(color: Colors.white),
+                  style: AppTextStyles(context).regular14.copyWith(
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
                 ),
               ),
             )
@@ -66,20 +73,23 @@ class _CustomAnimatedDropDownButtonState
         buttonStyleData: ButtonStyleData(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(
+              12,
+            ), // Matches your inputDecorationTheme
             border: Border.all(color: borderColor),
             color: Colors.transparent,
           ),
         ),
-        iconStyleData: const IconStyleData(
-          icon: Icon(Icons.arrow_drop_down, color: Colors.white38),
+        iconStyleData: IconStyleData(
+          icon: const Icon(Icons.arrow_drop_down),
           iconSize: 24,
+          iconEnabledColor: isDark ? Colors.white60 : Colors.black54,
         ),
         dropdownStyleData: DropdownStyleData(
-          maxHeight: 250,
-          width: 200,
+          maxHeight: 300,
+          width: 220,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(12),
             color: dropdownBg,
             border: Border.all(color: borderColor),
           ),
@@ -88,40 +98,27 @@ class _CustomAnimatedDropDownButtonState
           scrollbarTheme: ScrollbarThemeData(
             radius: const Radius.circular(40),
             thickness: WidgetStateProperty.all(4),
-            thumbColor: WidgetStateProperty.all(activeBlue.withOpacity(0.3)),
+            thumbColor: WidgetStateProperty.all(primaryColor.withOpacity(0.3)),
           ),
         ),
-        menuItemStyleData: const MenuItemStyleData(
+        menuItemStyleData: MenuItemStyleData(
           height: 45,
-          padding: EdgeInsets.symmetric(horizontal: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          // Subtle hover effect
+          selectedMenuItemBuilder: (context, child) {
+            return Container(
+              color: primaryColor.withOpacity(0.08),
+              child: child,
+            );
+          },
         ),
         dropdownSearchData: DropdownSearchData(
           searchController: textEditingController,
-          searchInnerWidgetHeight: 50,
+          searchInnerWidgetHeight: 60,
           searchInnerWidget: Container(
-            height: 50,
-            padding: const EdgeInsets.all(8),
-            child: TextFormField(
-              controller: textEditingController,
-              style: const TextStyle(color: Colors.white, fontSize: 13),
-              decoration: InputDecoration(
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 12,
-                ),
-                hintText: 'بحث...',
-                hintStyle: const TextStyle(color: Colors.white24, fontSize: 12),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(6),
-                  borderSide: const BorderSide(color: borderColor),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(6),
-                  borderSide: const BorderSide(color: activeBlue),
-                ),
-              ),
-            ),
+            height: 60,
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+            child: CustomSearchTextField(controller: textEditingController),
           ),
           searchMatchFn: (item, searchValue) {
             return item.value.toString().toLowerCase().contains(

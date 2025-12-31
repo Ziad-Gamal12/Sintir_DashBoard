@@ -1,29 +1,29 @@
+import 'package:sintir_dashboard/Features/Dashboard/Domain/Entities/DashboardSummaryCardType.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Presentation/Managers/dashbaord_analytics_cubit/dashbaord_analytics_state.dart';
 
-import '../../Domain/Entities/SummaryCardType.dart';
 import '../Models/AnalyticsCardViewModel.dart';
 
 AnalyticsCardViewModel mapStateToAnalyticsCardVM(
   DashbaordAnalyticsState state,
-  SummaryCardType type,
+  DashboardSummaryCardType type,
 ) {
   switch (type) {
-    case SummaryCardType.revenue:
+    case DashboardSummaryCardType.revenue:
       return AnalyticsCardViewModel(
         isLoading: state.isLoadingRevenue,
         result: state.revenue,
       );
-    case SummaryCardType.users:
+    case DashboardSummaryCardType.users:
       return AnalyticsCardViewModel(
         isLoading: state.isLoadingUsers,
         result: state.users,
       );
-    case SummaryCardType.courses:
+    case DashboardSummaryCardType.courses:
       return AnalyticsCardViewModel(
         isLoading: state.isLoadingCourses,
         result: state.courses,
       );
-    case SummaryCardType.tickets:
+    case DashboardSummaryCardType.tickets:
       return AnalyticsCardViewModel(
         isLoading: state.isLoadingTickets,
         result: state.tickets,

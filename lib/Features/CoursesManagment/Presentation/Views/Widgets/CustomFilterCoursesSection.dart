@@ -33,18 +33,13 @@ class _CustomFilterCoursesSectionState
           children: [
             Row(
               children: [
-                const Icon(
-                  Icons.filter_list_rounded,
-                  size: 20,
-                  color: Colors.white70,
-                ),
+                const Icon(Icons.filter_list_rounded, size: 20),
                 const SizedBox(width: 8),
                 Text(
                   "تصفية النتائج",
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: Colors.white70,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 TextButton.icon(
@@ -53,7 +48,6 @@ class _CustomFilterCoursesSectionState
                   },
                   icon: const Icon(Icons.refresh_rounded, size: 16),
                   label: const Text("إعادة ضبط"),
-                  style: TextButton.styleFrom(foregroundColor: Colors.white38),
                 ),
               ],
             ),

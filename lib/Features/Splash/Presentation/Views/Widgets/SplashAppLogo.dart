@@ -8,7 +8,6 @@ class SplashAppLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.sizeOf(context).width;
-
     double logoSize = (screenWidth / 8).clamp(80.0, 200.0);
     return SizedBox(
       width: logoSize,

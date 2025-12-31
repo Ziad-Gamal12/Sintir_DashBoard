@@ -40,12 +40,7 @@ class _SignInSectionState extends State<SignInSection> {
       child: BlocListener<SignInCubit, SignInState>(
         listener: (context, state) {
           if (state is SignInSuccess) {
-            AppDialogs.success(
-              context,
-              "تم تسجيل الدخول بنجاح",
-              onTap: () =>
-                  GoRouter.of(context).go(ResponsiveDashboardView.routeName),
-            );
+            GoRouter.of(context).go(ResponsiveDashboardView.routeName);
           } else if (state is SignInFailure) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               AppDialogs.error(context, state.errMessage);

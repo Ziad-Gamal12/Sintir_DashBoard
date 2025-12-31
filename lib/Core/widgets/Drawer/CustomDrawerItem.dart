@@ -32,7 +32,7 @@ class CustomDrawerItem extends StatelessWidget {
       decoration: BoxDecoration(
         color: isSelected
             ? (overrideColor?.withOpacity(0.15) ??
-                  KMainColor.withOpacity(isDark ? 0.15 : 0.65))
+                  KMainColor.withOpacity(isDark ? 0.15 : 0.9))
             : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         border: isSelected && isDark

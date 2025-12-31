@@ -1,5 +1,6 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/CourseTableWidgets/CourseInfo.dart';
@@ -7,6 +8,7 @@ import 'package:sintir_dashboard/Core/widgets/CourseTableWidgets/CourseStatus.da
 import 'package:sintir_dashboard/Core/widgets/CourseTableWidgets/InstructorInfo.dart';
 import 'package:sintir_dashboard/Core/widgets/CourseTableWidgets/SubjectBadge.dart';
 import 'package:sintir_dashboard/Core/widgets/CourseTableWidgets/SubscribersCount.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/ResponsiveCourseDeatilsView.dart';
 import 'package:sintir_dashboard/constant.dart';
 
 class CourseDataTableSource extends DataTableSource {
@@ -22,6 +24,11 @@ class CourseDataTableSource extends DataTableSource {
     final textStyles = AppTextStyles(context);
 
     return DataRow2(
+      onTap: () {
+        GoRouter.of(
+          context,
+        ).push(ResponsiveCourseDeatilsView.routeName, extra: course);
+      },
       cells: [
         DataCell(CourseInfo(course: course)),
         DataCell(SubjectBadge(subject: course.subject)),

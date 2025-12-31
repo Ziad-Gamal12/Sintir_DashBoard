@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:sintir_dashboard/Features/Dashboard/Domain/Entities/SummaryCardEntity.dart';
-import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/Widgets/SummaryStatCard.dart';
+import 'package:sintir_dashboard/Features/Dashboard/Domain/Entities/DashboardSummaryCardEntity.dart';
+import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/Widgets/DashboardSummaryStatCard.dart';
 
 class CustomSummaryCardGrid extends StatelessWidget {
   const CustomSummaryCardGrid({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final items = SummaryCardEntity.getSummaryCards();
+    final items = DashboardSummaryCardEntity.getDashboardSummaryCards();
 
     return SliverGrid(
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -20,7 +20,7 @@ class CustomSummaryCardGrid extends StatelessWidget {
         context,
         index,
       ) {
-        return SummaryStatCard(summaryCardEntity: items[index]);
+        return DashboardSummaryStatCard(summaryCardEntity: items[index]);
       }),
     );
   }

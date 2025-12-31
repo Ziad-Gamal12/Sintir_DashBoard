@@ -39,12 +39,12 @@ class _ResponsiveCourseTableState extends State<ResponsiveCourseTable> {
           renderEmptyRowsInTheEnd: false,
           rowsPerPage: 10,
           showFirstLastButtons: true,
-          // Triggered when user clicks next/back
           onPageChanged: (rowIndex) {
             if (widget.onLoadMore != null) {
               widget.onLoadMore!(rowIndex);
             }
           },
+
           headingTextStyle: textStyles.bold14.copyWith(color: Colors.grey),
           columns: const [
             DataColumn2(label: Text('الكورس'), size: ColumnSize.L),
@@ -57,7 +57,6 @@ class _ResponsiveCourseTableState extends State<ResponsiveCourseTable> {
           source: dataSource,
         ),
 
-        // --- Premium Loading Overlay ---
         if (widget.isLoading)
           Container(
             color: Colors.black.withOpacity(0.3),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sintir_dashboard/Core/widgets/CustomDesktopDashbaordLayout.dart';
+import 'package:sintir_dashboard/Core/widgets/DesktopLayoutBuilder/CustomDesktopDashbaordLayout.dart';
 
 class DesktopCoursesManagmentView extends StatefulWidget {
   const DesktopCoursesManagmentView({super.key});
