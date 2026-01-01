@@ -1,9 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Entities/CourseDetailsSummaryCardEntity.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseAnalyticsCubit/course_analytics_cubit.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDetailsSummaryStatCard.dart';
 
-class CourseDetailsSummaryCardsGrid extends StatelessWidget {
-  const CourseDetailsSummaryCardsGrid({super.key});
+class CourseDetailsSummaryCardsGrid extends StatefulWidget {
+  const CourseDetailsSummaryCardsGrid({super.key, required this.courseId});
+  final String courseId;
+  @override
+  State<CourseDetailsSummaryCardsGrid> createState() =>
+      _CourseDetailsSummaryCardsGridState();
+}
+
+class _CourseDetailsSummaryCardsGridState
+    extends State<CourseDetailsSummaryCardsGrid> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<CourseAnalyticsCubit>().fetchAllCourseStats(widget.courseId);
+  }
 
   @override
   Widget build(BuildContext context) {

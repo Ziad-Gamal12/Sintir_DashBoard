@@ -31,13 +31,12 @@ class DioService {
   }
 
   String _handleError(DioException error) {
-    switch (error.type) {
-      case DioExceptionType.connectionTimeout:
-        return "Connection timed out. Check your internet.";
-      case DioExceptionType.badResponse:
-        return "Server Error: ${error.response?.data['error'] ?? 'Unknown error'}";
-      default:
-        return "Something went wrong. Please try again.";
+    if (error.type == DioExceptionType.connectionTimeout) {
+      return "Connection timed out. Check your internet.";
     }
+    if (error.response != null && error.response?.data is Map) {
+      return error.response?.data['error'] ?? "Server error occurred.";
+    }
+    return "Something went wrong. Please try again.";
   }
 }

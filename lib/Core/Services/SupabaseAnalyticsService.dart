@@ -1,11 +1,9 @@
+import 'package:sintir_dashboard/Core/Models/CardAnalyticsModels/AnalyticsResultModel.dart';
 import 'package:sintir_dashboard/Core/Services/DioService.dart';
-import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
-import 'package:sintir_dashboard/Features/Dashboard/Data/Models/AnalyticsResultModel.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Domain/Entities/AnalyticsResultEntity.dart';
 
 class SupabaseAnalyticsService {
   final DioService _dioService;
-
   SupabaseAnalyticsService(this._dioService);
 
   Future<AnalyticsResultEntity> _getStats({
@@ -21,30 +19,15 @@ class SupabaseAnalyticsService {
         'sumField': sumField,
       },
     );
-
     return AnalyticsResultModel.fromJson(response.data).toEntity();
   }
 
-  // ... rest of the class
-  Future<AnalyticsResultEntity> getRevenueStats() => _getStats(
-    collection: BackendEndpoints.transactionsCollection,
-
-    sumField: "amount",
-  );
-  Future<AnalyticsResultEntity> getUserGrowth() => _getStats(
-    collection: BackendEndpoints.usersCollectionName,
-    status: BackendEndpoints.activeStatus,
-    sumField: null,
-  );
-
-  Future<AnalyticsResultEntity> getLiveCourseStats() => _getStats(
-    collection: BackendEndpoints.coursesCollection,
-    status: BackendEndpoints.coursePublishedState,
-    sumField: null,
-  );
-
-  Future<AnalyticsResultEntity> getTicketStats() => _getStats(
-    collection: BackendEndpoints.supportTicketsCollection,
-    sumField: null,
-  );
+  Future<AnalyticsResultEntity> getRevenueStats() =>
+      _getStats(collection: 'Transactions', sumField: "amount");
+  Future<AnalyticsResultEntity> getUserGrowth() =>
+      _getStats(collection: 'Users', status: "Active");
+  Future<AnalyticsResultEntity> getLiveCourseStats() =>
+      _getStats(collection: 'Courses', status: "published");
+  Future<AnalyticsResultEntity> getTicketStats() =>
+      _getStats(collection: 'SupportTickets');
 }

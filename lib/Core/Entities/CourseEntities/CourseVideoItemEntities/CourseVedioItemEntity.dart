@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseVideoItemEntities/CourseVideoviewnavigationsrequirmentsentity.dart';
+import 'package:sintir_dashboard/Core/Utils/imageAssets.dart';
 
 class CourseVideoItemEntity {
   String title, vedioUrl;
@@ -10,7 +11,7 @@ class CourseVideoItemEntity {
   String id;
   File? file;
   String? type;
-  String preffixImage = "Assets.assetsIconsSVGIconsVideoIcon";
+  String preffixImage = Assets.assetsIconsSVGIconsVideoIcon;
   void ontap({
     required BuildContext context,
     required CourseVideoViewNavigationsRequirmentsEntity requires,

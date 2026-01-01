@@ -5,6 +5,7 @@ import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseTestItemEnti
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseTestItemEntities/CourseTestViewNavigationsRequirmentsEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseTestItemEntities/TestResulteEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/JoinedByEntity.dart';
+import 'package:sintir_dashboard/Core/Utils/imageAssets.dart';
 
 class CourseTestEntity {
   int durationTime;
@@ -15,7 +16,7 @@ class CourseTestEntity {
   bool? isOpened;
   bool showResult;
   int? numberOfAttempts;
-  String preffixImage = "Assets.assetsIconsSVGIconsExamIcon";
+  String preffixImage = Assets.assetsIconsSVGIconsExamIcon;
 
   CourseTestEntity({
     required this.durationTime,

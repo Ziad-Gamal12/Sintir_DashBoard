@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseFileItemEntities/CourseFileviewnavigationsrequirmentsentity.dart';
+import 'package:sintir_dashboard/Core/Utils/imageAssets.dart';
 
 class CourseFileEntity {
   String title;
@@ -11,7 +12,7 @@ class CourseFileEntity {
   String id;
   File? file;
   String? type;
-  String preffixImage = "Assets.assetsIconsSVGIconsCustomFileIcon";
+  String preffixImage = Assets.assetsIconsSVGIconsCustomFileIcon;
 
   CourseFileEntity({
     this.type = "File",

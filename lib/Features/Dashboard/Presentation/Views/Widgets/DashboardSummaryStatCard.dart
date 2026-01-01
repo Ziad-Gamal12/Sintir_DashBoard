@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sintir_dashboard/Core/Models/CardAnalyticsModels/AnalyticsCardViewModel.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Data/Mappers/analytics_card_mapper.dart';
-import 'package:sintir_dashboard/Features/Dashboard/Data/Models/AnalyticsCardViewModel.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Domain/Entities/DashboardSummaryCardEntity.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Presentation/Managers/dashbaord_analytics_cubit/dashbaord_analytics_cubit.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Presentation/Managers/dashbaord_analytics_cubit/dashbaord_analytics_state.dart';

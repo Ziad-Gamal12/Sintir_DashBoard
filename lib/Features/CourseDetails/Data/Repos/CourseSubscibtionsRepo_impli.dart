@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/SubscriberEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseSubscribersEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStoreRequirmentsEntity.dart';
-import 'package:sintir_dashboard/Core/Models/subscripersModel.dart';
+import 'package:sintir_dashboard/Core/Models/SubscriberModel.dart';
 import 'package:sintir_dashboard/Core/Services/DataBaseService.dart';
 import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
 import 'package:sintir_dashboard/Core/errors/Exceptioons.dart';
@@ -178,7 +178,5 @@ class CourseSubscriptionsRepoImpl implements CourseSubscibtionsRepo {
 }
 
 List<SubscriberEntity> _parseSubscribers(List<dynamic> rawList) {
-  return rawList
-      .map((e) => Subscripersidsmodel.fromJson(e).toEntity())
-      .toList();
+  return rawList.map((e) => SubscriberModel.fromJson(e).toEntity()).toList();
 }

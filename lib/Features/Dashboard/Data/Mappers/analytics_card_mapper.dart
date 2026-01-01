@@ -1,7 +1,6 @@
+import 'package:sintir_dashboard/Core/Models/CardAnalyticsModels/AnalyticsCardViewModel.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Domain/Entities/DashboardSummaryCardType.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Presentation/Managers/dashbaord_analytics_cubit/dashbaord_analytics_state.dart';
-
-import '../Models/AnalyticsCardViewModel.dart';
 
 AnalyticsCardViewModel mapStateToAnalyticsCardVM(
   DashbaordAnalyticsState state,

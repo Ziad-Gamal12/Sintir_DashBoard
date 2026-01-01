@@ -1,26 +1,30 @@
 // ignore_for_file: file_names
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/SubscriberEntity.dart';
 
-class Subscripersidsmodel {
+class SubscriberModel {
   final String id;
   final String name, gender, phone, educationLevel, imageUrl, address;
+  final DateTime? joinedDate;
 
-  Subscripersidsmodel({
+  SubscriberModel({
     required this.id,
     required this.name,
     required this.gender,
     required this.phone,
     required this.educationLevel,
+    required this.joinedDate,
     required this.imageUrl,
     required this.address,
   });
-  factory Subscripersidsmodel.fromEntit({
+  factory SubscriberModel.fromEntit({
     required SubscriberEntity subscriberentity,
   }) {
-    return Subscripersidsmodel(
+    return SubscriberModel(
       id: subscriberentity.id,
       name: subscriberentity.name,
+      joinedDate: subscriberentity.joinedDate,
       gender: subscriberentity.gender,
       phone: subscriberentity.phone,
       educationLevel: subscriberentity.educationLevel,
@@ -29,11 +33,14 @@ class Subscripersidsmodel {
     );
   }
 
-  factory Subscripersidsmodel.fromJson(Map<String, dynamic> json) {
-    return Subscripersidsmodel(
+  factory SubscriberModel.fromJson(Map<String, dynamic> json) {
+    return SubscriberModel(
       id: json['id'],
       name: json['name'],
       gender: json['gender'],
+      joinedDate: (json['joinedDate'] != null)
+          ? (json['joinedDate'] as Timestamp).toDate()
+          : null,
       phone: json['phone'],
       educationLevel: json['educationLevel'],
       imageUrl: json['imageUrl'],
@@ -46,6 +53,7 @@ class Subscripersidsmodel {
     gender: gender,
     phone: phone,
     educationLevel: educationLevel,
+    joinedDate: joinedDate,
     imageUrl: imageUrl,
     address: address,
   );
@@ -57,6 +65,7 @@ class Subscripersidsmodel {
     'phone': phone,
     'educationLevel': educationLevel,
     'imageUrl': imageUrl,
+    'joinedDate': joinedDate,
     'address': address,
   };
 }
