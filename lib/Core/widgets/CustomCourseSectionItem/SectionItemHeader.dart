@@ -42,7 +42,7 @@ class SectionItemHeader extends StatelessWidget {
                 title,
                 style: AppTextStyles(
                   context,
-                ).bold16.copyWith(color: isExpanded ? KMainColor : null),
+                ).semiBold16.copyWith(color: isExpanded ? KMainColor : null),
               ),
             ),
             AnimatedRotation(

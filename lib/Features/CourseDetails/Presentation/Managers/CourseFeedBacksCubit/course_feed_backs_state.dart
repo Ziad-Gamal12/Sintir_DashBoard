@@ -5,7 +5,10 @@ sealed class CourseFeedBacksState {}
 
 final class CourseFeedBacksInitial extends CourseFeedBacksState {}
 
-final class CourseFeedBacksGetFeedBackLoading extends CourseFeedBacksState {}
+final class CourseFeedBacksGetFeedBackLoading extends CourseFeedBacksState {
+  final bool isPaginate;
+  CourseFeedBacksGetFeedBackLoading({required this.isPaginate});
+}
 
 final class CourseFeedBacksGetFeedBackSuccess extends CourseFeedBacksState {
   final GetCourseFeedBacksResponseEntity response;

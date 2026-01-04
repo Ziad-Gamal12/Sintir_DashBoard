@@ -22,9 +22,15 @@ import 'package:sintir_dashboard/Core/repos/ResetPaswordRepo/ResetPaswordRepoImp
 import 'package:sintir_dashboard/Features/Auth/Data/repos/AuthRepoImpl.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Repos/AuthRepo.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Data/Repos/CourseAnalyticsRepoImpl.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Data/Repos/CourseFeedBacksRepoImpli.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Data/Repos/CourseReportsRepoImpli.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Data/Repos/CourseSectionsRepo_impl.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Data/Repos/CourseTransactionsRepoImpl.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseAnalyticsRepo.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseFeedBacksRepo/CourseFeedBacksRepo.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseReportsRepo/CourseReportsRepo.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseSectionsRepos/CourseSectionsRepo.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseTransactionsRepo.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Data/Repos/DashbaordAnalyticsRepoImpl.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Domain/Repos/DashbaordAnalyticsRepo.dart';
 
@@ -81,5 +87,15 @@ void setup_Getit() {
     () => CourseAnalyticsRepoImpl(
       courseAnalyticsService: getIt<CourseAnalyticsService>(),
     ),
+  );
+  getIt.registerLazySingleton<CourseReportsRepo>(
+    () => CourseReportsRepoimpli(databaseservice: getIt<DataBaseService>()),
+  );
+
+  getIt.registerLazySingleton<CourseFeedBacksRepo>(
+    () => CourseFeedBacksRepoImpli(databaseservice: getIt<DataBaseService>()),
+  );
+  getIt.registerLazySingleton<CourseTransactionsRepo>(
+    () => CourseTransactionsRepoImpl(databaseService: getIt<DataBaseService>()),
   );
 }

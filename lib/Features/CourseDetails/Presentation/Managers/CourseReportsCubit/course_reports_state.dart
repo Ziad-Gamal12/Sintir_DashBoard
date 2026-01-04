@@ -14,7 +14,10 @@ final class CourseReportsAddReportFailure extends CourseReportsState {
   CourseReportsAddReportFailure({required this.errMessage});
 }
 
-final class CourseReportsGetReportLoading extends CourseReportsState {}
+final class CourseReportsGetReportLoading extends CourseReportsState {
+  final bool isPaginate;
+  CourseReportsGetReportLoading({required this.isPaginate});
+}
 
 final class CourseReportsGetReportSuccess extends CourseReportsState {
   final GetCourseReportsResponseEntity response;

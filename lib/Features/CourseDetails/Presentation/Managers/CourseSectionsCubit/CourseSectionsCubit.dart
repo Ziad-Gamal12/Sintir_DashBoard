@@ -17,10 +17,9 @@ class CourseSectionsCubit extends Cubit<CourseSectionsState> {
     : super(AddCourseSectionInitial());
 
   final CourseSectionsRepo _courseSectionsRepo;
+  List<CourseSectionEntity> courseSections = [];
+  bool hasMore = true;
 
-  // -----------------------
-  // Helper for emitting failures
-  // -----------------------
   void _emitFailure(Failure failure) {
     // If you have different failure states use logic to emit appropriate one.
     // For simplicity we emit a general failure state when applicable.
@@ -91,7 +90,7 @@ class CourseSectionsCubit extends Cubit<CourseSectionsState> {
     required String courseId,
     required bool isPaginate,
   }) async {
-    emit(GetCourseSectionsLoading());
+    emit(GetCourseSectionsLoading(isPaginate: isPaginate));
 
     final Either<Failure, GetCourseSectionsResonseEntity> result =
         await _courseSectionsRepo.getCourseSections(
@@ -101,8 +100,22 @@ class CourseSectionsCubit extends Cubit<CourseSectionsState> {
 
     result.fold(
       (failure) => emit(GetCourseSectionsFailure(errMessage: failure.message)),
-      (sections) => emit(GetCourseSectionsSuccess(response: sections)),
+      (sections) {
+        handleFetchedSectionsSuccessState(sections);
+        emit(GetCourseSectionsSuccess(response: sections));
+      },
     );
+  }
+
+  void handleFetchedSectionsSuccessState(
+    GetCourseSectionsResonseEntity response,
+  ) {
+    if (response.isPaginate) {
+      courseSections.addAll(response.sections);
+    } else {
+      courseSections = response.sections;
+    }
+    hasMore = response.hasMore;
   }
 
   // -----------------------

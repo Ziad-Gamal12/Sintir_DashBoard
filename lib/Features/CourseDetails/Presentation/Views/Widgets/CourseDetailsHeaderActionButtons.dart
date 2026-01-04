@@ -7,9 +7,14 @@ class CourseDetailsHeaderActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.end,
+      alignment: WrapAlignment.end,
+      spacing: 16,
+      runSpacing: 16,
       children: [
-        Expanded(
+        SizedBox(
+          width: 200,
           child: Custombutton(
             text: "",
             color: KMainColor.withOpacity(0.1),
@@ -25,8 +30,9 @@ class CourseDetailsHeaderActionButtons extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 12),
-        Expanded(
+
+        SizedBox(
+          width: 200,
           child: Custombutton(
             text: "",
             color: Colors.red.shade700,

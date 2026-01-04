@@ -35,7 +35,10 @@ final class FileUploadedingFailure extends CourseSectionsState {
 
 final class FileUploadedingLoading extends CourseSectionsState {}
 
-final class GetCourseSectionsLoading extends CourseSectionsState {}
+final class GetCourseSectionsLoading extends CourseSectionsState {
+  final bool isPaginate;
+  GetCourseSectionsLoading({required this.isPaginate});
+}
 
 final class GetCourseSectionsSuccess extends CourseSectionsState {
   final GetCourseSectionsResonseEntity response;

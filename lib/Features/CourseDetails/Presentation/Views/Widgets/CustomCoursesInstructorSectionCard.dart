@@ -23,16 +23,10 @@ class _ContentCreatorDetailsState extends State<ContentCreatorDetails>
   @override
   void initState() {
     super.initState();
-
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
     )..forward();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ContentCreatorCoursesCubit>().getContentCreatorCourses(
-        userId: widget.contentcreaterentity.id,
-      );
-    });
   }
 
   @override

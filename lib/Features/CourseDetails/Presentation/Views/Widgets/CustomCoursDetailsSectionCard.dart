@@ -8,41 +8,45 @@ import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widge
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseSectionsBuilder.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseSectionsCardHeader.dart';
 
-class CustomCoursDetailsSectionCard extends StatefulWidget {
+class CustomCoursDetailsSectionCard extends StatelessWidget {
   const CustomCoursDetailsSectionCard({super.key, required this.course});
 
   final CourseEntity course;
-  @override
-  State<CustomCoursDetailsSectionCard> createState() =>
-      _CustomCoursDetailsSectionCardState();
-}
-
-class _CustomCoursDetailsSectionCardState
-    extends State<CustomCoursDetailsSectionCard> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      context.read<CourseSectionsCubit>().getCourseSections(
-        courseId: widget.course.id,
-        isPaginate: false,
-      );
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    return CustomCard(
-      child: Column(
-        children: [
-          CustomCoursePoster(),
-          SizedBox(height: 32),
-          CourseDetailsDescription(),
-          Divider(height: 32),
-          CustomCourseSectionsCardHeader(title: "المحاضرات", showMore: () {}),
-          SizedBox(height: 32),
-          CustomCourseSectionsBuilder(course: widget.course),
-        ],
+    final cubit = context.watch<CourseSectionsCubit>();
+    return AspectRatio(
+      aspectRatio: 4 / 5,
+      child: CustomCard(
+        child: Column(
+          children: [
+            CustomCoursePoster(),
+            SizedBox(height: 32),
+            CourseDetailsDescription(),
+            Divider(height: 32),
+            CustomCourseSectionsCardHeader(
+              title: "المحاضرات",
+              showMore: () {
+                if (cubit.hasMore &&
+                    context.read<CourseSectionsCubit>().state
+                        is! GetCourseSectionsLoading) {
+                  context.read<CourseSectionsCubit>().getCourseSections(
+                    courseId: course.id,
+                    isPaginate: true,
+                  );
+                }
+              },
+            ),
+            SizedBox(height: 32),
+            Expanded(
+              child: CustomCourseSectionsBuilder(
+                course: course,
+                sections: cubit.courseSections,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

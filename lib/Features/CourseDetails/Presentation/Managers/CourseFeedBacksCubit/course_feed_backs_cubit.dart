@@ -10,12 +10,13 @@ class CourseFeedBacksCubit extends Cubit<CourseFeedBacksState> {
   CourseFeedBacksCubit({required this.courseFeedBacksRepo})
     : super(CourseFeedBacksInitial());
   final CourseFeedBacksRepo courseFeedBacksRepo;
-
+  List<CoursefeedbackItemEntity> feedBacks = [];
+  bool hasMore = true;
   Future<void> getCourseFeedBacks({
     required String courseId,
     required bool isPaginate,
   }) async {
-    emit(CourseFeedBacksGetFeedBackLoading());
+    emit(CourseFeedBacksGetFeedBackLoading(isPaginate: isPaginate));
     final result = await courseFeedBacksRepo.getCourseFedBacks(
       courseId: courseId,
       isPaginate: isPaginate,
@@ -25,9 +26,21 @@ class CourseFeedBacksCubit extends Cubit<CourseFeedBacksState> {
         emit(CourseFeedBacksGetFeedBackFailure(errMessage: failure.message));
       },
       (success) {
+        handleFetchedFeedBacksSuccessState(success);
         emit(CourseFeedBacksGetFeedBackSuccess(response: success));
       },
     );
+  }
+
+  void handleFetchedFeedBacksSuccessState(
+    GetCourseFeedBacksResponseEntity response,
+  ) {
+    if (response.isPaginate) {
+      feedBacks.addAll(response.feedBacks);
+    } else {
+      feedBacks = response.feedBacks;
+    }
+    hasMore = response.hasMore;
   }
 
   Future<void> addCourseFeedBack({

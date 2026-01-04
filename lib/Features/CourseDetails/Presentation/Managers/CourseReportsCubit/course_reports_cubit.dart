@@ -10,11 +10,13 @@ class CourseReportsCubit extends Cubit<CourseReportsState> {
   CourseReportsCubit({required this.coursereportsrepo})
     : super(CourseReportsInitial());
   final CourseReportsRepo coursereportsrepo;
+  List<CourseReportEntity> courseReports = [];
+  bool hasMore = true;
   Future<void> getCourseReports({
     required String courseId,
     required bool isPaginate,
   }) async {
-    emit(CourseReportsGetReportLoading());
+    emit(CourseReportsGetReportLoading(isPaginate: isPaginate));
     final result = await coursereportsrepo.getCourseReports(
       courseId: courseId,
       isPaginate: isPaginate,
@@ -24,9 +26,21 @@ class CourseReportsCubit extends Cubit<CourseReportsState> {
         emit(CourseReportsGetReportFailure(errMessage: failure.message));
       },
       (courseReports) {
+        handleFetchedReportsSuccessState(courseReports);
         emit(CourseReportsGetReportSuccess(response: courseReports));
       },
     );
+  }
+
+  void handleFetchedReportsSuccessState(
+    GetCourseReportsResponseEntity response,
+  ) {
+    if (response.isPaginate) {
+      courseReports.addAll(response.reports);
+    } else {
+      courseReports = response.reports;
+    }
+    hasMore = response.hasMore;
   }
 
   Future<void> addCourseReport({
