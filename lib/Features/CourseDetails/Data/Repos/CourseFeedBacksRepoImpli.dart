@@ -115,6 +115,26 @@ class CourseFeedBacksRepoImpli implements CourseFeedBacksRepo {
       return left(ServerFailure(message: "حدث خطأ ما يرجى المحاولة وقت أخر"));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> deleteCourseFedBack({
+    required String courseId,
+    required String feedBackId,
+  }) async {
+    try {
+      await databaseservice.deleteDoc(
+        collectionKey: BackendEndpoints.coursesCollection,
+        docId: courseId,
+        subCollectionKey: BackendEndpoints.feedBacksSubCollection,
+        subDocId: feedBackId,
+      );
+      return right(null);
+    } on CustomException catch (e) {
+      return left(ServerFailure(message: e.message));
+    } catch (e) {
+      return left(ServerFailure(message: "حدث خطأ ما يرجى المحاولة وقت أخر"));
+    }
+  }
 }
 
 List<CoursefeedbackItemEntity> _parseCourseFeedbacks(

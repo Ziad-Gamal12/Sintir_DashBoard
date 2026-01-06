@@ -28,3 +28,16 @@ final class CourseFeedBacksAddFeedBackFailure extends CourseFeedBacksState {
   final String errMessage;
   CourseFeedBacksAddFeedBackFailure({required this.errMessage});
 }
+
+// delete
+final class CourseFeedBacksDeleteFeedBackLoading extends CourseFeedBacksState {
+  final String feedBackId;
+  CourseFeedBacksDeleteFeedBackLoading({required this.feedBackId});
+}
+
+final class CourseFeedBacksDeleteFeedBackSuccess extends CourseFeedBacksState {}
+
+final class CourseFeedBacksDeleteFeedBackFailure extends CourseFeedBacksState {
+  final String errMessage;
+  CourseFeedBacksDeleteFeedBackFailure({required this.errMessage});
+}

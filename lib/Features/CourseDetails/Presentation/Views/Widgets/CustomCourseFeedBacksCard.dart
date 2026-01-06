@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sintir_dashboard/Core/Helper/ShowSnackBar.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseFeedBacksCubit/course_feed_backs_cubit.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseFeedBacksListView.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseSectionsCardHeader.dart';
@@ -21,49 +22,69 @@ class _CustomCourseFeedBacksCardState extends State<CustomCourseFeedBacksCard> {
   Widget build(BuildContext context) {
     final cubit = context.watch<CourseFeedBacksCubit>();
     final theme = Theme.of(context);
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: theme.cardColor.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CustomCourseSectionsCardHeader(
-            title: "التقييمات",
-            action: IconButton(
-              icon: Icon(
-                isExpanded
-                    ? Icons.keyboard_arrow_up_rounded
-                    : Icons.keyboard_arrow_down_rounded,
-                color: isExpanded ? KMainColor : theme.hintColor,
+    return BlocListener<CourseFeedBacksCubit, CourseFeedBacksState>(
+      listener: (context, state) {
+        if (state is CourseFeedBacksDeleteFeedBackFailure) {
+          CustomSnackBar.show(
+            context,
+            message: state.errMessage,
+            type: SnackType.error,
+          );
+        } else if (state is CourseFeedBacksDeleteFeedBackSuccess) {
+          CustomSnackBar.show(
+            context,
+            message: "تم حذف التقييم بنجاح",
+            type: SnackType.success,
+          );
+          context.read<CourseFeedBacksCubit>().getCourseFeedBacks(
+            courseId: widget.courseId,
+            isPaginate: false,
+          );
+        }
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: theme.cardColor.withOpacity(0.4),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CustomCourseSectionsCardHeader(
+              title: "التقييمات",
+              action: IconButton(
+                icon: Icon(
+                  isExpanded
+                      ? Icons.keyboard_arrow_up_rounded
+                      : Icons.keyboard_arrow_down_rounded,
+                  color: isExpanded ? KMainColor : theme.hintColor,
+                ),
+                onPressed: () => setState(() => isExpanded = !isExpanded),
               ),
-              onPressed: () => setState(() => isExpanded = !isExpanded),
-            ),
-            showMore: cubit.hasMore
-                ? () {
-                    if (cubit.hasMore &&
-                        context.read<CourseFeedBacksCubit>().state
-                            is! CourseFeedBacksGetFeedBackLoading) {
-                      context.read<CourseFeedBacksCubit>().getCourseFeedBacks(
-                        isPaginate: true,
-                        courseId: widget.courseId,
-                      );
+              showMore: cubit.hasMore
+                  ? () {
+                      if (cubit.hasMore &&
+                          context.read<CourseFeedBacksCubit>().state
+                              is! CourseFeedBacksGetFeedBackLoading) {
+                        context.read<CourseFeedBacksCubit>().getCourseFeedBacks(
+                          isPaginate: true,
+                          courseId: widget.courseId,
+                        );
+                      }
                     }
-                  }
-                : null,
-          ),
-          const SizedBox(height: 16),
+                  : null,
+            ),
+            const SizedBox(height: 16),
 
-          isExpanded
-              ? _buildExpandedList(cubit)
-              : _buildFixedScrollableList(cubit),
-        ],
+            isExpanded
+                ? _buildExpandedList(cubit)
+                : _buildFixedScrollableList(cubit),
+          ],
+        ),
       ),
     );
   }
@@ -71,7 +92,10 @@ class _CustomCourseFeedBacksCardState extends State<CustomCourseFeedBacksCard> {
   Widget _buildFixedScrollableList(CourseFeedBacksCubit cubit) {
     return SizedBox(
       height: 400,
-      child: CustomCourseFeedBacksListView(feedbacks: cubit.feedBacks),
+      child: CustomCourseFeedBacksListView(
+        feedbacks: cubit.feedBacks,
+        courseId: widget.courseId,
+      ),
     );
   }
 
@@ -80,6 +104,7 @@ class _CustomCourseFeedBacksCardState extends State<CustomCourseFeedBacksCard> {
       feedbacks: cubit.feedBacks,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
+      courseId: widget.courseId,
     );
   }
 }

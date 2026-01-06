@@ -8,6 +8,7 @@ import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseSecti
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseSectionsCubit/CourseSectionsCubit.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDetailsCard.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCoursDetailsSectionCard.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseActionsCard.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCoursesInstructorSectionCard.dart';
 
 class CourseDetailsSectionAndInstructorLayoutBuilder extends StatefulWidget {
@@ -54,6 +55,8 @@ class CourseDetailsSectionAndInstructorLayoutBuilderState
                 ),
                 Divider(height: 24),
                 CourseDetailsCard(course: widget.course),
+                Divider(height: 24),
+                CustomCourseActionsCard(course: widget.course),
               ],
             );
           } else {
@@ -74,6 +77,8 @@ class CourseDetailsSectionAndInstructorLayoutBuilderState
                       ),
                       const Divider(height: 24),
                       CourseDetailsCard(course: widget.course),
+                      const Divider(height: 24),
+                      CustomCourseActionsCard(course: widget.course),
                     ],
                   ),
                 ),

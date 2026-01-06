@@ -57,6 +57,7 @@ class BackendEndpoints {
   static String addCourseToUserDocSubCollectioName = "Courses";
   static String getCoursesfromUserDocSubCollectioName = "Courses";
   static String coursePublishedState = "Published";
+  static const String courseArchivedState = "Archived";
   static String coursePendingState = "Pending";
   static String courseDeletedState = "Deleted";
   static String coursedeclinedState = "Declined";

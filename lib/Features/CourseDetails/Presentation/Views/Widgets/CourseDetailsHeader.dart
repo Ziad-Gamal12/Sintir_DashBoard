@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDetailsHeaderActionButtons.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDetailsHeaderCourseInfo.dart';
 
 class CourseDetailsHeader extends StatelessWidget {
@@ -7,12 +6,6 @@ class CourseDetailsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        const Expanded(flex: 3, child: CourseDetailsHeaderCourseInfo()),
-        Expanded(child: const CourseDetailsHeaderActionButtons()),
-      ],
-    );
+    return CourseDetailsHeaderCourseInfo();
   }
 }

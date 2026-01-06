@@ -8,6 +8,10 @@ abstract class CourseFeedBacksRepo {
     required String courseId,
     required CoursefeedbackItemEntity review,
   });
+  Future<Either<Failure, void>> deleteCourseFedBack({
+    required String courseId,
+    required String feedBackId,
+  });
   Future<Either<Failure, GetCourseFeedBacksResponseEntity>> getCourseFedBacks({
     required String courseId,
     required bool isPaginate,

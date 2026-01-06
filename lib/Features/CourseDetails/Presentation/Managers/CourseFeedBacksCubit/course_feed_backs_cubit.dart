@@ -61,4 +61,24 @@ class CourseFeedBacksCubit extends Cubit<CourseFeedBacksState> {
       },
     );
   }
+
+  // delete feedback
+  Future<void> deleteCourseFeedBack({
+    required String courseId,
+    required String feedBackId,
+  }) async {
+    emit(CourseFeedBacksDeleteFeedBackLoading(feedBackId: feedBackId));
+    final result = await courseFeedBacksRepo.deleteCourseFedBack(
+      courseId: courseId,
+      feedBackId: feedBackId,
+    );
+    result.fold(
+      (failure) {
+        emit(CourseFeedBacksDeleteFeedBackFailure(errMessage: failure.message));
+      },
+      (success) {
+        emit(CourseFeedBacksDeleteFeedBackSuccess());
+      },
+    );
+  }
 }

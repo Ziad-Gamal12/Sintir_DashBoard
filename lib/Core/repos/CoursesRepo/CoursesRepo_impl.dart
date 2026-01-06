@@ -143,18 +143,7 @@ class CoursesrepoImpl implements Coursesrepo {
     required bool isPaginate,
   }) {
     return _getCourses(
-      baseQuery: {
-        "filters": [
-          {
-            "field": "state",
-            "operator": "==",
-            "value": BackendEndpoints.coursePublishedState,
-          },
-        ],
-        "orderBy": "postedDate",
-        "descending": true,
-        "limit": 10,
-      },
+      baseQuery: {"orderBy": "postedDate", "descending": true, "limit": 10},
       requirements: FireStoreRequirmentsEntity(
         collection: BackendEndpoints.coursesCollection,
       ),
@@ -169,17 +158,7 @@ class CoursesrepoImpl implements Coursesrepo {
     required bool isPaginate,
   }) {
     return _getCourses(
-      baseQuery: {
-        "filters": [
-          {
-            "field": "state",
-            "operator": "==",
-            "value": BackendEndpoints.coursePublishedState,
-          },
-        ],
-        "orderBy": "studentsCount",
-        "limit": 10,
-      },
+      baseQuery: {"orderBy": "studentsCount", "limit": 10},
       requirements: FireStoreRequirmentsEntity(
         collection: BackendEndpoints.coursesCollection,
       ),
@@ -278,11 +257,6 @@ class CoursesrepoImpl implements Coursesrepo {
       baseQuery: {
         "filters": [
           {"field": "subject", "operator": "==", "value": subject},
-          {
-            "field": "state",
-            "operator": "==",
-            "value": BackendEndpoints.coursePublishedState,
-          },
         ],
         "orderBy": "postedDate",
         "descending": true,

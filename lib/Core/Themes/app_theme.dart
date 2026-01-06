@@ -17,6 +17,13 @@ class AppTheme {
       surface: Colors.white,
       onSurface: Colors.black,
     ),
+    scrollbarTheme: ScrollbarThemeData(
+      thickness: WidgetStateProperty.all(6),
+      radius: const Radius.circular(10),
+      thumbColor: WidgetStateProperty.all(KMainColor.withOpacity(0.3)),
+      thumbVisibility: WidgetStateProperty.all(false),
+      interactive: true,
+    ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.white,
       elevation: 0,
@@ -55,7 +62,13 @@ class AppTheme {
 
     // Background: Neutral Deep Charcoal (No blue tint)
     scaffoldBackgroundColor: const Color(0xFF0F0F12),
-
+    scrollbarTheme: ScrollbarThemeData(
+      thickness: WidgetStateProperty.all(6),
+      radius: const Radius.circular(10),
+      thumbColor: WidgetStateProperty.all(KMainColor.withOpacity(0.3)),
+      thumbVisibility: WidgetStateProperty.all(false),
+      interactive: true,
+    ),
     useMaterial3: true,
     colorScheme: const ColorScheme.dark().copyWith(
       primary: KMainColor,

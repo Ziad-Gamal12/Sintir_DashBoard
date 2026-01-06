@@ -57,10 +57,7 @@ class CustomCourseReportsListView extends StatelessWidget {
                 ),
               );
             }
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: CustomCourseReportsCardItem(report: reports[index]),
-            );
+            return CustomCourseReportsCardItem(report: reports[index]);
           },
         );
       },

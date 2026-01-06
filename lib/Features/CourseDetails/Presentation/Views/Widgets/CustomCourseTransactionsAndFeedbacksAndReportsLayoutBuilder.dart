@@ -69,7 +69,7 @@ class CustomCourseAdaptiveLayoutBody extends StatelessWidget {
           courseId: courseId,
         );
 
-        if (constraints.maxWidth > 1100) {
+        if (constraints.maxWidth > 1300) {
           return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,

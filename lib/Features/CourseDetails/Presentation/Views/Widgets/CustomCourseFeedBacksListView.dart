@@ -12,9 +12,11 @@ class CustomCourseFeedBacksListView extends StatelessWidget {
     super.key,
     required this.feedbacks,
     this.shrinkWrap = false,
+    required this.courseId,
     this.physics = const BouncingScrollPhysics(),
   });
   final List<CoursefeedbackItemEntity> feedbacks;
+  final String courseId;
   final bool shrinkWrap;
   final ScrollPhysics physics;
   @override
@@ -50,7 +52,10 @@ class CustomCourseFeedBacksListView extends StatelessWidget {
             if (index >= feedbacks.length) {
               return const Center(child: CircularProgressIndicator());
             }
-            return CustomCourseFeedBacksCardItem(feedback: feedbacks[index]);
+            return CustomCourseFeedBacksCardItem(
+              feedback: feedbacks[index],
+              courseId: courseId,
+            );
           },
         );
       },
