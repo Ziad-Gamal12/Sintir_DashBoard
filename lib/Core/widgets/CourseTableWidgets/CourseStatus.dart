@@ -7,7 +7,7 @@ class CourseStatus extends StatelessWidget {
   final String status;
   @override
   Widget build(BuildContext context) {
-    Color color = _getStatusColor(status);
+    Color color = _getStatusStyle(status).color;
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -33,7 +33,7 @@ class CourseStatus extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            _getStatusText(status),
+            _getStatusStyle(status).label,
             style: AppTextStyles(context).regular14.copyWith(color: color),
           ),
         ],
@@ -41,15 +41,26 @@ class CourseStatus extends StatelessWidget {
     );
   }
 
-  Color _getStatusColor(String? state) {
-    if (state == BackendEndpoints.coursePublishedState) return Colors.green;
-    if (state == BackendEndpoints.coursePendingState) return Colors.orange;
-    return Colors.red;
+  _StatusStyle _getStatusStyle(String status) {
+    if (BackendEndpoints.coursePublishedState == status) {
+      return const _StatusStyle(label: "منشور", color: Color(0xFF00C853));
+    } else if (BackendEndpoints.coursePendingState == status) {
+      return const _StatusStyle(
+        label: "قيد المراجعة",
+        color: Color(0xFFFFAB00),
+      );
+    } else if (BackendEndpoints.courseArchivedState == status) {
+      return const _StatusStyle(label: "مؤرشف", color: Color(0xFF1976D2));
+    } else if (BackendEndpoints.courseDeletedState == status) {
+      return const _StatusStyle(label: "محذوف", color: Color(0xFF616161));
+    } else {
+      return const _StatusStyle(label: "مرفوض", color: Color(0xFFFF1744));
+    }
   }
+}
 
-  String _getStatusText(String? state) {
-    if (state == BackendEndpoints.coursePublishedState) return "منشور";
-    if (state == BackendEndpoints.coursePendingState) return "قيد المراجعة";
-    return "مرفوض";
-  }
+class _StatusStyle {
+  final String label;
+  final Color color;
+  const _StatusStyle({required this.label, required this.color});
 }

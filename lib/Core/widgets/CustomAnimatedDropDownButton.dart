@@ -36,7 +36,6 @@ class _CustomAnimatedDropDownButtonState
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Pulling colors from your AppTheme for perfect consistency
     final Color primaryColor = theme.primaryColor;
     final Color borderColor = isDark
         ? Colors.white.withOpacity(0.06)
@@ -50,7 +49,7 @@ class _CustomAnimatedDropDownButtonState
           widget.hintText ?? "اختر...",
           style: AppTextStyles(
             context,
-          ).regular14.copyWith(color: isDark ? Colors.white38 : Colors.black38),
+          ).regular14.copyWith(color: isDark ? Colors.white : Colors.black87),
         ),
         items: widget.items
             .map(

@@ -130,13 +130,18 @@ class AppDialogs {
     );
   }
 
-  static void warning(BuildContext context, String message) {
+  static void warning(
+    BuildContext context,
+    String message, {
+    void Function()? onTap,
+  }) {
     _show(
       context,
       title: "تحذير",
       message: message,
       color: Colors.orangeAccent,
       icon: Icons.warning_amber_rounded,
+      onTap: onTap,
     );
   }
 }

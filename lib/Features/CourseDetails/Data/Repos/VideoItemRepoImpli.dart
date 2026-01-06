@@ -34,7 +34,8 @@ class VideoItemRepoImpli implements VideoItemRepo {
       }
 
       String url = await storageService.uploadFile(
-        file: coursevedioitementity.file!,
+        bytes: coursevedioitementity.file!.readAsBytesSync(),
+        fileName: "${coursevedioitementity.file?.path}-video",
       );
 
       return right(url);

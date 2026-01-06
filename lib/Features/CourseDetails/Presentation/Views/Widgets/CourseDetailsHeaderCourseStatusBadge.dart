@@ -20,7 +20,6 @@ class _CourseDetailsHeaderCourseStatusBadgeState
   @override
   void initState() {
     super.initState();
-    // Creates a "Breathing" effect for the status dot
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -40,7 +39,6 @@ class _CourseDetailsHeaderCourseStatusBadgeState
 
     return Container(
       decoration: BoxDecoration(
-        // Soft gradient or translucent color makes it feel "fresh"
         color: style.color.withOpacity(0.12),
         borderRadius: BorderRadius.circular(100), // Perfect pill
         border: Border.all(color: style.color.withOpacity(0.2), width: 1),
@@ -49,7 +47,6 @@ class _CourseDetailsHeaderCourseStatusBadgeState
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // The "Live" Pulse Dot
           ScaleTransition(
             scale: Tween(begin: 0.8, end: 1.1).animate(
               CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
@@ -92,6 +89,10 @@ class _CourseDetailsHeaderCourseStatusBadgeState
         label: "قيد المراجعة",
         color: Color(0xFFFFAB00),
       );
+    } else if (BackendEndpoints.courseArchivedState == status) {
+      return const _StatusStyle(label: "مؤرشف", color: Color(0xFF1976D2));
+    } else if (BackendEndpoints.courseDeletedState == status) {
+      return const _StatusStyle(label: "محذوف", color: Color(0xFF616161));
     } else {
       return const _StatusStyle(label: "مرفوض", color: Color(0xFFFF1744));
     }

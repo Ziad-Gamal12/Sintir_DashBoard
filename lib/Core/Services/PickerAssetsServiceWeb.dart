@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:html' as html;
 import 'dart:typed_data';
 
@@ -10,6 +11,7 @@ import 'package:sintir_dashboard/Core/errors/Exceptioons.dart';
 class PickerAssetsService implements PickerAssetsInterface {
   @override
   Future<ImagePickerResult> pickMultiImages() async {
+    log('Picking multiple images for web');
     final uploadInput = html.FileUploadInputElement()
       ..accept = 'image/*'
       ..multiple = true

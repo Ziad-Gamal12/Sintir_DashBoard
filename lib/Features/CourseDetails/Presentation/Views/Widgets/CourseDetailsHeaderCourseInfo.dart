@@ -13,17 +13,14 @@ class CourseDetailsHeaderCourseInfo extends StatelessWidget {
     final style = AppTextStyles(context);
 
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.start, // Respects RTL automatically
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Title with enhanced weight and size
         Text(
           course.title,
           style: style.semiBold24.copyWith(letterSpacing: -0.5),
         ),
         const SizedBox(height: 16),
 
-        // Metadata Row
         Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           spacing: 12,
@@ -31,7 +28,6 @@ class CourseDetailsHeaderCourseInfo extends StatelessWidget {
           children: [
             const CourseDetailsHeaderCourseStatusBadge(),
 
-            // Vertical Divider (Hidden on small screens via Wrap)
             _buildDivider(),
 
             _buildEnhancedInfo(

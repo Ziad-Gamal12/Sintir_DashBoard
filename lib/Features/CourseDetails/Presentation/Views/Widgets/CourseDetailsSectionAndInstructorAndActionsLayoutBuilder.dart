@@ -4,8 +4,10 @@ import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart'
 import 'package:sintir_dashboard/Core/Managers/content_creator_courses_cubit/content_creator_courses_cubit.dart';
 import 'package:sintir_dashboard/Core/Services/get_it_Service.dart';
 import 'package:sintir_dashboard/Core/repos/ContentCreatorRepos/ContentCreatorProfileRepo.dart';
+import 'package:sintir_dashboard/Core/repos/CoursesRepo/CoursesRepo.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseSectionsRepos/CourseSectionsRepo.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseSectionsCubit/CourseSectionsCubit.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/course_details_actions_cubit/course_details_actions_cubit.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDetailsCard.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCoursDetailsSectionCard.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseActionsCard.dart';
@@ -41,6 +43,10 @@ class CourseDetailsSectionAndInstructorLayoutBuilderState
               )..getContentCreatorCourses(
                 userId: widget.course.contentcreaterentity!.id,
               ),
+        ),
+        BlocProvider(
+          create: (context) =>
+              CourseDetailsActionsCubit(coursesrepo: getIt<Coursesrepo>()),
         ),
       ],
       child: LayoutBuilder(

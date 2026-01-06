@@ -2,7 +2,7 @@
 
 // ignore_for_file: file_names
 
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
@@ -17,8 +17,19 @@ abstract class Coursesrepo {
   Future<Either<Failure, GetCoursesResonseEntity>> getPopularCourses({
     required bool isPaginate,
   });
-
-  Future<Either<Failure, String>> uplaodFile({required File file});
+  Future<Either<Failure, void>> deleteCourse({
+    required String courseId,
+    required String teacherId,
+  });
+  Future<Either<Failure, void>> updateCourseState({
+    required String courseId,
+    required String newState,
+    required String teacherId,
+  });
+  Future<Either<Failure, String>> uplaodFile({
+    required Uint8List bytes,
+    required String fileName,
+  });
   Future<Either<Failure, GetCoursesResonseEntity>> getMyCourses({
     required bool isPaginate,
   });

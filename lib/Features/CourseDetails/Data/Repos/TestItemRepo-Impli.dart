@@ -37,7 +37,10 @@ class TestItemRepoImpli implements Testitemrepo {
       for (CourseTestQuestionEntity question in questions) {
         final file = question.imageFile;
         if (file != null) {
-          final url = await storageService.uploadFile(file: file);
+          final url = await storageService.uploadFile(
+            bytes: file.readAsBytesSync(),
+            fileName: "${file.path}-question",
+          );
           question.imageUrl = url;
         }
       }
@@ -57,7 +60,10 @@ class TestItemRepoImpli implements Testitemrepo {
       for (CourseTestQuestionEntity question in questions) {
         final file = question.solutionFile;
         if (file != null) {
-          final url = await storageService.uploadFile(file: file);
+          final url = await storageService.uploadFile(
+            bytes: file.readAsBytesSync(),
+            fileName: "${file.path}-solution",
+          );
           question.solutionImageUrl = url;
         }
       }

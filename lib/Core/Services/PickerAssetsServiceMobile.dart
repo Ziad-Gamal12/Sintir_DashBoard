@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:io' as io;
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:sintir_dashboard/Core/Entities/imagePickerResult.dart';
@@ -16,11 +17,17 @@ class PickerAssetsService implements PickerAssetsInterface {
     final List<XFile> pickedFiles = await picker.pickMultiImage();
     List<File> files = [];
     List<String> fileNames = [];
+    List<Uint8List> bytesList = [];
     for (var xfile in pickedFiles) {
       files.add(io.File(xfile.path));
       fileNames.add(xfile.name);
+      bytesList.add(await xfile.readAsBytes());
     }
-    return ImagePickerResult(files: files, fileNames: fileNames);
+    return ImagePickerResult(
+      files: files,
+      fileNames: fileNames,
+      bytes: bytesList,
+    );
   }
 
   @override

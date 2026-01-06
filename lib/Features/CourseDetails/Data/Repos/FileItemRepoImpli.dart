@@ -18,7 +18,8 @@ class FileItemRepoImpli implements FileItemRepo {
         return left(ServerFailure(message: "لم يتم اختيار ملف لرفعه"));
       }
       String url = await storageService.uploadFile(
-        file: coursefileEntity.file!,
+        bytes: coursefileEntity.file!.readAsBytesSync(),
+        fileName: "${coursefileEntity.file?.path}",
       );
 
       return right(url);

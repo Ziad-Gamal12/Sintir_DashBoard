@@ -1,7 +1,5 @@
 // ignore_for_file: file_names
 
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
@@ -74,9 +72,15 @@ class CoursesrepoImpl implements Coursesrepo {
   }
 
   @override
-  Future<Either<Failure, String>> uplaodFile({required File file}) async {
+  Future<Either<Failure, String>> uplaodFile({
+    required Uint8List bytes,
+    required String fileName,
+  }) async {
     try {
-      final url = await storageService.uploadFile(file: file);
+      final url = await storageService.uploadFile(
+        bytes: bytes,
+        fileName: fileName,
+      );
       return right(url);
     } on CustomException catch (e) {
       return left(ServerFailure(message: e.message));
@@ -269,6 +273,70 @@ class CoursesrepoImpl implements Coursesrepo {
       isPaginate: isPaginate,
       saveLastDoc: (doc) => _teacherInterestedCoursesLastDoc = doc,
     );
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteCourse({
+    required String courseId,
+    required String teacherId,
+  }) async {
+    try {
+      Future.wait([
+        databaseservice.deleteDoc(
+          collectionKey: BackendEndpoints.coursesCollection,
+          docId: courseId,
+        ),
+        databaseservice.deleteDoc(
+          collectionKey: BackendEndpoints.usersCollectionName,
+          docId: teacherId,
+          subCollectionKey: BackendEndpoints.coursesCollection,
+          subDocId: courseId,
+        ),
+      ]);
+
+      return right(null);
+    } on CustomException catch (e) {
+      return left(ServerFailure(message: e.message));
+    } catch (_) {
+      return left(
+        ServerFailure(message: "فشل حذف الدورة، يرجى المحاولة لاحقاً"),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateCourseState({
+    required String courseId,
+    required String newState,
+    required String teacherId,
+  }) async {
+    try {
+      Future.wait([
+        databaseservice.updateData(
+          requirements: FireStoreRequirmentsEntity(
+            collection: BackendEndpoints.coursesCollection,
+            docId: courseId,
+          ),
+          data: {"state": newState},
+        ),
+        databaseservice.updateData(
+          requirements: FireStoreRequirmentsEntity(
+            collection: BackendEndpoints.usersCollectionName,
+            docId: teacherId,
+            subCollection: BackendEndpoints.coursesCollection,
+            subDocId: courseId,
+          ),
+          data: {"state": newState},
+        ),
+      ]);
+      return right(null);
+    } on CustomException catch (e) {
+      return left(ServerFailure(message: e.message));
+    } catch (_) {
+      return left(
+        ServerFailure(message: "فشل تحديث حالة الدورة، يرجى المحاولة لاحقاً"),
+      );
+    }
   }
 }
 
