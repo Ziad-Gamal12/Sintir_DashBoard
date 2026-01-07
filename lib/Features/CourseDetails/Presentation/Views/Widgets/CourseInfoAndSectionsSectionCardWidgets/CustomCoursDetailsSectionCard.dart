@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomCard.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseSectionsCubit/CourseSectionsCubit.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDetailsDescription.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCoursePoster.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseSectionsBuilder.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseSectionsCardHeader.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseInfoAndSectionsSectionCardWidgets/CourseDetailsDescription.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseInfoAndSectionsSectionCardWidgets/CustomCoursePoster.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseInfoAndSectionsSectionCardWidgets/CustomCourseSectionsBuilder.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseInfoAndSectionsSectionCardWidgets/CustomCourseSectionsCardHeader.dart';
 
 class CustomCoursDetailsSectionCard extends StatelessWidget {
   const CustomCoursDetailsSectionCard({super.key, required this.course});

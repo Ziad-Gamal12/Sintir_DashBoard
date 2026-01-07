@@ -6,9 +6,9 @@ import 'package:sintir_dashboard/Core/Helper/ShowSnackBar.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomCard.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/course_details_actions_cubit/course_details_actions_cubit.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/DeleteCourseActionButton.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/EditCourseActionButton.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/HideCourseSwitcher.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDeatilsActionsButtonsSectionCard/DeleteCourseActionButton.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDeatilsActionsButtonsSectionCard/EditCourseActionButton.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDeatilsActionsButtonsSectionCard/HideCourseSwitcher.dart';
 import 'package:sintir_dashboard/core/utils/backend_endpoints.dart';
 
 class CustomCourseActionsCard extends StatelessWidget {

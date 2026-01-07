@@ -19,8 +19,12 @@ class CourseFilterConstants {
         valueEn: BackendEndpoints.coursedeclinedState,
       ),
       FilterOptionEntity(
-        labelAr: "محذوف",
-        valueEn: BackendEndpoints.courseDeletedState,
+        labelAr: "محذوف من قبل المعلم",
+        valueEn: BackendEndpoints.courseDeletedByTeacherState,
+      ),
+      FilterOptionEntity(
+        labelAr: "محذوف من قبل الادارة",
+        valueEn: BackendEndpoints.courseDeletedByAdminState,
       ),
     ];
   }

@@ -49,7 +49,7 @@ class CustomCourseTransactionsCardItem extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  transaction.method,
+                  "${transaction.method}-${transaction.issuer}",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: textStyles.regular13.copyWith(
@@ -62,7 +62,6 @@ class CustomCourseTransactionsCardItem extends StatelessWidget {
 
           const SizedBox(width: 8),
 
-          // Center Side: ID and Date
           Expanded(
             flex: 4,
             child: Column(
@@ -92,7 +91,6 @@ class CustomCourseTransactionsCardItem extends StatelessWidget {
 
           const SizedBox(width: 12),
 
-          // Right Side: Status Badge
           _buildStatusBadge(theme, transaction.status ?? "pending"),
         ],
       ),

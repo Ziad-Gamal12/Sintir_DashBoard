@@ -23,6 +23,7 @@ class _EditCourseViewBodyState extends State<EditCourseViewBody> {
   String? selectedLanguage;
   String? selectedLevel;
   String? selectedSubject;
+  String? selectedState;
   @override
   void initState() {
     super.initState();
@@ -33,6 +34,7 @@ class _EditCourseViewBodyState extends State<EditCourseViewBody> {
     selectedLanguage = widget.currentCourse.language;
     selectedLevel = widget.currentCourse.level;
     selectedSubject = widget.currentCourse.subject;
+    selectedState = widget.currentCourse.state;
   }
 
   @override
@@ -74,6 +76,9 @@ class _EditCourseViewBodyState extends State<EditCourseViewBody> {
                   descriptionController: descriptionController,
                   priceController: priceController,
                   posterurl: widget.currentCourse.posterUrl,
+                  onStateChange: (value) => setState(() {
+                    selectedState = value;
+                  }),
                   onLevelChange: (v) => setState(() => selectedLevel = v),
                   onSubjectChange: (v) => setState(() => selectedSubject = v),
                   onLanguageChange: (v) => setState(() => selectedLanguage = v),
@@ -89,6 +94,7 @@ class _EditCourseViewBodyState extends State<EditCourseViewBody> {
                   selectedLevel: selectedLevel,
                   selectedSubject: selectedSubject,
                   currentCourse: widget.currentCourse,
+                  selectedState: selectedState,
                 ),
                 const SizedBox(height: 50),
               ],

@@ -4,7 +4,7 @@ import 'package:sintir_dashboard/Core/Entities/CourseFeedBackItemEntity.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomEmptyWidget.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomErrorWidget.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseFeedBacksCubit/course_feed_backs_cubit.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseFeedBacksCardItem.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseFeedBacksSectionCardWidgets/CustomCourseFeedBacksCardItem.dart';
 import 'package:sintir_dashboard/constant.dart';
 
 class CustomCourseFeedBacksListView extends StatelessWidget {

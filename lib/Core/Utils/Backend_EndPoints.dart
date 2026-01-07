@@ -59,7 +59,8 @@ class BackendEndpoints {
   static String coursePublishedState = "Published";
   static const String courseArchivedState = "Archived";
   static String coursePendingState = "Pending";
-  static String courseDeletedState = "DeletedByTeacher";
+  static String courseDeletedByTeacherState = "DeletedByTeacher";
+  static String courseDeletedByAdminState = "DeletedByAdmin";
   static String coursedeclinedState = "Declined";
   static String userKind = "kind";
   static String checkIsTeacherExistCollectionName = "Teachers";

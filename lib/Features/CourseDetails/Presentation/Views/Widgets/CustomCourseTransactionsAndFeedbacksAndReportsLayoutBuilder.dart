@@ -8,9 +8,9 @@ import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseTrans
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseFeedBacksCubit/course_feed_backs_cubit.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseReportsCubit/course_reports_cubit.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/course_transactions_cubit/course_transactions_cubit.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseFeedBacksCard.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseReportsCard.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseTransactionsCard.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseFeedBacksSectionCardWidgets/CustomCourseFeedBacksCard.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseReportsSectionCardWidgets/CustomCourseReportsCard.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseTransactionsSectionCardWidgets/CustomCourseTransactionsCard.dart';
 
 class CustomCourseTransactionsAndFeedbacksAndReportsSection
     extends StatelessWidget {

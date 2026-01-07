@@ -8,10 +8,10 @@ import 'package:sintir_dashboard/Core/repos/CoursesRepo/CoursesRepo.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseSectionsRepos/CourseSectionsRepo.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseSectionsCubit/CourseSectionsCubit.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/course_details_actions_cubit/course_details_actions_cubit.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDetailsCard.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCoursDetailsSectionCard.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseActionsCard.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCoursesInstructorSectionCard.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDeatilsActionsButtonsSectionCard/CustomCourseActionsCard.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDetailsSectionCard/CourseDetailsCard.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseInfoAndSectionsSectionCardWidgets/CustomCoursDetailsSectionCard.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseInstructorSectionCardWidgets/CustomCoursesInstructorSectionCard.dart';
 
 class CourseDetailsSectionAndInstructorLayoutBuilder extends StatefulWidget {
   const CourseDetailsSectionAndInstructorLayoutBuilder({
@@ -56,7 +56,7 @@ class CourseDetailsSectionAndInstructorLayoutBuilderState
               children: [
                 CustomCoursDetailsSectionCard(course: widget.course),
                 Divider(height: 24),
-                ContentCreatorDetails(
+                ContentCreatorDetailsCard(
                   contentcreaterentity: widget.course.contentcreaterentity!,
                 ),
                 Divider(height: 24),
@@ -77,7 +77,7 @@ class CourseDetailsSectionAndInstructorLayoutBuilderState
                 Expanded(
                   child: Column(
                     children: [
-                      ContentCreatorDetails(
+                      ContentCreatorDetailsCard(
                         contentcreaterentity:
                             widget.course.contentcreaterentity!,
                       ),

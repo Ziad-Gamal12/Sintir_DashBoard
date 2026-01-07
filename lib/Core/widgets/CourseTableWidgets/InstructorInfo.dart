@@ -5,7 +5,7 @@ import 'package:sintir_dashboard/Core/widgets/CustomCachedNetworkImage.dart';
 
 class InstructorInfo extends StatelessWidget {
   const InstructorInfo({super.key, this.instructor});
-  final Contentcreaterentity? instructor;
+  final ContentCreatorEntity? instructor;
   @override
   Widget build(BuildContext context) {
     final textStyles = AppTextStyles(context);

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
-import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
 import 'package:sintir_dashboard/Core/widgets/AppDialogs.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomButton.dart';
 import 'package:sintir_dashboard/Core/widgets/Custom_Loading_Widget.dart';
@@ -20,6 +19,7 @@ class CustomAddCourseActionButton extends StatelessWidget {
     required this.descriptionController,
     required this.priceController,
     required this.selectedLanguage,
+    required this.selectedState,
   });
   final GlobalKey<FormState> formKey;
   final TextEditingController titleController;
@@ -30,6 +30,7 @@ class CustomAddCourseActionButton extends StatelessWidget {
   final String? selectedLevel;
   final String? selectedSubject;
   final String? selectedLanguage;
+  final String? selectedState;
 
   @override
   Widget build(BuildContext context) {
@@ -72,12 +73,13 @@ class CustomAddCourseActionButton extends StatelessWidget {
 
     if (selectedLevel == null ||
         selectedSubject == null ||
-        selectedLanguage == null) {
+        selectedLanguage == null ||
+        selectedState == null) {
       _showMissingFieldsDialog(context);
       return;
     }
 
-    if (cubit.coursePosterImage == null) {
+    if (cubit.coursePosterImage == null && currentCourse.posterUrl == null) {
       _showMissingImageDialog(context);
       return;
     }
@@ -95,12 +97,12 @@ class CustomAddCourseActionButton extends StatelessWidget {
       subject: selectedSubject!,
       id: codeController.text.trim(),
       level: selectedLevel!,
-      state: BackendEndpoints.coursePendingState,
+      state: selectedState!,
       title: titleController.text.trim(),
       description: descriptionController.text.trim(),
       price: price,
       language: selectedLanguage!,
-      postedDate: DateTime.now(),
+      postedDate: currentCourse.postedDate,
     );
     cubit.update(courseEntity: course);
   }

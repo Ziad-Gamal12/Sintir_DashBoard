@@ -5,7 +5,7 @@ import 'package:sintir_dashboard/Core/Entities/CourseFeedBackItemEntity.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomCachedNetworkImage.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseFeedBacksCubit/course_feed_backs_cubit.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseFeedBacksCardItemPopupMenu.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseFeedBacksSectionCardWidgets/CustomCourseFeedBacksCardItemPopupMenu.dart';
 
 class CustomCourseFeedBacksCardItem extends StatelessWidget {
   final CoursefeedbackItemEntity feedback;

@@ -2,21 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/ContentCreaterEntity.dart';
 import 'package:sintir_dashboard/Core/Managers/content_creator_courses_cubit/content_creator_courses_cubit.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CreatorAvatar.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CreatorNameTitle.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CreatorStats.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomNavigateToInstructorProfileButton.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseInstructorSectionCardWidgets/CreatorAvatar.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseInstructorSectionCardWidgets/CreatorNameTitle.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseInstructorSectionCardWidgets/CreatorStats.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseInstructorSectionCardWidgets/CustomNavigateToInstructorProfileButton.dart';
 
-class ContentCreatorDetails extends StatefulWidget {
-  final Contentcreaterentity contentcreaterentity;
+class ContentCreatorDetailsCard extends StatefulWidget {
+  final ContentCreatorEntity contentcreaterentity;
 
-  const ContentCreatorDetails({super.key, required this.contentcreaterentity});
+  const ContentCreatorDetailsCard({
+    super.key,
+    required this.contentcreaterentity,
+  });
 
   @override
-  State<ContentCreatorDetails> createState() => _ContentCreatorDetailsState();
+  State<ContentCreatorDetailsCard> createState() =>
+      _ContentCreatorDetailsCardState();
 }
 
-class _ContentCreatorDetailsState extends State<ContentCreatorDetails>
+class _ContentCreatorDetailsCardState extends State<ContentCreatorDetailsCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
@@ -77,7 +81,10 @@ class _ContentCreatorDetailsState extends State<ContentCreatorDetails>
               subscribersCount: subscribersCount,
             ),
             const SizedBox(height: 20),
-            CustomNavigateToInstructorProfileButton(theme: theme),
+            CustomNavigateToInstructorProfileButton(
+              theme: theme,
+              contentcreaterentity: creator,
+            ),
           ],
         ),
       ),

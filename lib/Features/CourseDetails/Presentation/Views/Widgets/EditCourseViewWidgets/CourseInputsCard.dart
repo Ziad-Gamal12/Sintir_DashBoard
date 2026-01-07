@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/UpdateCourseCubit/UpdateCourseCubit.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/EditCourseViewWidgets/AddCoursePoster.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/EditCourseViewWidgets/CustomCourseStateAnimatedDropDownButton.dart';
 
 import 'course_code_input.dart';
 import 'course_description_input.dart';
@@ -21,6 +22,7 @@ class CourseInputsCard extends StatelessWidget {
   final ValueChanged<String?> onLevelChange;
   final ValueChanged<String?> onSubjectChange;
   final ValueChanged<String?> onLanguageChange;
+  final ValueChanged<String?> onStateChange;
   final CourseEntity courseEntity;
   const CourseInputsCard({
     super.key,
@@ -29,6 +31,7 @@ class CourseInputsCard extends StatelessWidget {
     required this.descriptionController,
     required this.courseEntity,
     required this.posterurl,
+    required this.onStateChange,
     required this.priceController,
     required this.onLevelChange,
     required this.onSubjectChange,
@@ -52,7 +55,6 @@ class CourseInputsCard extends StatelessWidget {
           hintText: courseEntity.level,
         ),
         const SizedBox(height: 14),
-
         CourseSubjectSelector(
           onChanged: onSubjectChange,
           hintText: courseEntity.subject,
@@ -62,7 +64,11 @@ class CourseInputsCard extends StatelessWidget {
           onChanged: onLanguageChange,
           hintText: courseEntity.language,
         ),
-
+        const SizedBox(height: 14),
+        CustomCourseStateAnimatedDropDownButton(
+          onChanged: onStateChange,
+          hintText: courseEntity.state,
+        ),
         const SizedBox(height: 14),
         Addcourseposter(
           coursePosterImage: context

@@ -25,7 +25,7 @@ class Contentcreatermodel {
     );
   }
   factory Contentcreatermodel.fromEntity({
-    required Contentcreaterentity entity,
+    required ContentCreatorEntity entity,
   }) {
     return Contentcreatermodel(
       name: entity.name,
@@ -50,8 +50,8 @@ class Contentcreatermodel {
       title: data["teacherExtraData"]["subject"],
     );
   }
-  Contentcreaterentity toEntity() {
-    return Contentcreaterentity(
+  ContentCreatorEntity toEntity() {
+    return ContentCreatorEntity(
       name: name,
       profileImageUrl: profileImageUrl,
       id: id,

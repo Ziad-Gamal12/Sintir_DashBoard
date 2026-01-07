@@ -40,7 +40,7 @@ class CreatorNameTitle extends StatelessWidget {
               title,
               style: AppTextStyles(
                 context,
-              ).regular16.copyWith(color: secondaryTextColor),
+              ).regular14.copyWith(color: secondaryTextColor),
             ),
           ],
         ),

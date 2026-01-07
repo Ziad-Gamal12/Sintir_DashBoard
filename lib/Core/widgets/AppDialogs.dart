@@ -17,6 +17,7 @@ class AppDialogs {
     void Function()? onTap,
     bool isConfirm = false,
   }) {
+    ThemeData theme = Theme.of(context);
     showDialog(
       context: context,
       builder: (context) => Center(
@@ -26,12 +27,12 @@ class AppDialogs {
             width: _getDialogWidth(context),
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: const Color(0xFF1C2637),
+              color: theme.cardColor,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: Colors.white.withOpacity(0.05)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
+                  color: theme.shadowColor,
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -52,17 +53,17 @@ class AppDialogs {
                 const SizedBox(height: 20),
                 Text(
                   title,
-                  style: AppTextStyles(
-                    context,
-                  ).semiBold20.copyWith(color: Colors.white),
+                  style: AppTextStyles(context).semiBold20.copyWith(
+                    color: theme.textTheme.titleLarge?.color,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   message,
                   textAlign: TextAlign.center,
-                  style: AppTextStyles(
-                    context,
-                  ).regular14.copyWith(color: const Color(0xFFB0B8C4)),
+                  style: AppTextStyles(context).regular14.copyWith(
+                    color: theme.textTheme.bodyMedium?.color,
+                  ),
                 ),
                 const SizedBox(height: 32),
                 Row(
@@ -77,9 +78,11 @@ class AppDialogs {
                           backgroundColor: color,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        child: const Text(
+                        child: Text(
                           "حسناً",
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(
+                            color: theme.textTheme.bodyLarge?.color,
+                          ),
                         ),
                       ),
                     ),
@@ -89,7 +92,9 @@ class AppDialogs {
                           onPressed: () => Navigator.pop(context),
                           child: Text(
                             "إلغاء",
-                            style: TextStyle(color: Colors.grey.shade400),
+                            style: TextStyle(
+                              color: theme.textTheme.bodyLarge?.color,
+                            ),
                           ),
                         ),
                       ),

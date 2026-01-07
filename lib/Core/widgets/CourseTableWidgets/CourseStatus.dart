@@ -32,9 +32,13 @@ class CourseStatus extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 6),
-          Text(
-            _getStatusStyle(status).label,
-            style: AppTextStyles(context).regular14.copyWith(color: color),
+          Flexible(
+            child: Text(
+              _getStatusStyle(status).label,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles(context).regular14.copyWith(color: color),
+            ),
           ),
         ],
       ),
@@ -51,8 +55,16 @@ class CourseStatus extends StatelessWidget {
       );
     } else if (BackendEndpoints.courseArchivedState == status) {
       return const _StatusStyle(label: "مؤرشف", color: Color(0xFF1976D2));
-    } else if (BackendEndpoints.courseDeletedState == status) {
-      return const _StatusStyle(label: "محذوف", color: Color(0xFF616161));
+    } else if (BackendEndpoints.courseDeletedByTeacherState == status) {
+      return const _StatusStyle(
+        label: "محذوف بواسطة المعلم",
+        color: Color(0xFF616161),
+      );
+    } else if (BackendEndpoints.courseDeletedByAdminState == status) {
+      return const _StatusStyle(
+        label: "محذوف بواسطة الادمن",
+        color: Color(0xFFB00020),
+      );
     } else {
       return const _StatusStyle(label: "مرفوض", color: Color(0xFFFF1744));
     }

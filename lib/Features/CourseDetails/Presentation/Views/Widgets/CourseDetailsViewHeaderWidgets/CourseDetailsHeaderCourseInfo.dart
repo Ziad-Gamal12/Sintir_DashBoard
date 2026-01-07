@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDetailsHeaderCourseStatusBadge.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDetailsViewHeaderWidgets/CourseDetailsHeaderCourseStatusBadge.dart';
 
 class CourseDetailsHeaderCourseInfo extends StatelessWidget {
   const CourseDetailsHeaderCourseInfo({super.key});

@@ -4,7 +4,7 @@ import 'package:sintir_dashboard/Core/Entities/Transactions/TransactionEntity.da
 import 'package:sintir_dashboard/Core/widgets/CustomEmptyWidget.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomErrorWidget.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/course_transactions_cubit/course_transactions_cubit.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseTransactionsCardItem.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseTransactionsSectionCardWidgets/CustomCourseTransactionsCardItem.dart';
 import 'package:sintir_dashboard/constant.dart';
 
 class CustomCourseTransactionsListView extends StatelessWidget {

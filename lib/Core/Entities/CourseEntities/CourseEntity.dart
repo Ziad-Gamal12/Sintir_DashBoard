@@ -10,7 +10,7 @@ class CourseEntity {
   final DateTime postedDate;
   final String subject;
   final String level;
-  Contentcreaterentity? contentcreaterentity;
+  ContentCreatorEntity? contentcreaterentity;
 
   CourseEntity({
     required this.id,
@@ -31,7 +31,7 @@ class CourseEntity {
     state: "Published",
     title: 'كورس تجريبي',
     description: 'هذا وصف تجريبي للكورس',
-    contentcreaterentity: Contentcreaterentity.empty(),
+    contentcreaterentity: ContentCreatorEntity.empty(),
     posterUrl:
         "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
     price: 120,

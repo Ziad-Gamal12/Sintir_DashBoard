@@ -6,7 +6,7 @@ import 'package:sintir_dashboard/Features/CourseDetails/Data/Mappers/analytics_c
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Entities/CourseDetailsSummaryCardEntity.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseAnalyticsCubit/CourseAnalyticsState.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseAnalyticsCubit/course_analytics_cubit.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDetailsSummaryStatCardFooter.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDetailsSummaryCardsSection/CourseDetailsSummaryStatCardFooter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class CourseDetailsSummaryStatCard extends StatelessWidget {

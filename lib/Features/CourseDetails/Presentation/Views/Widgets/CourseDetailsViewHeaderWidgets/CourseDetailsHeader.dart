@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDetailsHeaderCourseInfo.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseDetailsViewHeaderWidgets/CourseDetailsHeaderCourseInfo.dart';
 
 class CourseDetailsHeader extends StatelessWidget {
   const CourseDetailsHeader({super.key});
