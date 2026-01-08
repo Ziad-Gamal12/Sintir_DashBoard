@@ -3,6 +3,7 @@ import 'package:sintir_dashboard/Core/widgets/DesktopLayoutBuilder/CustomDesktop
 import 'package:sintir_dashboard/Core/widgets/Drawer/CustomDrawerBody.dart';
 import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Views/Widgets/CoursesManagmentBody.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/Widgets/DashboardViewBody.dart';
+import 'package:sintir_dashboard/Features/TicketsManagement/Presentation/Views/Widgets/TicketsManagementViewBody.dart';
 import 'package:sintir_dashboard/Features/UsersManagement/Presentation/Views/Widgets/UsersManagementViewBody.dart';
 
 class CustomDesktopDashboardLayout extends StatefulWidget {
@@ -21,7 +22,7 @@ class _CustomDesktopDashboardLayoutState
     const DashboardViewBody(),
     const CoursesManagmentBody(),
     const UsersManagementViewBody(),
-    const Center(child: Text("الدعم الفني")),
+    const TicketsManagementViewBody(),
   ];
 
   @override

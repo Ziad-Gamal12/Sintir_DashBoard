@@ -11,7 +11,6 @@ class CustomCard extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final bool isDark = theme.brightness == Brightness.dark;
     final Color surfaceColor = theme.colorScheme.surface;
-
     return Container(
       padding:
           padding ?? const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
