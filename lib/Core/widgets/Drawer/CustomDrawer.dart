@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/widgets/Drawer/CustomDrawerBody.dart';
 import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Views/ResponsiveCoursesManagmentView.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/ResponsiveDashboardView.dart';
+import 'package:sintir_dashboard/Features/UsersManagement/Presentation/Views/ResponsiveUsersManagementView.dart';
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({super.key, required this.currentIndex});
@@ -55,6 +56,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
       return;
     } else if (index == 1) {
       GoRouter.of(context).push(ResponsiveCoursesManagmentView.routeName);
+      return;
+    } else if (index == 2) {
+      GoRouter.of(context).push(ResponsiveUsersManagementView.routeName);
       return;
     }
   }

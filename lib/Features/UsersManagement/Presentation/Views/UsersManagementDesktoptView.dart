@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/widgets/DesktopLayoutBuilder/CustomDesktopDashbaordLayout.dart';
 
-class TabletDashboardView extends StatelessWidget {
-  const TabletDashboardView({super.key});
+class UsersManagementDesktoptView extends StatelessWidget {
+  const UsersManagementDesktoptView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: CustomDesktopDashboardLayout(currentIndex: 0));
+    return CustomDesktopDashboardLayout(currentIndex: 2);
   }
 }

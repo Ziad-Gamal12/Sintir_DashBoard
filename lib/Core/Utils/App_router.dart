@@ -10,6 +10,8 @@ import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Respo
 import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Views/ResponsiveCoursesManagmentView.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/ResponsiveDashboardView.dart';
 import 'package:sintir_dashboard/Features/Splash/Presentation/Views/SplashView.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/ResponsiveUserDetailsView.dart';
+import 'package:sintir_dashboard/Features/UsersManagement/Presentation/Views/ResponsiveUsersManagementView.dart';
 
 class App_router {
   static GoRouter router = GoRouter(
@@ -48,6 +50,15 @@ class App_router {
         builder: (context, state) => ContentCreatorProfile(
           contentcreaterentity: state.extra as ContentCreatorEntity,
         ),
+      ),
+      GoRoute(
+        path: ResponsiveUsersManagementView.routeName,
+        builder: (context, state) => ResponsiveUsersManagementView(),
+      ),
+      GoRoute(
+        path: ResponsiveUserDetailsView.routeName,
+        builder: (context, state) =>
+            ResponsiveUserDetailsView(uid: state.extra as String),
       ),
     ],
   );

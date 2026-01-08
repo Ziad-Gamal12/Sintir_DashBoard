@@ -3,6 +3,7 @@ import 'package:sintir_dashboard/Core/widgets/DesktopLayoutBuilder/CustomDesktop
 import 'package:sintir_dashboard/Core/widgets/Drawer/CustomDrawerBody.dart';
 import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Views/Widgets/CoursesManagmentBody.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/Widgets/DashboardViewBody.dart';
+import 'package:sintir_dashboard/Features/UsersManagement/Presentation/Views/Widgets/UsersManagementViewBody.dart';
 
 class CustomDesktopDashboardLayout extends StatefulWidget {
   const CustomDesktopDashboardLayout({super.key, required this.currentIndex});
@@ -19,7 +20,7 @@ class _CustomDesktopDashboardLayoutState
   final List<Widget> _screens = [
     const DashboardViewBody(),
     const CoursesManagmentBody(),
-    const Center(child: Text("إدارة المستخدمين")),
+    const UsersManagementViewBody(),
     const Center(child: Text("الدعم الفني")),
   ];
 

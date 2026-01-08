@@ -51,7 +51,7 @@ class _CoursesManagmentBodyState extends State<CoursesManagmentBody> {
             child: SizedBox(
               width: double.infinity,
               child: AspectRatio(
-                aspectRatio: 1,
+                aspectRatio: 3 / 2,
                 child: CustomPageView(pageController: _pageController),
               ),
             ),

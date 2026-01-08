@@ -86,14 +86,15 @@ class _CustomAnimatedDropDownButtonState
         ),
         dropdownStyleData: DropdownStyleData(
           maxHeight: 300,
-          width: 220,
+          width: 200,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             color: dropdownBg,
             border: Border.all(color: borderColor),
           ),
+          useSafeArea: true,
           elevation: 0,
-          offset: const Offset(0, -4),
+          offset: const Offset(0, 0),
           scrollbarTheme: ScrollbarThemeData(
             radius: const Radius.circular(40),
             thickness: WidgetStateProperty.all(4),
@@ -130,6 +131,7 @@ class _CustomAnimatedDropDownButtonState
             textEditingController.clear();
           }
         },
+        alignment: Alignment.center,
       ),
     );
   }

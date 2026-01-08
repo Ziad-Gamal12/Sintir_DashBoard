@@ -1,5 +1,5 @@
 // Location: Features/CoursesManagment/Presentation/Manager/CourseFilterConstants.dart
-import 'package:sintir_dashboard/Features/CoursesManagment/Domain/Entities/FilterOptionEntity.dart';
+import 'package:sintir_dashboard/Core/Entities/FilterOptionEntity.dart';
 import 'package:sintir_dashboard/core/utils/backend_endpoints.dart'; // Adjust path
 
 class CourseFilterConstants {

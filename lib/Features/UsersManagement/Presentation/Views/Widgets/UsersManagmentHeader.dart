@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Views/Widgets/CustomAddCourseShadowButton.dart';
 
-class CoursesManagmentHeader extends StatelessWidget {
-  const CoursesManagmentHeader({super.key});
+class UsersManagmentHeader extends StatelessWidget {
+  const UsersManagmentHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,29 +10,36 @@ class CoursesManagmentHeader extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     return Row(
       children: [
-        Icon(FontAwesomeIcons.bookOpen, size: 32),
+        SizedBox(
+          width: 32,
+          height: 32,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Icon(FontAwesomeIcons.users),
+          ),
+        ),
         SizedBox(width: 16),
         Expanded(
-          flex: 3,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "إدارة الكورسات",
+                "إدارة المستخدمين",
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               SizedBox(height: 8),
               Text(
-                "قم بإدارة الكورسات الخاصة بك بسهولة وفعالية من خلال هذه الواجهة البسيطة.",
+                "قم بإدارة المستخدمين الخاصة بك بسهولة وفعالية من خلال هذه الواجهة البسيطة.",
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: isDark ? Colors.white70 : Colors.black54,
                   height: 1.5,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
         ),
-        CustomAddCourseShadowButton(),
       ],
     );
   }

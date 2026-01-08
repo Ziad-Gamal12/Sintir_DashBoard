@@ -4,11 +4,32 @@ import 'package:sintir_dashboard/Core/widgets/CustomCard.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomErrorWidget.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Domain/Entities/GenderAnalysisEntity.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Presentation/Managers/dashbaord_users_gender_analytics_cubit/dashbaord_users_gender_analytics_cubit.dart';
-import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/Widgets/GenderPaiChart.dart';
+import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/Widgets/GenderChartBuilder.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class CustomGenderSummarySection extends StatelessWidget {
+class CustomGenderSummarySection extends StatefulWidget {
   const CustomGenderSummarySection({super.key});
+
+  @override
+  State<CustomGenderSummarySection> createState() =>
+      _CustomGenderSummarySectionState();
+}
+
+class _CustomGenderSummarySectionState
+    extends State<CustomGenderSummarySection> {
+  late final SnapshotController _snapshotController;
+
+  @override
+  void initState() {
+    super.initState();
+    _snapshotController = SnapshotController();
+  }
+
+  @override
+  void dispose() {
+    _snapshotController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +41,8 @@ class CustomGenderSummarySection extends StatelessWidget {
             DashbaordUsersGenderAnalyticsCubit,
             DashbaordUsersGenderAnalyticsState
           >(
+            buildWhen: (previous, current) =>
+                previous.runtimeType != current.runtimeType,
             builder: (context, state) {
               if (state is DashbaordUsersGenderAnalyticsFailure) {
                 return CustomErrorWidget(errormessage: state.errMessage);
@@ -35,6 +58,7 @@ class CustomGenderSummarySection extends StatelessWidget {
                 enabled: isLoading,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       "تحليل المستخدمين",
@@ -43,41 +67,17 @@ class CustomGenderSummarySection extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    Center(
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          SizedBox(
-                            height: 200,
-                            child: GenderPieChart(
-                              femaleCount: entity.femaleCount.toDouble(),
-                              maleCount: entity.maleCount.toDouble(),
-                            ),
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                (entity.maleCount + entity.femaleCount)
-                                    .toString(),
-                                style: theme.textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                "إجمالي",
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+
+                    GenderChartBuilder(
+                      snapshotController: _snapshotController,
+                      entity: entity,
+                      isLoading: isLoading,
                     ),
+
                     const SizedBox(height: 32),
                     const Divider(),
                     const SizedBox(height: 16),
-                    // New Detailed Info Rows
+
                     _DetailedStatRow(
                       label: "نسبة الذكور",
                       value: "${entity.malePercentage.toStringAsFixed(1)}%",
@@ -117,7 +117,12 @@ class _DetailedStatRow extends StatelessWidget {
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 12),
-        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 13)),
+        Text(
+          label,
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
+        ),
         const Spacer(),
         Text(
           value,

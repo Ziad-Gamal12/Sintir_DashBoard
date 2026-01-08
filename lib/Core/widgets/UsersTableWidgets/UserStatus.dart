@@ -9,7 +9,7 @@ class UserStatus extends StatelessWidget {
   Widget build(BuildContext context) {
     Color color = _getStatusStyle(status).color;
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),

@@ -43,13 +43,16 @@ class _CustomMostViewedCoursesTableState
           );
         } else {
           return SizedBox(
-            height: 600,
-            child: ResponsiveCourseTable(
-              onLoadMore: (rowIndex) {
-                _fetchMoreCourses();
-              },
-              isLoading: state is DashbaordFetchMostViewedCoursesLoading,
-              courses: fetchedCourses,
+            width: double.infinity,
+            child: AspectRatio(
+              aspectRatio: 3 / 2,
+              child: ResponsiveCourseTable(
+                onLoadMore: (rowIndex) {
+                  _fetchMoreCourses();
+                },
+                isLoading: state is DashbaordFetchMostViewedCoursesLoading,
+                courses: fetchedCourses,
+              ),
             ),
           );
         }

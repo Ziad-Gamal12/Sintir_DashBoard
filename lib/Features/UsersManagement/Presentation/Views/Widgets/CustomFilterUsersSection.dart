@@ -3,18 +3,17 @@ import 'package:sintir_dashboard/Core/Entities/FilterOptionEntity.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomAnimatedDropDownButton.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomCard.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomSearchTextField.dart';
-import 'package:sintir_dashboard/Features/CoursesManagment/Domain/Entities/CourseFilterConstants.dart';
+import 'package:sintir_dashboard/Features/UsersManagement/Domain/Entities/UsersFilterConstants.dart';
 
-class CustomFilterCoursesSection extends StatefulWidget {
-  const CustomFilterCoursesSection({super.key});
+class CustomFilterUsersSection extends StatefulWidget {
+  const CustomFilterUsersSection({super.key});
 
   @override
-  State<CustomFilterCoursesSection> createState() =>
-      _CustomFilterCoursesSectionState();
+  State<CustomFilterUsersSection> createState() =>
+      _CustomFilterUsersSectionState();
 }
 
-class _CustomFilterCoursesSectionState
-    extends State<CustomFilterCoursesSection> {
+class _CustomFilterUsersSectionState extends State<CustomFilterUsersSection> {
   final TextEditingController searchController = TextEditingController();
 
   @override
@@ -60,27 +59,22 @@ class _CustomFilterCoursesSectionState
                 children: [
                   _buildSearchField(),
                   const SizedBox(width: 24),
-
                   _buildFilterDropdown(
-                    hint: "المادة الدراسية",
-                    options: CourseFilterConstants.getSubjectFilters(),
-                    onChanged: (valEn) => print("Selected Subject: $valEn"),
+                    hint: "الدور",
+                    options: UsersFilterConstants.getRolesFilters(),
+                    onChanged: (valEn) {},
                   ),
                   const SizedBox(width: 12),
-
-                  // 3. Level Filter
                   _buildFilterDropdown(
-                    hint: "المستوى الدراسي",
-                    options: CourseFilterConstants.getLevelFilters(),
-                    onChanged: (valEn) => print("Selected Level: $valEn"),
+                    hint: "الحالة",
+                    options: UsersFilterConstants.getUsersStatusFilters(),
+                    onChanged: (valEn) {},
                   ),
                   const SizedBox(width: 12),
-
-                  // 4. Status Filter
                   _buildFilterDropdown(
-                    hint: "حالة الكورس",
-                    options: CourseFilterConstants.getStatusFilters(),
-                    onChanged: (valEn) => print("Selected Status: $valEn"),
+                    hint: "الجنس",
+                    options: UsersFilterConstants.getGenderFilters(),
+                    onChanged: (valEn) {},
                   ),
                 ],
               ),

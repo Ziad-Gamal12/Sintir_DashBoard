@@ -36,18 +36,20 @@ class UserEntity {
     this.teacherExtraDataEntity,
   });
   static UserEntity empty() => UserEntity(
-    uid: "empty",
-    firstName: "empty",
-    lastName: "empty",
-    email: "empty",
-    address: "empty",
-    phoneNumber: "empty",
-    deviceId: "empty",
-    gender: "empty",
+    uid: "132412",
+    firstName: "زياد",
+    lastName: "جمال",
+    email: "ziadgamail.com",
+    address: "محلة سبك اشمون",
+    phoneNumber: "0123456789",
+    deviceId: "44423525352",
+    gender: "Male",
     profilePicurl: "https://cdn-icons-png.flaticon.com/128/15239/15239514.png",
-    status: "empty",
-    role: "empty",
+    status: "Active",
+    role: "Admin",
     joinedDate: DateTime.now(),
-    fullName: "empty",
+    fullName: "زياد جمال",
   );
+  static List<UserEntity> fakeUsers() =>
+      List.generate(10, (index) => UserEntity.empty());
 }

@@ -25,9 +25,33 @@ class UsersDataTableSource extends DataTableSource {
         DataCell(UserInfo(user: user)),
         DataCell(UserRole(role: user.role)),
         DataCell(
-          Text(
-            DateFormat('yyyy-MM-dd').format(user.joinedDate),
-            style: textStyles.regular11.copyWith(color: Colors.grey),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.calendar_today_outlined,
+                size: 14,
+                color: Colors.grey.shade500,
+              ),
+              const SizedBox(width: 8),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    DateFormat('dd MMM, yyyy').format(user.joinedDate),
+                    style: textStyles.regular11,
+                  ),
+                  Text(
+                    DateFormat('hh:mm a').format(user.joinedDate),
+                    style: textStyles.regular11.copyWith(
+                      color: Colors.grey,
+                      fontSize: 9,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
         DataCell(UserStatus(status: user.status)),
