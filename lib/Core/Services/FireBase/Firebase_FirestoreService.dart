@@ -1,5 +1,7 @@
 // ignore_for_file: file_names
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStorePaginateResponse.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStoreRequirmentsEntity.dart';
@@ -249,8 +251,10 @@ class FirebaseFirestoreservice implements DataBaseService {
         listData: querySnapshot.docs.map((e) => e.data()).toList(),
       );
     } on FirebaseException catch (e) {
+      log(e.toString());
       throw _getFireStoreCustomException(e: e);
     } catch (e) {
+      log(e.toString());
       throw CustomException(message: "حدث خطأ غير متوقع أثناء جلب البيانات");
     }
   }

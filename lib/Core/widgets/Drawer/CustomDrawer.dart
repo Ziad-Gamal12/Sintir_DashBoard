@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/widgets/Drawer/CustomDrawerBody.dart';
 import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Views/ResponsiveCoursesManagmentView.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/ResponsiveDashboardView.dart';
-import 'package:sintir_dashboard/Features/TicketsManagement/Presentation/Views/ResponsiveTicketsManagementView.dart';
+import 'package:sintir_dashboard/Features/Support/Presentation/Views/ResponsiveTicketsManagementView.dart';
 import 'package:sintir_dashboard/Features/UsersManagement/Presentation/Views/ResponsiveUsersManagementView.dart';
 
 class CustomDrawer extends StatefulWidget {

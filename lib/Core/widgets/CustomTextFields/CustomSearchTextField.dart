@@ -18,7 +18,6 @@ class CustomSearchTextField extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Premium Color Palette
     final Color surfaceColor = isDark ? theme.cardColor : Colors.white;
     final Color borderColor = isDark ? Colors.white10 : const Color(0xFFE4E6E8);
     final Color primaryColor = theme.primaryColor;

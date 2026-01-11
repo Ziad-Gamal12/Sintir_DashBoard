@@ -15,53 +15,58 @@ class CustomUserListTile extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 12,
-      ), // Tighter padding
-      leading: Container(
-        padding: const EdgeInsets.all(2), // Space for the ring
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: KMainColor.withOpacity(0.4), width: 1.5),
-        ),
-        child: Container(
-          width: 42, // Slightly smaller for elegance
-          height: 42,
-          decoration: const BoxDecoration(shape: BoxShape.circle),
-          child: ClipOval(
-            child: CustomCachedNetworkImage(imageUrl: userEntity.profilePicurl),
+    return Material(
+      color: Colors.transparent,
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+        ), // Tighter padding
+        leading: Container(
+          padding: const EdgeInsets.all(2), // Space for the ring
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: KMainColor.withOpacity(0.4), width: 1.5),
           ),
-        ),
-      ),
-      title: Text(
-        userEntity.fullName,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: AppTextStyles(context).semiBold14.copyWith(
-          color: isDark ? Colors.white : Colors.black,
-          letterSpacing: 0.2,
-        ),
-      ),
-      subtitle: Row(
-        children: [
-          Container(
-            width: 6,
-            height: 6,
-            decoration: const BoxDecoration(
-              color: Colors.green,
-              shape: BoxShape.circle,
+          child: Container(
+            width: 42, // Slightly smaller for elegance
+            height: 42,
+            decoration: const BoxDecoration(shape: BoxShape.circle),
+            child: ClipOval(
+              child: CustomCachedNetworkImage(
+                imageUrl: userEntity.profilePicurl,
+              ),
             ),
           ),
-          const SizedBox(width: 6),
-          Text(
-            getRoleAr(),
-            style: AppTextStyles(context).regular13.copyWith(
-              color: isDark ? Colors.white54 : Colors.grey.shade600,
-              fontSize: 11, // Smaller role text for hierarchy
-            ),
+        ),
+        title: Text(
+          userEntity.fullName,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyles(context).semiBold14.copyWith(
+            color: isDark ? Colors.white : Colors.black,
+            letterSpacing: 0.2,
           ),
-        ],
+        ),
+        subtitle: Row(
+          children: [
+            Container(
+              width: 6,
+              height: 6,
+              decoration: const BoxDecoration(
+                color: Colors.green,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              getRoleAr(),
+              style: AppTextStyles(context).regular13.copyWith(
+                color: isDark ? Colors.white54 : Colors.grey.shade600,
+                fontSize: 11, // Smaller role text for hierarchy
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

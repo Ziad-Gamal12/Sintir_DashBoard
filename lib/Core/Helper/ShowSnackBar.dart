@@ -11,11 +11,16 @@ class CustomSnackBar {
     required SnackType type,
   }) {
     final colorData = _getSnackData(type, context);
+    final screenWidth = MediaQuery.sizeOf(context).width;
+
+    final double responsiveWidth = screenWidth < 600
+        ? screenWidth * 0.9
+        : 400.0;
 
     final snackBar = SnackBar(
       behavior: SnackBarBehavior.floating,
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       elevation: 0,
+      width: responsiveWidth,
       backgroundColor: Colors.transparent,
       duration: const Duration(seconds: 3),
       content: _SnackContent(

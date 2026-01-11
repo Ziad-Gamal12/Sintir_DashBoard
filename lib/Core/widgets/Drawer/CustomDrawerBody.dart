@@ -52,9 +52,7 @@ class _CustomDrawerBodyState extends State<CustomDrawerBody> {
             children: [
               const SizedBox(height: 10),
               CustomUserListTile(userEntity: userEntity),
-
               const SizedBox(height: 24),
-
               Expanded(
                 child: ListView.separated(
                   itemCount: drawerItems.length,
