@@ -1,42 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:sintir_dashboard/Core/Helper/AppPadding.dart';
-import 'package:sintir_dashboard/Core/widgets/UsersTableWidgets/CustomUsersTable.dart';
-import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
-import 'package:sintir_dashboard/Features/UsersManagement/Presentation/Views/Widgets/CustomFilterUsersSection.dart';
-import 'package:sintir_dashboard/Features/UsersManagement/Presentation/Views/Widgets/UsersManagmentHeader.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sintir_dashboard/Core/Services/get_it_Service.dart';
+import 'package:sintir_dashboard/Features/UsersManagement/Domain/Repos/UsersRepo.dart';
+import 'package:sintir_dashboard/Features/UsersManagement/Presentation/Managers/users_management_cubit/users_management_cubit.dart';
+import 'package:sintir_dashboard/Features/UsersManagement/Presentation/Views/Widgets/UsersManagementViewBodyHandler.dart';
 
 class UsersManagementViewBody extends StatelessWidget {
   const UsersManagementViewBody({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: AppPadding.horizontal(context),
-        vertical: AppPadding.vertical(context),
-      ),
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(child: UsersManagmentHeader()),
-          SliverToBoxAdapter(child: Divider(height: 48)),
-          SliverToBoxAdapter(child: CustomFilterUsersSection()),
-          SliverToBoxAdapter(child: Divider(height: 48)),
-
-          SliverToBoxAdapter(
-            child: SizedBox(
-              width: double.infinity,
-              child: AspectRatio(
-                aspectRatio: 3 / 2,
-                child: ResponsiveUsersTable(
-                  users: UserEntity.fakeUsers(),
-                  isLoading: false,
-                  onLoadMore: (val) {},
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return BlocProvider(
+      create: (context) => UsersManagementCubit(usersRepo: getIt<UsersRepo>()),
+      child: UsersManagementViewBodyHandler(),
     );
   }
 }

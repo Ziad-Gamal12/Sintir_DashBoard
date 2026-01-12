@@ -40,6 +40,8 @@ import 'package:sintir_dashboard/Features/Support/Data/Services/SupportAnalytics
 import 'package:sintir_dashboard/Features/Support/Domain/Repos/SupportAnalyticsRepo.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Repos/SupportChatRepo.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Repos/SupportTicketsRepo.dart';
+import 'package:sintir_dashboard/Features/UsersManagement/Data/Repos/UsersRepoImpl.dart';
+import 'package:sintir_dashboard/Features/UsersManagement/Domain/Repos/UsersRepo.dart';
 
 final getIt = GetIt.instance;
 
@@ -122,5 +124,8 @@ void setup_Getit() {
     () => SupportAnalyticsRepoImpl(
       supportAnalyticsService: getIt<SupportAnalyticsService>(),
     ),
+  );
+  getIt.registerLazySingleton<UsersRepo>(
+    () => UsersRepoImpl(dataBaseService: getIt<DataBaseService>()),
   );
 }

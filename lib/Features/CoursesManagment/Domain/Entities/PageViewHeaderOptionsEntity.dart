@@ -11,7 +11,7 @@ class PageViewHeaderOptionsEntity {
     required this.iconData,
   });
 
-  static List<PageViewHeaderOptionsEntity> getPageViewHeaderOptions() {
+  static List<PageViewHeaderOptionsEntity> getCoursesHeaderOptions() {
     return [
       PageViewHeaderOptionsEntity(
         title: "جميع الكورسات",

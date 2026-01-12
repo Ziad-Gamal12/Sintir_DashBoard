@@ -3,11 +3,12 @@ import 'package:sintir_dashboard/Core/Entities/FilterOptionEntity.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomAnimatedDropDownButton.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomCard.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomSearchTextField.dart';
+import 'package:sintir_dashboard/Features/UsersManagement/Domain/Entities/FilterUsersQueryEntity.dart';
 import 'package:sintir_dashboard/Features/UsersManagement/Domain/Entities/UsersFilterConstants.dart';
 
 class CustomFilterUsersSection extends StatefulWidget {
-  const CustomFilterUsersSection({super.key});
-
+  const CustomFilterUsersSection({super.key, required this.onFilter});
+  final Function(FilterUsersQueryEntity) onFilter;
   @override
   State<CustomFilterUsersSection> createState() =>
       _CustomFilterUsersSectionState();
@@ -15,7 +16,7 @@ class CustomFilterUsersSection extends StatefulWidget {
 
 class _CustomFilterUsersSectionState extends State<CustomFilterUsersSection> {
   final TextEditingController searchController = TextEditingController();
-
+  FilterUsersQueryEntity filters = FilterUsersQueryEntity();
   @override
   void dispose() {
     searchController.dispose();
@@ -44,6 +45,10 @@ class _CustomFilterUsersSectionState extends State<CustomFilterUsersSection> {
                 TextButton.icon(
                   onPressed: () {
                     searchController.clear();
+                    setState(() {
+                      filters = FilterUsersQueryEntity();
+                    });
+                    widget.onFilter(filters);
                   },
                   icon: const Icon(Icons.refresh_rounded, size: 16),
                   label: const Text("إعادة ضبط"),
@@ -62,19 +67,34 @@ class _CustomFilterUsersSectionState extends State<CustomFilterUsersSection> {
                   _buildFilterDropdown(
                     hint: "الدور",
                     options: UsersFilterConstants.getRolesFilters(),
-                    onChanged: (valEn) {},
+                    onChanged: (valEn) {
+                      setState(() {
+                        filters.role = valEn;
+                      });
+                      widget.onFilter(filters);
+                    },
                   ),
                   const SizedBox(width: 12),
                   _buildFilterDropdown(
                     hint: "الحالة",
                     options: UsersFilterConstants.getUsersStatusFilters(),
-                    onChanged: (valEn) {},
+                    onChanged: (valEn) {
+                      setState(() {
+                        filters.status = valEn;
+                      });
+                      widget.onFilter(filters);
+                    },
                   ),
                   const SizedBox(width: 12),
                   _buildFilterDropdown(
                     hint: "الجنس",
                     options: UsersFilterConstants.getGenderFilters(),
-                    onChanged: (valEn) {},
+                    onChanged: (valEn) {
+                      setState(() {
+                        filters.gender = valEn;
+                      });
+                      widget.onFilter(filters);
+                    },
                   ),
                 ],
               ),
@@ -91,7 +111,12 @@ class _CustomFilterUsersSectionState extends State<CustomFilterUsersSection> {
       height: 48,
       child: CustomSearchTextField(
         controller: searchController,
-        onChanged: (value) {},
+        onChanged: (value) {
+          setState(() {
+            filters.keyword = value.trim();
+          });
+          widget.onFilter(filters);
+        },
       ),
     );
   }

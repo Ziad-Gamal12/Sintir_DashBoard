@@ -41,7 +41,13 @@ class UsersRepoImpl implements UsersRepo {
         return Left(ServerFailure(message: "فشل تحميل المستخدمين"));
       }
       if (response.listData!.isEmpty) {
-        return Left(ServerFailure(message: "لا يوجد مستخدمين"));
+        return Right(
+          GetUsersResponseEntity(
+            users: [],
+            hasMore: false,
+            isPaginate: isPaginate,
+          ),
+        );
       }
       if (response.lastDocumentSnapshot != null &&
           response.listData!.isNotEmpty) {

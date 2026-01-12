@@ -23,7 +23,7 @@ class _CustomCourseManagmentPageViewHeaderState
   @override
   void initState() {
     super.initState();
-    headerOptions = PageViewHeaderOptionsEntity.getPageViewHeaderOptions();
+    headerOptions = PageViewHeaderOptionsEntity.getCoursesHeaderOptions();
   }
 
   @override
