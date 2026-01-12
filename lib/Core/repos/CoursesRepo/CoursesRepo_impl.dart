@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
+import 'package:sintir_dashboard/Core/Entities/CourseEntities/FilterCoursesQueryEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseResonseEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStoreRequirmentsEntity.dart';
 import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
@@ -107,7 +108,6 @@ class CoursesrepoImpl implements Coursesrepo {
     try {
       final query = {...baseQuery};
       query["startAfter"] = isPaginate ? lastDoc : null;
-
       final data = await databaseservice.getData(
         query: query,
         requirements: requirements,
@@ -145,9 +145,19 @@ class CoursesrepoImpl implements Coursesrepo {
   @override
   Future<Either<Failure, GetCoursesResonseEntity>> getRecentCourses({
     required bool isPaginate,
+    FilterCoursesQueryEntity? filters,
   }) {
     return _getCourses(
-      baseQuery: {"orderBy": "postedDate", "descending": true, "limit": 10},
+      baseQuery: {
+        "orderBy": "postedDate",
+        "descending": true,
+        "limit": 10,
+        "searchField": "title",
+        "searchValue": filters?.title,
+        "filters": _buildFilters(
+          filters: filters ?? FilterCoursesQueryEntity(),
+        ),
+      },
       requirements: FireStoreRequirmentsEntity(
         collection: BackendEndpoints.coursesCollection,
       ),
@@ -155,6 +165,43 @@ class CoursesrepoImpl implements Coursesrepo {
       isPaginate: isPaginate,
       saveLastDoc: (doc) => _recentLastDoc = doc,
     );
+  }
+
+  List<Map<String, dynamic>> _buildFilters({
+    required FilterCoursesQueryEntity filters,
+  }) {
+    List<Map<String, dynamic>> filtersList = [];
+    if (filters.subject != null) {
+      if (filters.subject!.isNotEmpty) {
+        filtersList.add({
+          "field": "subject",
+          "operator": "==",
+          "value": filters.subject,
+        });
+      }
+    }
+
+    if (filters.state != null) {
+      if (filters.state!.isNotEmpty) {
+        filtersList.add({
+          "field": "state",
+          "operator": "==",
+          "value": filters.state,
+        });
+      }
+    }
+
+    if (filters.level != null) {
+      if (filters.level!.isNotEmpty) {
+        filtersList.add({
+          "field": "level",
+          "operator": "==",
+          "value": filters.level,
+        });
+      }
+    }
+
+    return filtersList;
   }
 
   @override

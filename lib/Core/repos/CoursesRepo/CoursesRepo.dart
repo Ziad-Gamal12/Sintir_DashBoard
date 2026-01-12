@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
+import 'package:sintir_dashboard/Core/Entities/CourseEntities/FilterCoursesQueryEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseResonseEntity.dart';
 import 'package:sintir_dashboard/Core/errors/Failures.dart';
 
@@ -13,6 +14,7 @@ abstract class Coursesrepo {
   Future<Either<Failure, void>> addCourse({required CourseEntity courseEntity});
   Future<Either<Failure, GetCoursesResonseEntity>> getRecentCourses({
     required bool isPaginate,
+    FilterCoursesQueryEntity? filters,
   });
   Future<Either<Failure, GetCoursesResonseEntity>> getPopularCourses({
     required bool isPaginate,

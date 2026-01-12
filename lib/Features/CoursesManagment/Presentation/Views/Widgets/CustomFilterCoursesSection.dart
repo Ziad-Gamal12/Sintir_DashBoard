@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sintir_dashboard/Core/Entities/CourseEntities/FilterCoursesQueryEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FilterOptionEntity.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomAnimatedDropDownButton.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomCard.dart';
@@ -6,8 +7,8 @@ import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomSearchTextF
 import 'package:sintir_dashboard/Features/CoursesManagment/Domain/Entities/CourseFilterConstants.dart';
 
 class CustomFilterCoursesSection extends StatefulWidget {
-  const CustomFilterCoursesSection({super.key});
-
+  const CustomFilterCoursesSection({super.key, required this.onFilterChanged});
+  final Function(FilterCoursesQueryEntity) onFilterChanged;
   @override
   State<CustomFilterCoursesSection> createState() =>
       _CustomFilterCoursesSectionState();
@@ -16,7 +17,7 @@ class CustomFilterCoursesSection extends StatefulWidget {
 class _CustomFilterCoursesSectionState
     extends State<CustomFilterCoursesSection> {
   final TextEditingController searchController = TextEditingController();
-
+  FilterCoursesQueryEntity filters = FilterCoursesQueryEntity();
   @override
   void dispose() {
     searchController.dispose();
@@ -45,6 +46,10 @@ class _CustomFilterCoursesSectionState
                 TextButton.icon(
                   onPressed: () {
                     searchController.clear();
+                    setState(() {
+                      filters = FilterCoursesQueryEntity();
+                    });
+                    widget.onFilterChanged(filters);
                   },
                   icon: const Icon(Icons.refresh_rounded, size: 16),
                   label: const Text("إعادة ضبط"),
@@ -60,11 +65,15 @@ class _CustomFilterCoursesSectionState
                 children: [
                   _buildSearchField(),
                   const SizedBox(width: 24),
-
                   _buildFilterDropdown(
                     hint: "المادة الدراسية",
                     options: CourseFilterConstants.getSubjectFilters(),
-                    onChanged: (valEn) => print("Selected Subject: $valEn"),
+                    onChanged: (valEn) {
+                      setState(() {
+                        filters.subject = valEn;
+                      });
+                      widget.onFilterChanged(filters);
+                    },
                   ),
                   const SizedBox(width: 12),
 
@@ -72,7 +81,12 @@ class _CustomFilterCoursesSectionState
                   _buildFilterDropdown(
                     hint: "المستوى الدراسي",
                     options: CourseFilterConstants.getLevelFilters(),
-                    onChanged: (valEn) => print("Selected Level: $valEn"),
+                    onChanged: (valEn) {
+                      setState(() {
+                        filters.level = valEn;
+                      });
+                      widget.onFilterChanged(filters);
+                    },
                   ),
                   const SizedBox(width: 12),
 
@@ -80,7 +94,12 @@ class _CustomFilterCoursesSectionState
                   _buildFilterDropdown(
                     hint: "حالة الكورس",
                     options: CourseFilterConstants.getStatusFilters(),
-                    onChanged: (valEn) => print("Selected Status: $valEn"),
+                    onChanged: (valEn) {
+                      setState(() {
+                        filters.state = valEn;
+                      });
+                      widget.onFilterChanged(filters);
+                    },
                   ),
                 ],
               ),
@@ -97,7 +116,12 @@ class _CustomFilterCoursesSectionState
       height: 48,
       child: CustomSearchTextField(
         controller: searchController,
-        onChanged: (value) {},
+        onChanged: (value) {
+          setState(() {
+            filters.title = value.trim();
+          });
+          widget.onFilterChanged(filters);
+        },
       ),
     );
   }
