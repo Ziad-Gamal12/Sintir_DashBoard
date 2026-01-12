@@ -11,8 +11,8 @@ import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Views/Re
 import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/ResponsiveDashboardView.dart';
 import 'package:sintir_dashboard/Features/Splash/Presentation/Views/SplashView.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Entities/SupportTicketEntity.dart';
-import 'package:sintir_dashboard/Features/Support/Presentation/Views/ResponsiveSupportChatView.dart';
 import 'package:sintir_dashboard/Features/Support/Presentation/Views/ResponsiveTicketsManagementView.dart';
+import 'package:sintir_dashboard/Features/Support/Presentation/Views/SupportChatMobileView.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/ResponsiveUserDetailsView.dart';
 import 'package:sintir_dashboard/Features/UsersManagement/Presentation/Views/ResponsiveUsersManagementView.dart';
 
@@ -70,7 +70,7 @@ class App_router {
       GoRoute(
         path: ResponsiveSupportChatView.routeName,
         builder: (context, state) => ResponsiveSupportChatView(
-          supportTicketEntity: state.extra as SupportTicketEntity,
+          supportTicket: state.extra as SupportTicketEntity,
         ),
       ),
     ],

@@ -66,7 +66,10 @@ class SupportChatCubit extends Cubit<SupportChatState> {
     response.fold(
       (failure) =>
           emit(PickAndUploadMessageImageFailure(errMessage: failure.message)),
-      (url) => emit(PickAndUploadMessageImageSuccess(imageUrl: url[0])),
+      (url) {
+        if (url.isEmpty) return;
+        emit(PickAndUploadMessageImageSuccess(imageUrl: url[0]));
+      },
     );
   }
 }

@@ -4,8 +4,9 @@ import 'package:sintir_dashboard/Core/widgets/Drawer/CustomDrawer.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Entities/SupportTicketEntity.dart';
 import 'package:sintir_dashboard/Features/Support/Presentation/Views/Widgets/SupportTicketChatViewWidgets/SupportTicketChatViewBody.dart';
 
-class SupportChatMobileView extends StatelessWidget {
-  const SupportChatMobileView({super.key, required this.supportTicket});
+class ResponsiveSupportChatView extends StatelessWidget {
+  const ResponsiveSupportChatView({super.key, required this.supportTicket});
+  static const String routeName = '/SupportChatView';
   final SupportTicketEntity supportTicket;
   @override
   Widget build(BuildContext context) {

@@ -5,7 +5,7 @@ class FilterTicketsContants {
   static List<FilterOptionEntity> getStatusFilters() {
     return [
       FilterOptionEntity(labelAr: "الكل", valueEn: ""),
-      FilterOptionEntity(labelAr: "مفعل", valueEn: BackendEndpoints.open),
+      FilterOptionEntity(labelAr: "مفتوح", valueEn: BackendEndpoints.open),
       FilterOptionEntity(
         labelAr: "قيد الأنتظار",
         valueEn: BackendEndpoints.pending,

@@ -5,7 +5,7 @@ import 'package:sintir_dashboard/Core/widgets/CustomEmptyWidget.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomErrorWidget.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Entities/SupportTicketEntity.dart';
 import 'package:sintir_dashboard/Features/Support/Presentation/Managers/support_tickets_cubit/support_tickets_cubit.dart';
-import 'package:sintir_dashboard/Features/Support/Presentation/Views/ResponsiveSupportChatView.dart';
+import 'package:sintir_dashboard/Features/Support/Presentation/Views/SupportChatMobileView.dart';
 import 'package:sintir_dashboard/Features/Support/Presentation/Views/Widgets/TicketItem.dart';
 import 'package:sintir_dashboard/constant.dart';
 

@@ -68,7 +68,22 @@ class _CustomSupportChatSendMessageSectionState
         child: IntrinsicHeight(
           child: Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
+
+            decoration: BoxDecoration(
+              color: theme.cardColor.withOpacity(0.4),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.15),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             child: Row(
               children: [
                 Expanded(
