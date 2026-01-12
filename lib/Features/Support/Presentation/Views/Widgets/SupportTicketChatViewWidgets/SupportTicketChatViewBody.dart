@@ -27,8 +27,8 @@ class SupportTicketChatViewBody extends StatelessWidget {
             ),
           ),
           Positioned(
-            left: width * 0.1,
-            right: width * 0.1,
+            left: width * 0.15,
+            right: width * 0.15,
             bottom: 20,
             child: CustomSupportChatSendMessageSection(
               ticketId: supportTicketEntity.id,

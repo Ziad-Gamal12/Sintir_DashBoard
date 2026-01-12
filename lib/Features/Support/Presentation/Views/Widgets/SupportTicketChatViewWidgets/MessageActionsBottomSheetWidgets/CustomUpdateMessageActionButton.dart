@@ -14,13 +14,14 @@ class CustomUpdateMessageActionButton extends StatelessWidget {
   final SupportChatMessageEntity messageEntity;
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return SizedBox(
       width: double.infinity,
       child: Custombutton(
         text: "تعديل",
         color: Colors.transparent,
-        side: const BorderSide(width: 1, color: Colors.grey),
-        textColor: Colors.white,
+        side: BorderSide(width: 1, color: theme.colorScheme.primary),
+        textColor: theme.colorScheme.primary,
         onPressed: () {
           showCustomModalBottomSheet(
             child: UpdateMessageBottomSheet(

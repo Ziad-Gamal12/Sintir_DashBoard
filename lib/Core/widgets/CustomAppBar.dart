@@ -8,7 +8,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
     super.key,
     required this.appBartitle,
-    this.showBackButton = false, // Control back button visibility
+    this.showBackButton = false,
   });
 
   final String appBartitle;

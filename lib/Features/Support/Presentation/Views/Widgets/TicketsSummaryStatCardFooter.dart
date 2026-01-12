@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:sintir_dashboard/Features/Support/Domain/Entities/AnalyticsTicketsResultEntity.dart';
+import 'package:sintir_dashboard/Features/Dashboard/Domain/Entities/AnalyticsResultEntity.dart';
 
 class TicketsSummaryStatCardFooter extends StatelessWidget {
   const TicketsSummaryStatCardFooter({
     super.key,
     required this.summaryCardStatusEntity,
   });
-  final AnalyticsTicketsResultEntity? summaryCardStatusEntity;
+  final AnalyticsResultEntity? summaryCardStatusEntity;
 
   @override
   Widget build(BuildContext context) {

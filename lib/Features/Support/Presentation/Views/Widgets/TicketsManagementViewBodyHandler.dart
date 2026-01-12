@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/Helper/AppPadding.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Entities/FilterTicketsQueryEntity.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Entities/SupportTicketEntity.dart';
+import 'package:sintir_dashboard/Features/Support/Presentation/Managers/TicketAnalyticsCubit/ticket_analytics_cubit.dart';
 import 'package:sintir_dashboard/Features/Support/Presentation/Managers/support_tickets_cubit/support_tickets_cubit.dart';
 import 'package:sintir_dashboard/Features/Support/Presentation/Views/Widgets/CustomTicketsSummaryCardGrid.dart';
 import 'package:sintir_dashboard/Features/Support/Presentation/Views/Widgets/TicketsFilterSection.dart';
@@ -33,6 +34,13 @@ class _TicketsManagementViewBodyHandlerState
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<SupportTicketsCubit>().getSupportTickets(
+        _filterEntity,
+        isPaginate: false,
+      );
+      context.read<TicketAnalyticsCubit>().fetchAllStats();
+    });
   }
 
   void _onScroll() {

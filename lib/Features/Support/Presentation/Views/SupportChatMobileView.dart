@@ -10,7 +10,7 @@ class SupportChatMobileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(appBartitle: "الدعم"),
+      appBar: CustomAppBar(appBartitle: "الدعم", showBackButton: true),
       drawer: const CustomDrawer(currentIndex: 3),
       body: SupportTicketChatViewBody(supportTicketEntity: supportTicket),
     );

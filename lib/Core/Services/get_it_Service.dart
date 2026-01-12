@@ -33,8 +33,11 @@ import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseSecti
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseTransactionsRepo.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Data/Repos/DashbaordAnalyticsRepoImpl.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Domain/Repos/DashbaordAnalyticsRepo.dart';
+import 'package:sintir_dashboard/Features/Support/Data/Repos/SupportAnalyticsRepoImpl.dart';
 import 'package:sintir_dashboard/Features/Support/Data/Repos/SupportChatRepoImpl.dart';
 import 'package:sintir_dashboard/Features/Support/Data/Repos/SupportTicketsRepoImpl.dart';
+import 'package:sintir_dashboard/Features/Support/Data/Services/SupportAnalyticsService.dart';
+import 'package:sintir_dashboard/Features/Support/Domain/Repos/SupportAnalyticsRepo.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Repos/SupportChatRepo.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Repos/SupportTicketsRepo.dart';
 
@@ -110,6 +113,14 @@ void setup_Getit() {
       dataBaseService: getIt<DataBaseService>(),
       pickerassetsservice: getIt<PickerAssetsInterface>(),
       storageService: getIt<StorageService>(),
+    ),
+  );
+  getIt.registerLazySingleton<SupportAnalyticsService>(
+    () => SupportAnalyticsService(getIt<DioService>()),
+  );
+  getIt.registerLazySingleton<SupportAnalyticsRepo>(
+    () => SupportAnalyticsRepoImpl(
+      supportAnalyticsService: getIt<SupportAnalyticsService>(),
     ),
   );
 }

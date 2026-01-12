@@ -6,7 +6,6 @@ class CourseAnalyticsState extends Equatable {
   final AnalyticsResultEntity? subscribers;
   final AnalyticsResultEntity? reports;
   final AnalyticsResultEntity? feedbacks;
-
   final bool isLoadingRevenue;
   final bool isLoadingSubscribers;
   final bool isLoadingReports;

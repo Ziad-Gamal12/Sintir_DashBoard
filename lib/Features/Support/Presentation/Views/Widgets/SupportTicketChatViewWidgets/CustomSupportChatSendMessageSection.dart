@@ -67,11 +67,8 @@ class _CustomSupportChatSendMessageSectionState
         key: formKey,
         child: IntrinsicHeight(
           child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: theme.cardColor,
-              borderRadius: BorderRadius.circular(16),
-            ),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
             child: Row(
               children: [
                 Expanded(
