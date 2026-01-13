@@ -25,11 +25,13 @@ import 'package:sintir_dashboard/Features/CourseDetails/Data/Repos/CourseAnalyti
 import 'package:sintir_dashboard/Features/CourseDetails/Data/Repos/CourseFeedBacksRepoImpli.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Data/Repos/CourseReportsRepoImpli.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Data/Repos/CourseSectionsRepo_impl.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Data/Repos/CourseSubscibtionsRepo_impli.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Data/Repos/CourseTransactionsRepoImpl.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseAnalyticsRepo.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseFeedBacksRepo/CourseFeedBacksRepo.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseReportsRepo/CourseReportsRepo.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseSectionsRepos/CourseSectionsRepo.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseSubscibtionsRepo/CourseSubscibtionsRepo.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseTransactionsRepo.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Data/Repos/DashbaordAnalyticsRepoImpl.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Domain/Repos/DashbaordAnalyticsRepo.dart';
@@ -127,5 +129,9 @@ void setup_Getit() {
   );
   getIt.registerLazySingleton<UsersRepo>(
     () => UsersRepoImpl(dataBaseService: getIt<DataBaseService>()),
+  );
+  getIt.registerLazySingleton<CourseSubscibtionsRepo>(
+    () =>
+        CourseSubscriptionsRepoImpl(databaseService: getIt<DataBaseService>()),
   );
 }

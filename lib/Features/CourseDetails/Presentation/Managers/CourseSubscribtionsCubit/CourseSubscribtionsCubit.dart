@@ -2,25 +2,27 @@
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
+import 'package:sintir_dashboard/Core/Entities/CourseEntities/SubscriberEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseSubscribersEntity.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseSubscibtionsRepo/CourseSubscibtionsRepo.dart';
 
 part 'CourseSubscribtionsState.dart';
 
 class CourseSubscribtionsCubit extends Cubit<CourseSubscribtionsState> {
-  CourseSubscribtionsCubit({
-    required this.subscribtionRepo,
-    required this.course,
-  }) : super(SubscribeToCoursesInitial());
+  CourseSubscribtionsCubit({required this.subscribtionRepo})
+    : super(SubscribeToCoursesInitial());
   final CourseSubscibtionsRepo subscribtionRepo;
-  final CourseEntity course;
+  bool hasMore = true;
+  List<SubscriberEntity> subscribers = [];
 
-  void checkIfSubscribed({required String uid}) async {
+  void checkIfSubscribed({
+    required String uid,
+    required String courseID,
+  }) async {
     emit(CheckIfSubscribedLoading());
     var result = await subscribtionRepo.checkIfSubscribed(
       userID: uid,
-      courseID: course.id,
+      courseID: courseID,
     );
     result.fold(
       (failure) {
@@ -32,10 +34,13 @@ class CourseSubscribtionsCubit extends Cubit<CourseSubscribtionsState> {
     );
   }
 
-  Future<void> getCoursSubscribers({required bool isPaginate}) async {
+  Future<void> getCoursSubscribers({
+    required bool isPaginate,
+    required String courseID,
+  }) async {
     emit(GetCourseSubscribersLoading(isPaginate: isPaginate));
     var result = await subscribtionRepo.getSubscribers(
-      courseID: course.id,
+      courseID: courseID,
       isPaginate: isPaginate,
     );
     result.fold(
@@ -43,7 +48,13 @@ class CourseSubscribtionsCubit extends Cubit<CourseSubscribtionsState> {
         emit(GetCourseSubscribersFailure(errMessage: failure.message));
       },
       (response) {
-        emit(GetCourseSubscribersSuccess(response: response));
+        hasMore = response.hasMore;
+        if (response.isPaginate) {
+          subscribers.addAll(response.subscribers);
+        } else {
+          subscribers = response.subscribers;
+        }
+        emit(GetCourseSubscribersSuccess(subscribers: subscribers));
       },
     );
   }
@@ -51,18 +62,24 @@ class CourseSubscribtionsCubit extends Cubit<CourseSubscribtionsState> {
   Future<void> searchSubscribers({
     required String keyword,
     required bool isPaginate,
+    required String courseID,
   }) async {
     emit(SearchSubscribersLoading(isPaginate: isPaginate));
     var result = await subscribtionRepo.searchSubscribers(
       searchKey: keyword,
       isPaginate: isPaginate,
-      courseID: course.id,
+      courseID: courseID,
     );
     result.fold(
       (failure) {
         emit(SearchSubscribersFailure(errMessage: failure.message));
       },
       (response) {
+        if (response.isPaginate) {
+          subscribers.addAll(response.subscribers);
+        } else {
+          subscribers = response.subscribers;
+        }
         emit(SearchSubscribersSuccess(response: response));
       },
     );

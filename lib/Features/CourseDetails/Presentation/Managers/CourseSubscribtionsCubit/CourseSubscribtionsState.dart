@@ -27,8 +27,9 @@ final class GetCourseSubscribersLoading extends CourseSubscribtionsState {
 }
 
 final class GetCourseSubscribersSuccess extends CourseSubscribtionsState {
-  final GetCourseSubscribersEntity response;
-  GetCourseSubscribersSuccess({required this.response});
+ final List<SubscriberEntity> subscribers;
+
+  GetCourseSubscribersSuccess({required this.subscribers});
 }
 
 final class GetCourseSubscribersFailure extends CourseSubscribtionsState {
