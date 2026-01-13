@@ -25,6 +25,16 @@ final class DeleteSupportTicketFailure extends SupportTicketsState {
   DeleteSupportTicketFailure({required this.errMessage});
 }
 
+// Change Ticket Status
+final class UpdateSupportTicketStatusLoading extends SupportTicketsState {}
+
+final class UpdateSupportTicketStatusSuccess extends SupportTicketsState {}
+
+final class UpdateSupportTicketStatusFailure extends SupportTicketsState {
+  final String errMessage;
+  UpdateSupportTicketStatusFailure({required this.errMessage});
+}
+
 // Get User Support Tickets
 final class GetSupportTicketsLoading extends SupportTicketsState {
   final bool isPaginate;

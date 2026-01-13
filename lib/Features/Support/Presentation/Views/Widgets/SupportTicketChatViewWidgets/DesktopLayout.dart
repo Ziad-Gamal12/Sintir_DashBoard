@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Entities/SupportTicketEntity.dart';
-import 'package:sintir_dashboard/Features/Support/Presentation/Views/Widgets/SupportTicketChatViewWidgets/CustomChatTicketActionCard.dart';
-import 'package:sintir_dashboard/Features/Support/Presentation/Views/Widgets/SupportTicketChatViewWidgets/CustomChatTicketDetailsCard.dart';
+import 'package:sintir_dashboard/Features/Support/Presentation/Views/Widgets/SupportTicketChatViewWidgets/CustomChatTicketInfoAndActions.dart';
 import 'package:sintir_dashboard/Features/Support/Presentation/Views/Widgets/SupportTicketChatViewWidgets/CustomSupportChatSendMessageSection.dart';
 import 'package:sintir_dashboard/Features/Support/Presentation/Views/Widgets/SupportTicketChatViewWidgets/SupportChatMessagesListView.dart';
 
@@ -17,31 +16,8 @@ class DesktopLayout extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: 350,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                CustomChatTicketDetailsCard(
-                  supportTicketEntity: ticket,
-                  isDesktop: true,
-                ),
-                const SizedBox(height: 12),
-                CustomChatTicketActionCard(
-                  currentStatus: ticket.status,
-                  onStatusChanged: (newStatus) {
-                    // context.read<SupportChatCubit>().updateStatus(newStatus);
-                  },
-                  onLeaveChat: () => print("Leave"),
-                  onDeleteTicket: () => print("Delete"),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const VerticalDivider(width: 1),
         Expanded(
+          flex: 2,
           child: Stack(
             children: [
               Positioned.fill(
@@ -56,6 +32,8 @@ class DesktopLayout extends StatelessWidget {
             ],
           ),
         ),
+        const VerticalDivider(width: 1),
+        Expanded(child: CustomChatTicketInfoAndActions(ticket: ticket)),
       ],
     );
   }

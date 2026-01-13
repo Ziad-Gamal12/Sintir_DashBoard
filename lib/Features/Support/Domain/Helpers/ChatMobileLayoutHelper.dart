@@ -2,8 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Entities/SupportTicketEntity.dart';
-import 'package:sintir_dashboard/Features/Support/Presentation/Views/Widgets/SupportTicketChatViewWidgets/CustomChatTicketActionCard.dart';
-import 'package:sintir_dashboard/Features/Support/Presentation/Views/Widgets/SupportTicketChatViewWidgets/CustomChatTicketDetailsCard.dart';
+import 'package:sintir_dashboard/Features/Support/Presentation/Views/Widgets/SupportTicketChatViewWidgets/CustomChatTicketInfoAndActions.dart';
 
 class ChatMobileLayoutHelper {
   static void showActionSheet(
@@ -24,35 +23,7 @@ class ChatMobileLayoutHelper {
             opacity: anim1,
             child: ScaleTransition(
               scale: anim1,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: Container(
-                      constraints: const BoxConstraints(maxWidth: 500),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CustomChatTicketDetailsCard(
-                              supportTicketEntity: ticket,
-                              isDesktop: true,
-                            ),
-                            const SizedBox(height: 16),
-                            CustomChatTicketActionCard(
-                              currentStatus: ticket.status,
-                              onStatusChanged: (val) => Navigator.pop(context),
-                              onLeaveChat: () => Navigator.pop(context),
-                              onDeleteTicket: () => Navigator.pop(context),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              child: CustomChatTicketInfoAndActions(ticket: ticket),
             ),
           ),
         );

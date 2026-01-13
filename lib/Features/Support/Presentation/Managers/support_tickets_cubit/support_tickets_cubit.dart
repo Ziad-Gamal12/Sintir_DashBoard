@@ -38,6 +38,23 @@ class SupportTicketsCubit extends Cubit<SupportTicketsState> {
     );
   }
 
+  // Change Support Ticket Status
+  Future<void> changeSupportTicketStatus({
+    required String ticketId,
+    required String status,
+  }) async {
+    emit(UpdateSupportTicketStatusLoading());
+    final response = await supportTicketsRepo.updateSupportTicketStatus(
+      supportTicketId: ticketId,
+      status: status,
+    );
+    response.fold(
+      (failure) =>
+          emit(UpdateSupportTicketStatusFailure(errMessage: failure.message)),
+      (response) => emit(UpdateSupportTicketStatusSuccess()),
+    );
+  }
+
   // get  Support Tickets
   Future<void> getSupportTickets(
     FilterTicketsQueryEntity? filterTicketsQueryEntity, {
