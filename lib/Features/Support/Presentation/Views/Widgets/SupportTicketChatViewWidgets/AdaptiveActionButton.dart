@@ -54,6 +54,7 @@ class AdaptiveActionButton extends StatelessWidget {
       child: Custombutton(
         text: text,
         color: color,
+        width: double.infinity,
         textColor: textColor,
         onPressed: onPressed,
         borderRadius: BorderRadius.circular(12),

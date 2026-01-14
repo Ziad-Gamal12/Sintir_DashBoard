@@ -8,12 +8,9 @@ import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseSubsc
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseTransactionsRepo.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseFeedBacksCubit/course_feed_backs_cubit.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseReportsCubit/course_reports_cubit.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseSubscribtionsCubit/CourseSubscribtionsCubit.dart'; // Added
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseSubscribersCubit/CourseSubscribersCubit.dart'; // Added
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/course_transactions_cubit/course_transactions_cubit.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseFeedBacksSectionCardWidgets/CustomCourseFeedBacksCard.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseReportsSectionCardWidgets/CustomCourseReportsCard.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseSubscribersSectionCard/CourseSubscribersSectionCard.dart'; // Added
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseTransactionsSectionCardWidgets/CustomCourseTransactionsCard.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CustomCourseAdaptiveLayoutBody.dart';
 
 class CourseAnalyticsAndEngagementAdaptiveLayout extends StatelessWidget {
   const CourseAnalyticsAndEngagementAdaptiveLayout({
@@ -44,102 +41,12 @@ class CourseAnalyticsAndEngagementAdaptiveLayout extends StatelessWidget {
         ),
         // Added the Subscribers Cubit here
         BlocProvider(
-          create: (context) => CourseSubscribtionsCubit(
+          create: (context) => CourseSubscribersCubit(
             subscribtionRepo: getIt<CourseSubscibtionsRepo>(),
           )..getCoursSubscribers(courseID: course.id, isPaginate: false),
         ),
       ],
-      child: CustomCourseAdaptiveLayoutBody(courseId: course.id),
-    );
-  }
-}
-
-class CustomCourseAdaptiveLayoutBody extends StatelessWidget {
-  const CustomCourseAdaptiveLayoutBody({super.key, required this.courseId});
-  final String courseId;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final transactions = CustomCourseTransactionsCard(
-          key: const PageStorageKey('trans_card'),
-          courseId: courseId,
-        );
-        final feedbacks = CustomCourseFeedBacksCard(
-          key: const PageStorageKey('feed_card'),
-          courseId: courseId,
-        );
-        final reports = CustomCourseReportsCard(
-          key: const PageStorageKey('repo_card'),
-          courseId: courseId,
-        );
-        final subscribers = CourseSubscribersSectionCard(
-          key: const PageStorageKey('sub_card'),
-          courseId: courseId,
-        );
-
-        if (constraints.maxWidth > 1300) {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 2,
-                child: Column(
-                  children: [
-                    transactions,
-                    const SizedBox(height: 16),
-                    subscribers,
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [feedbacks, const SizedBox(height: 16), reports],
-                ),
-              ),
-            ],
-          );
-        } else if (constraints.maxWidth > 800) {
-          return Column(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  transactions,
-                  const SizedBox(height: 16),
-                  subscribers,
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: feedbacks),
-                  const SizedBox(width: 16),
-                  Expanded(child: reports),
-                ],
-              ),
-            ],
-          );
-        }
-        // Mobile: Narrow Screens
-        else {
-          return Column(
-            children: [
-              transactions,
-              const SizedBox(height: 16),
-              subscribers,
-              const SizedBox(height: 16),
-              feedbacks,
-              const SizedBox(height: 16),
-              reports,
-            ],
-          );
-        }
-      },
+      child: CustomCourseAdaptiveLayoutBody(course: course),
     );
   }
 }

@@ -23,7 +23,9 @@ class ChatMobileLayoutHelper {
             opacity: anim1,
             child: ScaleTransition(
               scale: anim1,
-              child: CustomChatTicketInfoAndActions(ticket: ticket),
+              child: Center(
+                child: CustomChatTicketInfoAndActions(ticket: ticket),
+              ),
             ),
           ),
         );

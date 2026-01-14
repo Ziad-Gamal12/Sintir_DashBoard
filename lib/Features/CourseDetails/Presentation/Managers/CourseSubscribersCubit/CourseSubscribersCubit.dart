@@ -6,33 +6,14 @@ import 'package:sintir_dashboard/Core/Entities/CourseEntities/SubscriberEntity.d
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseSubscribersEntity.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseSubscibtionsRepo/CourseSubscibtionsRepo.dart';
 
-part 'CourseSubscribtionsState.dart';
+part 'CourseSubscribersState.dart';
 
-class CourseSubscribtionsCubit extends Cubit<CourseSubscribtionsState> {
-  CourseSubscribtionsCubit({required this.subscribtionRepo})
+class CourseSubscribersCubit extends Cubit<CourseSubscribersState> {
+  CourseSubscribersCubit({required this.subscribtionRepo})
     : super(SubscribeToCoursesInitial());
   final CourseSubscibtionsRepo subscribtionRepo;
   bool hasMore = true;
   List<SubscriberEntity> subscribers = [];
-
-  void checkIfSubscribed({
-    required String uid,
-    required String courseID,
-  }) async {
-    emit(CheckIfSubscribedLoading());
-    var result = await subscribtionRepo.checkIfSubscribed(
-      userID: uid,
-      courseID: courseID,
-    );
-    result.fold(
-      (failure) {
-        emit(CheckIfSubscribedFailure(errMessage: failure.message));
-      },
-      (isSubscribed) {
-        emit(CheckIfSubscribedSuccess(isSubscribed: isSubscribed));
-      },
-    );
-  }
 
   Future<void> getCoursSubscribers({
     required bool isPaginate,

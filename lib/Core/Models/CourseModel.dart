@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Models/contentCreaterModel.dart';
 
-class Coursemodel {
+class CourseModel {
   final String id, posterUrl, title, description, language, state;
   final int price;
   final int studentsCount;
@@ -13,7 +13,7 @@ class Coursemodel {
   final DateTime postedDate;
   final Map contentcreaterentity;
 
-  Coursemodel({
+  CourseModel({
     required this.id,
     required this.posterUrl,
     required this.studentsCount,
@@ -28,8 +28,8 @@ class Coursemodel {
     required this.contentcreaterentity,
   });
 
-  factory Coursemodel.fromEntity({required CourseEntity courseEntity}) {
-    return Coursemodel(
+  factory CourseModel.fromEntity({required CourseEntity courseEntity}) {
+    return CourseModel(
       id: courseEntity.id,
       posterUrl: courseEntity.posterUrl ?? "",
       subject: courseEntity.subject,
@@ -48,8 +48,8 @@ class Coursemodel {
           : {},
     );
   }
-  factory Coursemodel.fromJson(Map<String, dynamic> json) {
-    return Coursemodel(
+  factory CourseModel.fromJson(Map<String, dynamic> json) {
+    return CourseModel(
       id: json['id'],
       posterUrl: json['posterUrl'],
       title: json['title'],

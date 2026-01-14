@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/SubscriberEntity.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomEmptyWidget.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomErrorWidget.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseSubscribtionsCubit/CourseSubscribtionsCubit.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseSubscribersCubit/CourseSubscribersCubit.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseSubscribersSectionCard/SubscriberPremiumCard.dart';
 import 'package:sintir_dashboard/constant.dart';
 
@@ -21,7 +21,7 @@ class CustomCourseSubscribersListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CourseSubscribtionsCubit, CourseSubscribtionsState>(
+    return BlocBuilder<CourseSubscribersCubit, CourseSubscribersState>(
       buildWhen: (previous, current) =>
           current is GetCourseSubscribersFailure ||
           current is GetCourseSubscribersSuccess ||

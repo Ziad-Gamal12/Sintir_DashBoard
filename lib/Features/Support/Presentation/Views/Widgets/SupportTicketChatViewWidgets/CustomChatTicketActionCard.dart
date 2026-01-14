@@ -41,7 +41,6 @@ class CustomChatTicketActionCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-
                 AdaptiveActionButton(
                   isMobile: isMobile,
                   text: 'حذف',
@@ -59,7 +58,6 @@ class CustomChatTicketActionCard extends StatelessWidget {
                   onChanged: onStatusChanged,
                 ),
                 const SizedBox(height: 12),
-
                 AdaptiveActionButton(
                   isMobile: isMobile,
                   text: 'حذف',

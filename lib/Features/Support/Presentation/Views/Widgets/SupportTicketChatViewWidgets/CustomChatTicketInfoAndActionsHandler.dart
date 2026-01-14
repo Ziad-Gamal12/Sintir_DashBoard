@@ -45,48 +45,44 @@ class CustomChatTicketInfoAndActionsHandler extends StatelessWidget {
           );
         }
       },
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              constraints: const BoxConstraints(maxWidth: 500),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CustomChatTicketDetailsCard(
-                      supportTicketEntity: ticket,
-                      isDesktop: true,
-                    ),
-                    const SizedBox(height: 16),
-                    BlocSelector<
-                      SupportTicketsCubit,
-                      SupportTicketsState,
-                      bool
-                    >(
-                      selector: (state) {
-                        return state is DeleteSupportTicketLoading;
-                      },
-                      builder: (context, isLoading) {
-                        return CustomChatTicketActionCard(
-                          currentStatus: ticket.status,
-                          onStatusChanged: (val) => context
-                              .read<SupportTicketsCubit>()
-                              .changeSupportTicketStatus(
-                                ticketId: ticket.id,
-                                status: val,
-                              ),
-                          isDeletingLoading: isLoading,
-                          onDeleteTicket: () => context
-                              .read<SupportTicketsCubit>()
-                              .deleteSupportTicket(ticketId: ticket.id),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  CustomChatTicketDetailsCard(
+                    supportTicketEntity: ticket,
+                    isDesktop: true,
+                  ),
+                  const SizedBox(height: 16),
+                  BlocSelector<SupportTicketsCubit, SupportTicketsState, bool>(
+                    selector: (state) {
+                      return state is DeleteSupportTicketLoading;
+                    },
+                    builder: (context, isLoading) {
+                      return CustomChatTicketActionCard(
+                        currentStatus: ticket.status,
+                        onStatusChanged: (val) => context
+                            .read<SupportTicketsCubit>()
+                            .changeSupportTicketStatus(
+                              ticketId: ticket.id,
+                              status: val,
+                            ),
+                        isDeletingLoading: isLoading,
+                        onDeleteTicket: () => context
+                            .read<SupportTicketsCubit>()
+                            .deleteSupportTicket(ticketId: ticket.id),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           ),

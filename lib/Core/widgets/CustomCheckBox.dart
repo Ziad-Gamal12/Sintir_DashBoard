@@ -7,7 +7,8 @@ import 'package:svg_flutter/svg.dart';
 
 class Customcheckbox extends StatefulWidget {
   final ValueChanged<bool> onChanged;
-  const Customcheckbox({super.key, required this.onChanged});
+  bool? isChecked;
+  Customcheckbox({super.key, required this.onChanged, this.isChecked});
 
   @override
   State<Customcheckbox> createState() => _CustomcheckboxState();
@@ -15,6 +16,16 @@ class Customcheckbox extends StatefulWidget {
 
 class _CustomcheckboxState extends State<Customcheckbox> {
   bool isChecked = false;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        isChecked = widget.isChecked ?? false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;

@@ -23,7 +23,6 @@ class SupportTicketChatViewBody extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final bool isDesktop = constraints.maxWidth > 900;
-
           return isDesktop
               ? DesktopLayout(ticket: supportTicketEntity)
               : MobileLayout(ticket: supportTicketEntity);

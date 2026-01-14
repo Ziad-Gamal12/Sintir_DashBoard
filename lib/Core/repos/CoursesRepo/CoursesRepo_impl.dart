@@ -42,7 +42,7 @@ class CoursesrepoImpl implements Coursesrepo {
         );
       }
 
-      final data = Coursemodel.fromEntity(courseEntity: courseEntity).toJson();
+      final data = CourseModel.fromEntity(courseEntity: courseEntity).toJson();
 
       await Future.wait([
         databaseservice.setData(
@@ -241,7 +241,7 @@ class CoursesrepoImpl implements Coursesrepo {
     required CourseEntity courseEntity,
   }) async {
     try {
-      final data = Coursemodel.fromEntity(courseEntity: courseEntity).toJson();
+      final data = CourseModel.fromEntity(courseEntity: courseEntity).toJson();
 
       await Future.wait([
         databaseservice.setData(
@@ -389,6 +389,6 @@ class CoursesrepoImpl implements Coursesrepo {
 
 List<CourseEntity> _parseCourses(List<dynamic> listData) {
   return listData
-      .map((e) => Coursemodel.fromJson(Map<String, dynamic>.from(e)).toEntity())
+      .map((e) => CourseModel.fromJson(Map<String, dynamic>.from(e)).toEntity())
       .toList();
 }

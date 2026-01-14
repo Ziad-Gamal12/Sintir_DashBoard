@@ -12,9 +12,9 @@ class DesktopLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     final double width = MediaQuery.sizeOf(context).width;
     final bool isLarge = width > 1200;
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Expanded(
           flex: 2,

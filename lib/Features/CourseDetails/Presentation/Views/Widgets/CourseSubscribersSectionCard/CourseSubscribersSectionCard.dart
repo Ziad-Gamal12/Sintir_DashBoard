@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sintir_dashboard/Core/widgets/CustomButton.dart';
-import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomSearchTextField.dart';
-import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseSubscribtionsCubit/CourseSubscribtionsCubit.dart';
+import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseSubscribersCubit/CourseSubscribersCubit.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseInfoAndSectionsSectionCardWidgets/CustomCourseSectionsCardHeader.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseSubscribersSectionCard/CourseSubscribersSearchAndAddSection.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseSubscribersSectionCard/CustomCourseSubscribersListView.dart';
 import 'package:sintir_dashboard/constant.dart';
 
 class CourseSubscribersSectionCard extends StatefulWidget {
-  const CourseSubscribersSectionCard({super.key, required this.courseId});
-  final String courseId;
+  const CourseSubscribersSectionCard({super.key, required this.course});
+  final CourseEntity course;
 
   @override
   State<CourseSubscribersSectionCard> createState() =>
@@ -28,7 +28,7 @@ class _CourseSubscribersSectionCardState
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.watch<CourseSubscribtionsCubit>();
+    final cubit = context.watch<CourseSubscribersCubit>();
     final theme = Theme.of(context);
     return AnimatedContainer(
       duration: const Duration(milliseconds: 450),
@@ -47,13 +47,13 @@ class _CourseSubscribersSectionCardState
               title: "المشتركين",
               showMore: cubit.hasMore
                   ? () {
-                      if (context.read<CourseSubscribtionsCubit>().state
+                      if (context.read<CourseSubscribersCubit>().state
                           is! GetCourseSubscribersLoading) {
                         context
-                            .read<CourseSubscribtionsCubit>()
+                            .read<CourseSubscribersCubit>()
                             .getCoursSubscribers(
                               isPaginate: true,
-                              courseID: widget.courseId,
+                              courseID: widget.course.id,
                             );
                       }
                     }
@@ -72,7 +72,7 @@ class _CourseSubscribersSectionCardState
             const SizedBox(height: 16),
             CourseSubscribersSearchAndAddSection(
               searchController: searchController,
-              courseID: widget.courseId,
+              course: widget.course,
             ),
             const SizedBox(height: 8),
 
@@ -83,7 +83,7 @@ class _CourseSubscribersSectionCardState
     );
   }
 
-  Widget _buildFixedView(CourseSubscribtionsCubit cubit) {
+  Widget _buildFixedView(CourseSubscribersCubit cubit) {
     return SizedBox(
       height: 450,
       child: CustomCourseSubscribersListView(
@@ -94,51 +94,11 @@ class _CourseSubscribersSectionCardState
     );
   }
 
-  Widget _buildFullView(CourseSubscribtionsCubit cubit) {
+  Widget _buildFullView(CourseSubscribersCubit cubit) {
     return CustomCourseSubscribersListView(
       subscribers: cubit.subscribers,
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-    );
-  }
-}
-
-class CourseSubscribersSearchAndAddSection extends StatelessWidget {
-  const CourseSubscribersSearchAndAddSection({
-    super.key,
-    required this.searchController,
-    required this.courseID,
-  });
-
-  final TextEditingController searchController;
-  final String courseID;
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          flex: 2,
-          child: CustomSearchTextField(
-            controller: searchController,
-            onChanged: (val) {
-              context.read<CourseSubscribtionsCubit>().searchSubscribers(
-                courseID: courseID,
-                keyword: val,
-                isPaginate: false,
-              );
-            },
-          ),
-        ),
-        Spacer(),
-        Expanded(
-          child: Custombutton(
-            text: "إضافة",
-            color: KMainColor,
-            textColor: Colors.white,
-            onPressed: () {},
-          ),
-        ),
-      ],
     );
   }
 }

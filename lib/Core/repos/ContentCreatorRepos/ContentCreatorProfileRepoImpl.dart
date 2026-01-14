@@ -39,7 +39,7 @@ class ContentCreatorProfileRepoImpl implements ContentCreatorProfileRepo {
       final List<Map<String, dynamic>> data =
           response.listData! as List<Map<String, dynamic>>;
       List<CourseEntity> courses = data
-          .map((e) => Coursemodel.fromJson(e).toEntity())
+          .map((e) => CourseModel.fromJson(e).toEntity())
           .toList();
       return right(courses);
     } on CustomException catch (e) {
@@ -79,7 +79,7 @@ class ContentCreatorProfileRepoImpl implements ContentCreatorProfileRepo {
       final List<Map<String, dynamic>> data =
           response.listData! as List<Map<String, dynamic>>;
       List<CourseEntity> courses = data
-          .map((e) => Coursemodel.fromJson(e).toEntity())
+          .map((e) => CourseModel.fromJson(e).toEntity())
           .toList();
       return right(courses);
     } on CustomException catch (e) {
