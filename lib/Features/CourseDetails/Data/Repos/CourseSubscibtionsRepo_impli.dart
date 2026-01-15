@@ -202,10 +202,10 @@ class CourseSubscriptionsRepoImpl implements CourseSubscibtionsRepo {
 
       return right(null);
     } on CustomException catch (e, s) {
-      await _rollbackUserCourse(course, userEntity);
+      await _rollbackUserCourse(course.id, userEntity.uid);
       return left(ServerFailure(message: e.message));
     } catch (e) {
-      await _rollbackUserCourse(course, userEntity);
+      await _rollbackUserCourse(course.id, userEntity.uid);
       return left(
         ServerFailure(message: "حدث خطأ ما يرجى المحاولة فى وقت أخر"),
       );
@@ -279,21 +279,21 @@ class CourseSubscriptionsRepoImpl implements CourseSubscibtionsRepo {
     );
   }
 
-  Future<bool> _isCourseInUserList(CourseEntity course, UserEntity user) async {
+  Future<bool> _isCourseInUserList(String courseID, String userId) async {
     return await databaseService.isDataExists(
       key: BackendEndpoints.usersCollectionName,
-      docId: user.uid,
-      subDocId: course.id,
+      docId: userId,
+      subDocId: courseID,
       subCollectionKey: BackendEndpoints.subscribetoCourseCollection,
     );
   }
 
-  Future<void> _rollbackUserCourse(CourseEntity course, UserEntity user) async {
-    if (await _isCourseInUserList(course, user)) {
+  Future<void> _rollbackUserCourse(String courseId, String userId) async {
+    if (await _isCourseInUserList(courseId, userId)) {
       await databaseService.deleteDoc(
         collectionKey: BackendEndpoints.usersCollectionName,
-        docId: user.uid,
-        subDocId: course.id,
+        docId: userId,
+        subDocId: courseId,
         subCollectionKey: BackendEndpoints.subscribetoCourseCollection,
       );
     }
@@ -303,9 +303,26 @@ class CourseSubscriptionsRepoImpl implements CourseSubscibtionsRepo {
   Future<Either<Failure, void>> deleteSubscriber({
     required String courseID,
     required String subscriberID,
-  }) {
-    // TODO: implement deleteSubscriber
-    throw UnimplementedError();
+  }) async {
+    try {
+      Future.wait([
+        _updateCourseSubscriberCount(courseId: courseID, delta: -1),
+        _rollbackUserCourse(courseID, subscriberID),
+        databaseService.deleteDoc(
+          collectionKey: BackendEndpoints.coursesCollection,
+          docId: courseID,
+          subDocId: subscriberID,
+          subCollectionKey: BackendEndpoints.subscribersSubCollection,
+        ),
+      ]);
+      return right(null);
+    } on CustomException catch (e) {
+      return left(ServerFailure(message: e.message));
+    } catch (e) {
+      return left(
+        ServerFailure(message: "حدث خطأ ما يرجى المحاولة فى وقت أخر"),
+      );
+    }
   }
 }
 

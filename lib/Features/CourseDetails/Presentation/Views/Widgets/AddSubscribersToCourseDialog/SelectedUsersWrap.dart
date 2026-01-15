@@ -14,6 +14,7 @@ class SelectedUsersWrap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (selectedUsers.isEmpty) return const SizedBox.shrink();
+    ThemeData theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Wrap(
@@ -21,6 +22,9 @@ class SelectedUsersWrap extends StatelessWidget {
         children: selectedUsers
             .map(
               (user) => Chip(
+                side: BorderSide(color: theme.primaryColor.withOpacity(0.5)),
+                backgroundColor: theme.cardColor,
+                deleteIconColor: theme.primaryColor,
                 label: Text(user.firstName),
                 onDeleted: () => onDelete(user),
               ),

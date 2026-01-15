@@ -65,4 +65,23 @@ class CourseSubscribersCubit extends Cubit<CourseSubscribersState> {
       },
     );
   }
+
+  Future<void> deleteSubscriber({
+    required String courseID,
+    required String subscriberID,
+  }) async {
+    emit(DeleteSubscriberLoading(subscriberId: subscriberID));
+    final result = await subscribtionRepo.deleteSubscriber(
+      courseID: courseID,
+      subscriberID: subscriberID,
+    );
+    result.fold(
+      (failure) {
+        emit(DeleteSubscriberFailure(errMessage: failure.message));
+      },
+      (response) {
+        emit(DeleteSubscriberSuccess(subscriberId: subscriberID));
+      },
+    );
+  }
 }

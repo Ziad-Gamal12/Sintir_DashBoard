@@ -40,3 +40,19 @@ final class SearchSubscribersFailure extends CourseSubscribersState {
   final String errMessage;
   SearchSubscribersFailure({required this.errMessage});
 }
+// delete subscriber
+
+final class DeleteSubscriberLoading extends CourseSubscribersState {
+  final String subscriberId;
+  DeleteSubscriberLoading({required this.subscriberId});
+}
+
+final class DeleteSubscriberSuccess extends CourseSubscribersState {
+  final String subscriberId;
+  DeleteSubscriberSuccess({required this.subscriberId});
+}
+
+final class DeleteSubscriberFailure extends CourseSubscribersState {
+  final String errMessage;
+  DeleteSubscriberFailure({required this.errMessage});
+}

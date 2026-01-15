@@ -266,18 +266,23 @@ class FirebaseFirestoreservice implements DataBaseService {
     String? subCollectionKey,
     String? subDocId,
   }) async {
-    if (subCollectionKey != null) {
-      final snapshot = await firestore
-          .collection(key)
-          .doc(docId)
-          .collection(subCollectionKey)
-          .doc(subDocId)
-          .get();
-      return snapshot.exists;
-    }
+    try {
+      if (subCollectionKey != null) {
+        final snapshot = await firestore
+            .collection(key)
+            .doc(docId)
+            .collection(subCollectionKey)
+            .doc(subDocId)
+            .get();
+        return snapshot.exists;
+      }
 
-    final snapshot = await firestore.collection(key).doc(docId).get();
-    return snapshot.exists;
+      final snapshot = await firestore.collection(key).doc(docId).get();
+      return snapshot.exists;
+    } on Exception catch (e) {
+      log(e.toString());
+      rethrow;
+    }
   }
 
   @override

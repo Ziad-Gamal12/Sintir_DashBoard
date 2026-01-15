@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
-import 'package:sintir_dashboard/Core/widgets/AppDialogs.dart';
+import 'package:sintir_dashboard/Core/Helper/ShowSnackBar.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/UpdateCourseCubit/UpdateCourseCubit.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/EditCourseViewWidgets/CourseInputsCard.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/EditCourseViewWidgets/CustomAddCourseActionButton.dart';
@@ -50,15 +50,20 @@ class _EditCourseViewBodyState extends State<EditCourseViewBody> {
   Widget build(BuildContext context) {
     return BlocConsumer<UpdateCourseCubit, UpdateCourseCubitState>(
       listener: (context, state) {
-        if (state is UpdateCourseCubitLoading) {
-          AppDialogs.success(
+        if (state is UpdateCourseCubitSuccess) {
+          CustomSnackBar.show(
             context,
-            "تم تحديث الدورة بنجاح",
-            onTap: () => GoRouter.of(context).pop(),
+            message: "تم تحديث الدورة بنجاح",
+            type: SnackType.success,
           );
+          GoRouter.of(context).pop();
         }
         if (state is UpdateCourseCubitFailure) {
-          AppDialogs.error(context, state.errmessage);
+          CustomSnackBar.show(
+            context,
+            message: state.errmessage,
+            type: SnackType.error,
+          );
         }
       },
       builder: (context, state) {

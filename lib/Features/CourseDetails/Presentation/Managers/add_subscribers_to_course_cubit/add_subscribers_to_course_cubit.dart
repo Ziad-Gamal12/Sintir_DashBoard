@@ -22,15 +22,19 @@ class AddSubscribersToCourseCubit extends Cubit<AddSubscribersToCourseState> {
         course: course,
         userEntity: user,
       );
+      if (isClosed) return;
       result.fold((failure) {
         anyFailure = true;
         lastErrorMessage = failure.message;
       }, (_) => null);
     }
+
+    if (isClosed) return;
+
     if (anyFailure) {
       emit(
         AddSubscribersToCourseFailure(
-          errmessage: lastErrorMessage ?? "حدث خطأ ما",
+          errmessage: lastErrorMessage ?? "حدث خطأ ما",
         ),
       );
     } else {

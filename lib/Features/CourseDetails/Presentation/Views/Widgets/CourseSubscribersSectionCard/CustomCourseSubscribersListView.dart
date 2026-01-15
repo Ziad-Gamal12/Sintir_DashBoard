@@ -13,11 +13,13 @@ class CustomCourseSubscribersListView extends StatelessWidget {
     required this.subscribers,
     this.shrinkWrap = false,
     this.physics = const BouncingScrollPhysics(),
+    required this.courseID,
   });
 
   final List<SubscriberEntity> subscribers;
   final bool shrinkWrap;
   final ScrollPhysics physics;
+  final String courseID;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,6 @@ class CustomCourseSubscribersListView extends StatelessWidget {
             ),
           );
         }
-
         return ListView.builder(
           shrinkWrap: shrinkWrap,
           physics: physics,
@@ -60,7 +61,12 @@ class CustomCourseSubscribersListView extends StatelessWidget {
             }
             return SubscriberPremiumCard(
               subscriber: subscribers[index],
-              onDelete: () {},
+              onDelete: () {
+                context.read<CourseSubscribersCubit>().deleteSubscriber(
+                  subscriberID: subscribers[index].id,
+                  courseID: courseID,
+                );
+              },
               onNavigate: () {},
             );
           },

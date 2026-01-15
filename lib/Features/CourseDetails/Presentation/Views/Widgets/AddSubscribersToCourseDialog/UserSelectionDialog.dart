@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Helper/ShowSnackBar.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomSearchTextField.dart';
@@ -94,49 +95,47 @@ class _UserSelectionDialogState extends State<UserSelectionDialog> {
             message: "تم اضافة المستخدمين بنجاح",
             type: SnackType.success,
           );
+          GoRouter.of(context).pop();
         }
       },
-      child: Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.45,
-          height: MediaQuery.of(context).size.height * 0.8,
-          padding: const EdgeInsets.all(24),
-          color: theme.cardColor,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const DialogHeader(),
-              const SizedBox(height: 20),
-              CustomSearchTextField(
-                controller: _searchController,
-                onChanged: _onSearchChanged,
-              ),
-              const SizedBox(height: 10),
-              SelectedUsersWrap(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.45,
+        height: MediaQuery.of(context).size.height * 0.8,
+        padding: const EdgeInsets.all(24),
+        color: theme.cardColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const DialogHeader(),
+            const SizedBox(height: 20),
+            CustomSearchTextField(
+              controller: _searchController,
+              onChanged: _onSearchChanged,
+            ),
+            const SizedBox(height: 10),
+            SelectedUsersWrap(
+              selectedUsers: _selectedUsers,
+              onDelete: (user) => _toggleUser(user, false),
+            ),
+            const Divider(),
+            Expanded(
+              child: UserListSection(
+                scrollController: _scrollController,
                 selectedUsers: _selectedUsers,
-                onDelete: (user) => _toggleUser(user, false),
+                onUserToggled: _toggleUser,
               ),
-              const Divider(),
-              Expanded(
-                child: UserListSection(
-                  scrollController: _scrollController,
-                  selectedUsers: _selectedUsers,
-                  onUserToggled: _toggleUser,
-                ),
-              ),
-              const Divider(),
-              DialogActions(
-                selectedCount: _selectedUsers.length,
-                onConfirm: () {
-                  context.read<AddSubscribersToCourseCubit>().addSubscribers(
-                    usersEntity: _selectedUsers,
-                    course: widget.courseEntity,
-                  );
-                },
-              ),
-            ],
-          ),
+            ),
+            const Divider(),
+            DialogActions(
+              selectedCount: _selectedUsers.length,
+              onConfirm: () {
+                context.read<AddSubscribersToCourseCubit>().addSubscribers(
+                  usersEntity: _selectedUsers,
+                  course: widget.courseEntity,
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

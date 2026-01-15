@@ -89,6 +89,7 @@ class _CourseSubscribersSectionCardState
       child: CustomCourseSubscribersListView(
         subscribers: cubit.subscribers,
         physics: const BouncingScrollPhysics(),
+        courseID: widget.course.id,
         shrinkWrap: false,
       ),
     );
@@ -98,6 +99,8 @@ class _CourseSubscribersSectionCardState
     return CustomCourseSubscribersListView(
       subscribers: cubit.subscribers,
       physics: const NeverScrollableScrollPhysics(),
+      courseID: widget.course.id,
+
       shrinkWrap: true,
     );
   }

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/SubscriberEntity.dart';
+import 'package:sintir_dashboard/Core/Helper/ShowSnackBar.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseSubscribersCubit/CourseSubscribersCubit.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseSubscribersSectionCard/IconInfoRow.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseSubscribersSectionCard/SubscriberActionSection.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseSubscribersSectionCard/SubscriberAvatar.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseSubscribersSectionCard/SubscriberDetails.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseSubscribersSectionCard/SubscriberGenderBadge.dart';
 
 class SubscriberPremiumCard extends StatelessWidget {
   final SubscriberEntity subscriber;
@@ -22,24 +26,44 @@ class SubscriberPremiumCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final styles = AppTextStyles(context);
-
-    return Container(
-      height: 90,
-      margin: const EdgeInsets.symmetric(vertical: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        border: Border(
-          bottom: BorderSide(color: theme.dividerColor.withOpacity(0.05)),
+    return BlocListener<CourseSubscribersCubit, CourseSubscribersState>(
+      listener: (context, state) {
+        if (state is DeleteSubscriberFailure) {
+          CustomSnackBar.show(
+            context,
+            message: state.errMessage,
+            type: SnackType.error,
+          );
+        } else if (state is DeleteSubscriberSuccess &&
+            state.subscriberId == subscriber.id) {
+          CustomSnackBar.show(
+            context,
+            message: "تم حذف المستخدم بنجاح",
+            type: SnackType.success,
+          );
+          context.read<CourseSubscribersCubit>().subscribers.removeWhere(
+            (element) => element.id == subscriber.id,
+          );
+        }
+      },
+      child: Container(
+        height: 90,
+        margin: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          border: Border(
+            bottom: BorderSide(color: theme.dividerColor.withOpacity(0.05)),
+          ),
         ),
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth > 950) {
-            return _buildDesktop(context, styles);
-          }
-          return _buildCompact(context);
-        },
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth > 950) {
+              return _buildDesktop(context, styles);
+            }
+            return _buildCompact(context);
+          },
+        ),
       ),
     );
   }
@@ -48,17 +72,12 @@ class SubscriberPremiumCard extends StatelessWidget {
     final isMale =
         subscriber.gender.toLowerCase().contains('m') ||
         subscriber.gender.contains('ذكر');
-
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center, // PERFECT ALIGNMENT
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SubscriberAvatar(imageUrl: subscriber.imageUrl),
         const SizedBox(width: 20),
-
-        // 1. Name and Education Level
         Expanded(flex: 4, child: SubscriberDetails(subscriber: subscriber)),
-
-        // 2. Contact Column (Centered Vertically)
         Expanded(
           flex: 5,
           child: Column(
@@ -83,7 +102,7 @@ class SubscriberPremiumCard extends StatelessWidget {
           flex: 3,
           child: Row(
             children: [
-              _GenderBadge(isMale: isMale, gender: subscriber.gender),
+              SubscriberGenderBadge(isMale: isMale, gender: subscriber.gender),
               const SizedBox(width: 12),
               Text(
                 "#${subscriber.id.substring(0, 5)}",
@@ -95,11 +114,11 @@ class SubscriberPremiumCard extends StatelessWidget {
 
         const VerticalDivider(width: 40, indent: 25, endIndent: 25),
 
-        // 4. Joined Date & Action Buttons
         SubscriberActionSection(
           joinedDate: subscriber.joinedDate ?? DateTime.now(),
           onDelete: onDelete,
           onNaviagte: onNavigate,
+          subscriberId: subscriber.id,
         ),
       ],
     );
@@ -115,35 +134,9 @@ class SubscriberPremiumCard extends StatelessWidget {
           joinedDate: subscriber.joinedDate ?? DateTime.now(),
           onDelete: onDelete,
           onNaviagte: onNavigate,
+          subscriberId: subscriber.id,
         ),
       ],
-    );
-  }
-}
-
-class _GenderBadge extends StatelessWidget {
-  final bool isMale;
-  final String gender;
-
-  const _GenderBadge({required this.isMale, required this.gender});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = isMale ? Colors.blue.shade400 : Colors.pink.shade300;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        gender,
-        style: TextStyle(
-          color: color,
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
     );
   }
 }

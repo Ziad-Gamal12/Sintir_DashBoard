@@ -8,32 +8,21 @@ import 'package:svg_flutter/svg.dart';
 class Customcheckbox extends StatefulWidget {
   final ValueChanged<bool> onChanged;
   bool? isChecked;
-  Customcheckbox({super.key, required this.onChanged, this.isChecked});
+  Customcheckbox({super.key, required this.onChanged, this.isChecked = false});
 
   @override
   State<Customcheckbox> createState() => _CustomcheckboxState();
 }
 
 class _CustomcheckboxState extends State<Customcheckbox> {
-  bool isChecked = false;
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      setState(() {
-        isChecked = widget.isChecked ?? false;
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: () {
-        isChecked = !isChecked;
+        widget.isChecked = !widget.isChecked!;
         setState(() {});
-        widget.onChanged(isChecked);
+        widget.onChanged(widget.isChecked!);
       },
       child: AnimatedContainer(
         alignment: Alignment.center,
@@ -50,7 +39,7 @@ class _CustomcheckboxState extends State<Customcheckbox> {
           ),
           color: getFilledColor(isDark: isDarkMode),
         ),
-        child: isChecked
+        child: widget.isChecked == true
             ? SvgPicture.asset(Assets.assetsIconsSVGIconsCheckedIcon)
             : const SizedBox(),
       ),
@@ -58,7 +47,7 @@ class _CustomcheckboxState extends State<Customcheckbox> {
   }
 
   Color getFilledColor({required bool isDark}) {
-    if (isChecked) {
+    if (widget.isChecked == true) {
       return KMainColor;
     } else {
       if (isDark) {
@@ -70,7 +59,7 @@ class _CustomcheckboxState extends State<Customcheckbox> {
   }
 
   Color getBorderColor({required bool isDark}) {
-    if (isChecked) {
+    if (widget.isChecked == true) {
       return Colors.transparent;
     } else {
       if (isDark) {

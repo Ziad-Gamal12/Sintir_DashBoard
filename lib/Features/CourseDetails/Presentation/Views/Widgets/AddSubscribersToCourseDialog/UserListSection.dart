@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomCachedNetworkImage.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomCheckBox.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomErrorWidget.dart';
@@ -21,6 +22,7 @@ class UserListSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textstyles = AppTextStyles(context);
     return BlocBuilder<UsersManagementCubit, UsersManagementState>(
       builder: (context, state) {
         final cubit = context.read<UsersManagementCubit>();
@@ -58,8 +60,16 @@ class UserListSection extends StatelessWidget {
               return ListTile(
                 key: ValueKey(user.uid),
                 leading: _UserAvatar(imageUrl: user.profilePicurl),
-                title: Text(user.firstName),
-                subtitle: Text(user.email),
+                title: Text(
+                  "${user.firstName} ${user.lastName}",
+                  style: textstyles.semiBold14,
+                ),
+                subtitle: Text(
+                  user.email,
+                  style: textstyles.regular11,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 trailing: Customcheckbox(
                   isChecked: isSelected,
                   onChanged: (val) => onUserToggled(user, val),

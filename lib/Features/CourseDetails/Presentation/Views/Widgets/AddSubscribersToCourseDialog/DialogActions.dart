@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomButton.dart';
 import 'package:sintir_dashboard/Core/widgets/Custom_Loading_Widget.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/add_subscribers_to_course_cubit/add_subscribers_to_course_cubit.dart';
@@ -17,14 +18,10 @@ class DialogActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text("اغلاق"),
-        ),
-        const SizedBox(width: 12),
         BlocSelector<
           AddSubscribersToCourseCubit,
           AddSubscribersToCourseState,
@@ -42,13 +39,17 @@ class DialogActions extends StatelessWidget {
                     ? null
                     : () {
                         onConfirm();
-                        Navigator.pop(context);
                       },
                 color: KMainColor,
                 textColor: Colors.white,
               ),
             );
           },
+        ),
+        const SizedBox(height: 12),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text("اغلاق", style: AppTextStyles(context).medium12),
         ),
       ],
     );
