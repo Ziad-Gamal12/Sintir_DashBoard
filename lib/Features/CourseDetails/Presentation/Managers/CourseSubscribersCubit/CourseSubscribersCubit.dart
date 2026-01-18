@@ -80,6 +80,7 @@ class CourseSubscribersCubit extends Cubit<CourseSubscribersState> {
         emit(DeleteSubscriberFailure(errMessage: failure.message));
       },
       (response) {
+        subscribers.removeWhere((element) => element.id == subscriberID);
         emit(DeleteSubscriberSuccess(subscriberId: subscriberID));
       },
     );
