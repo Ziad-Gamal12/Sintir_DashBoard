@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/SubscriberEntity.dart';
+import 'package:sintir_dashboard/Core/widgets/AppDialogs.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomEmptyWidget.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomErrorWidget.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseSubscribersCubit/CourseSubscribersCubit.dart';
@@ -38,9 +39,15 @@ class CustomCourseSubscribersTable extends StatelessWidget {
         return ResponsiveSubscribersTable(
           subscribers: subscribers,
           onDelete: (subscriber) {
-            context.read<CourseSubscribersCubit>().deleteSubscriber(
-              subscriberID: subscriber.id,
-              courseID: courseID,
+            AppDialogs.warning(
+              context,
+              "هل تريد حذف هذا المشترك؟",
+              onTap: () {
+                context.read<CourseSubscribersCubit>().deleteSubscriber(
+                  subscriberID: subscriber.id,
+                  courseID: courseID,
+                );
+              },
             );
           },
           onLoadMore: (val) {

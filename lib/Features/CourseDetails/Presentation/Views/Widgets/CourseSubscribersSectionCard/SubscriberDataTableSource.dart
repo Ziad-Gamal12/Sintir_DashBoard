@@ -1,8 +1,10 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/SubscriberEntity.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/ResponsiveUserDetailsView.dart';
 import 'package:sintir_dashboard/constant.dart';
 
 class SubscriberDataTableSource extends DataTableSource {
@@ -16,11 +18,10 @@ class SubscriberDataTableSource extends DataTableSource {
     if (index >= subscribers.length) return null;
     final user = subscribers[index];
     final textStyles = AppTextStyles(context);
-
     final isLoading = user.id == 'loading';
 
     return DataRow2(
-      onTap: isLoading ? null : () => _showUserDetails(user),
+      onTap: isLoading ? null : () => _showUserDetails(user, context),
       cells: [
         DataCell(
           Row(
@@ -37,10 +38,7 @@ class SubscriberDataTableSource extends DataTableSource {
                       style: textStyles.bold14,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Text(
-                      user.phone,
-                      style: textStyles.regular11.copyWith(color: Colors.grey),
-                    ),
+                    Text(user.phone, style: textStyles.regular11),
                   ],
                 ),
               ),
@@ -67,7 +65,7 @@ class SubscriberDataTableSource extends DataTableSource {
                 user.joinedDate != null
                     ? DateFormat('hh:mm a').format(user.joinedDate!)
                     : '--/--/--',
-                style: textStyles.regular11.copyWith(color: Colors.grey),
+                style: textStyles.regular11,
               ),
             ],
           ),
@@ -76,7 +74,7 @@ class SubscriberDataTableSource extends DataTableSource {
         DataCell(
           Text(
             user.address,
-            style: textStyles.regular14.copyWith(color: Colors.blueGrey),
+            style: textStyles.regular14,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -136,7 +134,11 @@ class SubscriberDataTableSource extends DataTableSource {
     );
   }
 
-  void _showUserDetails(SubscriberEntity user) {}
+  void _showUserDetails(SubscriberEntity user, BuildContext context) {
+    GoRouter.of(
+      context,
+    ).push(ResponsiveUserDetailsView.routeName, extra: user.id);
+  }
 
   @override
   bool get isRowCountApproximate => false;

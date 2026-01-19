@@ -31,7 +31,7 @@ class _CustomCourseReportsCardState extends State<CustomCourseReportsCard> {
         border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -56,8 +56,7 @@ class _CustomCourseReportsCardState extends State<CustomCourseReportsCard> {
                 tooltip: isExpanded ? "تصغير" : "توسيع",
               ),
             ),
-            const SizedBox(height: 16),
-
+            const SizedBox(height: 24),
             isExpanded ? _buildFullView(cubit) : _buildFixedView(cubit),
           ],
         ),

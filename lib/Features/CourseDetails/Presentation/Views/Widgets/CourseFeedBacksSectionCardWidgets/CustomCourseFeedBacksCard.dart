@@ -45,7 +45,7 @@ class _CustomCourseFeedBacksCardState extends State<CustomCourseFeedBacksCard> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: theme.cardColor.withOpacity(0.4),
           borderRadius: BorderRadius.circular(16),
@@ -78,7 +78,7 @@ class _CustomCourseFeedBacksCardState extends State<CustomCourseFeedBacksCard> {
                     }
                   : null,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
             isExpanded
                 ? _buildExpandedList(cubit)

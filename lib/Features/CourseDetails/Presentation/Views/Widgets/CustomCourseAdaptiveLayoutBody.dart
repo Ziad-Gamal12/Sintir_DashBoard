@@ -59,9 +59,10 @@ class CustomCourseAdaptiveLayoutBody extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  transactions,
-                  const SizedBox(height: 16),
                   subscribers,
+                  const SizedBox(height: 16),
+
+                  transactions,
                 ],
               ),
               const SizedBox(height: 16),
@@ -80,9 +81,9 @@ class CustomCourseAdaptiveLayoutBody extends StatelessWidget {
         else {
           return Column(
             children: [
-              transactions,
-              const SizedBox(height: 16),
               subscribers,
+              const SizedBox(height: 16),
+              transactions,
               const SizedBox(height: 16),
               feedbacks,
               const SizedBox(height: 16),

@@ -38,38 +38,33 @@ class _ResponsiveSubscribersTableState
     return Stack(
       alignment: Alignment.center,
       children: [
-        Theme(
-          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-          child: PaginatedDataTable2(
-            columnSpacing: 24,
-            horizontalMargin: 20,
-            minWidth: 1100,
-            headingRowHeight: 56,
-            dataRowHeight: 70,
-            renderEmptyRowsInTheEnd: false,
-            rowsPerPage: 10,
-            showFirstLastButtons: true,
-            onPageChanged: (rowIndex) {
-              if (widget.onLoadMore != null) {
-                widget.onLoadMore!(rowIndex);
-              }
-            },
-            headingRowColor: WidgetStateProperty.all(
-              Colors.grey.withOpacity(0.05),
-            ),
-            headingTextStyle: textStyles.bold14.copyWith(
-              color: Colors.blueGrey,
-            ),
-            columns: const [
-              DataColumn2(label: Text('الطالب'), size: ColumnSize.L),
-              DataColumn2(label: Text('المستوى الدراسي'), size: ColumnSize.M),
-              DataColumn2(label: Text('الجنس'), size: ColumnSize.S),
-              DataColumn2(label: Text('تاريخ الانضمام'), size: ColumnSize.M),
-              DataColumn2(label: Text('العنوان'), size: ColumnSize.L),
-              DataColumn2(label: Text('تفاصيل'), size: ColumnSize.S),
-            ],
-            source: dataSource,
+        PaginatedDataTable2(
+          columnSpacing: 24,
+          horizontalMargin: 20,
+          minWidth: 1100,
+          headingRowHeight: 56,
+          dataRowHeight: 70,
+          renderEmptyRowsInTheEnd: false,
+          rowsPerPage: 10,
+          showFirstLastButtons: true,
+          onPageChanged: (rowIndex) {
+            if (widget.onLoadMore != null) {
+              widget.onLoadMore!(rowIndex);
+            }
+          },
+          headingRowColor: WidgetStateProperty.all(
+            Colors.grey.withOpacity(0.05),
           ),
+          headingTextStyle: textStyles.bold14.copyWith(color: Colors.grey),
+          columns: const [
+            DataColumn2(label: Text('الطالب'), size: ColumnSize.L),
+            DataColumn2(label: Text('المستوى الدراسي'), size: ColumnSize.M),
+            DataColumn2(label: Text('الجنس'), size: ColumnSize.S),
+            DataColumn2(label: Text('تاريخ الانضمام'), size: ColumnSize.M),
+            DataColumn2(label: Text('العنوان'), size: ColumnSize.L),
+            DataColumn2(label: Text('حذف'), size: ColumnSize.S),
+          ],
+          source: dataSource,
         ),
         if (widget.isLoading)
           Container(

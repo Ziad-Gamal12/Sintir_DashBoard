@@ -42,8 +42,7 @@ class CustomEmptyWidget extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-
+            const SizedBox(height: 16),
             Text(
               text ?? "لا توجد بيانات حالياً",
               style: textStyles.semiBold16.copyWith(

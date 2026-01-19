@@ -32,7 +32,7 @@ class _CustomCourseTransactionsCardState
         border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -62,9 +62,7 @@ class _CustomCourseTransactionsCardState
                 tooltip: isExpanded ? "تصغير" : "توسيع",
               ),
             ),
-            const SizedBox(height: 16),
-
-            // Toggle Logic
+            const SizedBox(height: 24),
             isExpanded ? _buildFullView(cubit) : _buildFixedView(cubit),
           ],
         ),
