@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
+import 'package:sintir_dashboard/Core/widgets/CustomInfoRow.dart';
 
 class CourseDetailsCard extends StatelessWidget {
   final CourseEntity course;
@@ -10,7 +11,6 @@ class CourseDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AppTextStyles textStyles = AppTextStyles(context);
     ThemeData theme = Theme.of(context);
     return Container(
       width: double.infinity,
@@ -23,79 +23,43 @@ class CourseDetailsCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "تفاصيل الدورة",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          Text("تفاصيل الدورة", style: AppTextStyles(context).semiBold20),
           const SizedBox(height: 25),
-          _buildDetailRow(
-            "المادة",
-            course.subject,
-            Icons.science_outlined,
-            textStyles,
+          CustomInfoRow(
+            label: "المادة",
+            value: course.subject,
+            icon: Icons.science_outlined,
           ),
           _buildDivider(),
-          _buildDetailRow(
-            "المستوى",
-            course.level,
-            Icons.bar_chart_rounded,
-            textStyles,
+          CustomInfoRow(
+            label: "المستوى",
+            value: course.level,
+            icon: Icons.bar_chart_rounded,
           ),
           _buildDivider(),
-          _buildDetailRow(
-            "اللغة",
-            course.language,
-            Icons.language_rounded,
-            textStyles,
+          CustomInfoRow(
+            label: "اللغة",
+            value: course.language,
+            icon: Icons.language_rounded,
           ),
           _buildDivider(),
-          _buildDetailRow(
-            "السعر",
-            "${course.price} جنية",
-            Icons.payments_outlined,
-            textStyles,
+          CustomInfoRow(
+            label: "السعر",
+            value: "${course.price} جنية",
+            icon: Icons.payments_outlined,
           ),
           _buildDivider(),
-          _buildDetailRow(
-            "الطلاب",
-            "${course.studentsCount} طالب",
-            Icons.people_outline_rounded,
-            textStyles,
+          CustomInfoRow(
+            label: "الطلاب",
+            value: "${course.studentsCount} طالب",
+            icon: Icons.people_outline_rounded,
           ),
           _buildDivider(),
-          _buildDetailRow(
-            "تاريخ النشر",
-            DateFormat('yyyy/MM/dd').format(course.postedDate),
-            Icons.calendar_today_rounded,
-            textStyles,
+          CustomInfoRow(
+            label: "تاريخ النشر",
+            value: DateFormat('yyyy/MM/dd').format(course.postedDate),
+            icon: Icons.calendar_today_rounded,
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailRow(
-    String label,
-    String value,
-    IconData icon,
-    AppTextStyles textStyles,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        children: [
-          Icon(icon, color: const Color(0xFF8E99AF), size: 22),
-          const SizedBox(width: 12),
-          Text(
-            label,
-            style: const TextStyle(color: Color(0xFF8E99AF), fontSize: 15),
-          ),
-          const Spacer(),
-          Text(value, style: textStyles.medium12),
         ],
       ),
     );

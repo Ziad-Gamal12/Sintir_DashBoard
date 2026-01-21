@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/UserDetailsStatusBadge.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/CustomUserInfoCard/UserDetailsStatusBadge.dart';
 import 'package:sintir_dashboard/constant.dart';
 
 class UserStatusActionSection extends StatelessWidget {

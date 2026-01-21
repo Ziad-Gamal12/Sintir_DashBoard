@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomCard.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/CustomUserInfoCard/UserMainInfo.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/CustomUserInfoCard/UserStatusActionSection.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/UserAvatar.dart';
-import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/UserMainInfo.dart';
-import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/UserStatusActionSection.dart';
 
-class CustomUserDetailsCard extends StatelessWidget {
-  const CustomUserDetailsCard({super.key});
+class CustomUserInfoCard extends StatelessWidget {
+  const CustomUserInfoCard({super.key});
 
   @override
   Widget build(BuildContext context) {

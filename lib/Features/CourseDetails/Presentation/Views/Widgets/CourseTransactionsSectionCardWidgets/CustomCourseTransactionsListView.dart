@@ -40,7 +40,6 @@ class CustomCourseTransactionsListView extends StatelessWidget {
             child: CustomEmptyWidget(text: "لا توجد عمليات مالية حالياً"),
           );
         }
-
         return ListView.builder(
           shrinkWrap: shrinkWrap,
           physics: physics,

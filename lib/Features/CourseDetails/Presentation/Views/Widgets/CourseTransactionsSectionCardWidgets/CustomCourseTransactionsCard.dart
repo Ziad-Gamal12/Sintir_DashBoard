@@ -22,7 +22,6 @@ class _CustomCourseTransactionsCardState
   Widget build(BuildContext context) {
     final cubit = context.watch<CourseTransactionsCubit>();
     final theme = Theme.of(context);
-
     return AnimatedContainer(
       duration: const Duration(milliseconds: 450),
       curve: Curves.fastOutSlowIn,
@@ -70,7 +69,6 @@ class _CustomCourseTransactionsCardState
     );
   }
 
-  // Dashboard View (Aligned with other cards)
   Widget _buildFixedView(CourseTransactionsCubit cubit) {
     return SizedBox(
       height: 450,

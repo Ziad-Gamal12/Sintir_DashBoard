@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
-import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/UserDetailsInfoTile.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/CustomUserInfoCard/UserDetailsInfoTile.dart';
 
 class UserMainInfo extends StatelessWidget {
   final TextAlign textAlign;
