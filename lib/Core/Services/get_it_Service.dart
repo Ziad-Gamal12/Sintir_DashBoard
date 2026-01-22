@@ -42,6 +42,8 @@ import 'package:sintir_dashboard/Features/Support/Data/Services/SupportAnalytics
 import 'package:sintir_dashboard/Features/Support/Domain/Repos/SupportAnalyticsRepo.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Repos/SupportChatRepo.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Repos/SupportTicketsRepo.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Data/Repos/UserDetailRepoImpl.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Domain/Repos/UserDetailRepo.dart';
 import 'package:sintir_dashboard/Features/UsersManagement/Data/Repos/UsersRepoImpl.dart';
 import 'package:sintir_dashboard/Features/UsersManagement/Domain/Repos/UsersRepo.dart';
 
@@ -133,5 +135,11 @@ void setup_Getit() {
   getIt.registerLazySingleton<CourseSubscibtionsRepo>(
     () =>
         CourseSubscriptionsRepoImpl(databaseService: getIt<DataBaseService>()),
+  );
+  getIt.registerLazySingleton<UserDetailsRepo>(
+    () => UserDetailsRepoImpl(
+      firebaseAuthService: getIt<FirebaseAuthService>(),
+      dataBaseService: getIt<DataBaseService>(),
+    ),
   );
 }

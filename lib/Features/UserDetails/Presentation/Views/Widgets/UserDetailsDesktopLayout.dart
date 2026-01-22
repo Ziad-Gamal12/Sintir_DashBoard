@@ -3,8 +3,8 @@ import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/UserDetailsMainContent.dart';
 
 class UserDetailsDesktopLayout extends StatelessWidget {
-  const UserDetailsDesktopLayout({super.key});
-
+  const UserDetailsDesktopLayout({super.key, required this.userID});
+  final String userID;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -12,7 +12,10 @@ class UserDetailsDesktopLayout extends StatelessWidget {
       children: [
         const Expanded(flex: 7, child: UserDetailsMainContent()),
         const SizedBox(width: 32),
-        Expanded(flex: 3, child: SlidingUserDetailsAndActionsCards()),
+        Expanded(
+          flex: 3,
+          child: SlidingUserDetailsAndActionsCards(userID: userID),
+        ),
       ],
     );
   }

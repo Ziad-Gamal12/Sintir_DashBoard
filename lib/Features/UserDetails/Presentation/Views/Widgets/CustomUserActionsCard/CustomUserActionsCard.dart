@@ -5,8 +5,8 @@ import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/CustomUserActionsCard/EditUserDetailsButton.dart';
 
 class CustomUserActionsCard extends StatelessWidget {
-  const CustomUserActionsCard({super.key});
-
+  const CustomUserActionsCard({super.key, required this.userID});
+  final String userID;
   @override
   Widget build(BuildContext context) {
     AppTextStyles textStyles = AppTextStyles(context);
@@ -18,7 +18,7 @@ class CustomUserActionsCard extends StatelessWidget {
           const SizedBox(height: 16),
           EditUserDetailsButton(),
           const SizedBox(height: 12),
-          DelelteUserActionButton(),
+          DelelteUserActionButton(userID: userID),
         ],
       ),
     );

@@ -3,15 +3,15 @@ import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/CustomUserFullDetailsCard.dart/CustomUseDetailsCard.dart';
 
 class SlidingUserDetailsAndActionsCards extends StatelessWidget {
-  const SlidingUserDetailsAndActionsCards({super.key});
-
+  const SlidingUserDetailsAndActionsCards({super.key, required this.userID});
+  final String userID;
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         CustomUserDetailsCard(),
         const SizedBox(height: 32),
-        CustomUserActionsCard(),
+        CustomUserActionsCard(userID: userID),
       ],
     );
   }

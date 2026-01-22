@@ -14,9 +14,12 @@ class InstructorInfo extends StatelessWidget {
         CircleAvatar(
           radius: 14,
           backgroundColor: Colors.white10,
-          child: ClipOval(
-            child: CustomCachedNetworkImage(
-              imageUrl: instructor?.profileImageUrl ?? '',
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: ClipOval(
+              child: CustomCachedNetworkImage(
+                imageUrl: instructor?.profileImageUrl ?? '',
+              ),
             ),
           ),
         ),

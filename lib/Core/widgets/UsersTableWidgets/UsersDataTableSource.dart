@@ -1,11 +1,13 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/UsersTableWidgets/UserInfo.dart';
 import 'package:sintir_dashboard/Core/widgets/UsersTableWidgets/UserRole.dart';
 import 'package:sintir_dashboard/Core/widgets/UsersTableWidgets/UserStatus.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/ResponsiveUserDetailsView.dart';
 
 class UsersDataTableSource extends DataTableSource {
   final List<UserEntity> users;
@@ -20,7 +22,11 @@ class UsersDataTableSource extends DataTableSource {
     final textStyles = AppTextStyles(context);
 
     return DataRow2(
-      onTap: () {},
+      onTap: () {
+        GoRouter.of(
+          context,
+        ).push(ResponsiveUserDetailsView.routeName, extra: user.uid);
+      },
       cells: [
         DataCell(UserInfo(user: user)),
         DataCell(UserRole(role: user.role)),

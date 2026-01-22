@@ -4,7 +4,7 @@ import 'package:sintir_dashboard/Core/Entities/Transactions/TransactionEntity.da
 import 'package:sintir_dashboard/Core/errors/Failures.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
 
-abstract class UserDetailRepo {
+abstract class UserDetailsRepo {
   Future<Either<Failure, UserEntity>> getUser({required String userID});
   Future<Either<Failure, void>> updateUser({required UserEntity userEntity});
   Future<Either<Failure, void>> deleteUser({required String uid});

@@ -4,7 +4,8 @@ import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets
 import 'UserDetailsMainContent.dart';
 
 class UserDetailsMobileLayout extends StatelessWidget {
-  const UserDetailsMobileLayout({super.key});
+  const UserDetailsMobileLayout({super.key, required this.userID});
+final String userID;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,9 @@ class UserDetailsMobileLayout extends StatelessWidget {
         SizedBox(height: 32),
         SizedBox(
           width: double.infinity,
-          child: SlidingUserDetailsAndActionsCards(),
+          child: SlidingUserDetailsAndActionsCards(
+            userID: userID,
+          ),
         ),
       ],
     );

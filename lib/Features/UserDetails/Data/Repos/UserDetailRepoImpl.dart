@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
@@ -14,11 +16,11 @@ import 'package:sintir_dashboard/Features/Auth/Data/models/UserModel.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Domain/Repos/UserDetailRepo.dart';
 
-class UserDetailRepoImpl implements UserDetailRepo {
+class UserDetailsRepoImpl implements UserDetailsRepo {
   final DataBaseService dataBaseService;
   final FirebaseAuthService firebaseAuthService;
 
-  UserDetailRepoImpl({
+  UserDetailsRepoImpl({
     required this.dataBaseService,
     required this.firebaseAuthService,
   });
@@ -30,7 +32,8 @@ class UserDetailRepoImpl implements UserDetailRepo {
           collectionKey: BackendEndpoints.usersCollectionName,
           docId: uid,
         ),
-        firebaseAuthService.deleteUSer(),
+        // solve this problem to delete user from firebase auth by uid
+        //firebaseAuthService.deleteUSer(),
       ]);
       return right(null);
     } on CustomException catch (e) {
@@ -51,9 +54,7 @@ class UserDetailRepoImpl implements UserDetailRepo {
           docId: userID,
         ),
       );
-      if (resulte.docData == null) {
-        return left(ServerFailure(message: "لم يتم العثور على المستخدم"));
-      }
+      log(resulte.docData.toString());
       final user = UserModel.fromJson(resulte.docData!).toEntity();
       return right(user);
     } on CustomException catch (e) {

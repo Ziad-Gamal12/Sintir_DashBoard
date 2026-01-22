@@ -82,7 +82,7 @@ class FirebaseAuthService {
     }
   }
 
-  Future<void> deleteUSer() async {
+  Future<void> deleteUSerCurrentUser() async {
     try {
       await auth.currentUser?.delete();
     } catch (e) {

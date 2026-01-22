@@ -27,11 +27,11 @@ class VerticalUserTransactionItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Top Row: Status and ID (smaller)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TransactionItemStatusBadge(status: transaction.status),
+              SizedBox(width: 8),
               Expanded(
                 child: Align(
                   alignment: Alignment.centerLeft,

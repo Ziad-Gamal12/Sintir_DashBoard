@@ -34,14 +34,16 @@ class TransactionsCardItemId extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        Text(
-          transaction.transactionId ?? "---",
-          maxLines: 1,
-          textAlign: TextAlign.start,
-          overflow: TextOverflow.ellipsis,
-          style: textStyles.medium12.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.8),
-            letterSpacing: 0.5,
+        Expanded(
+          child: Text(
+            transaction.transactionId ?? "---",
+            maxLines: 1,
+            textAlign: TextAlign.start,
+            overflow: TextOverflow.ellipsis,
+            style: textStyles.medium12.copyWith(
+              color: theme.colorScheme.onSurface.withOpacity(0.8),
+              letterSpacing: 0.5,
+            ),
           ),
         ),
       ],
