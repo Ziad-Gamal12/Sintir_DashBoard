@@ -19,7 +19,7 @@ class UserDetailsMainContent extends StatelessWidget {
         const SectionHeader(title: "كورسات المستخدم"),
         const SizedBox(height: 16),
         SizedBox(
-          height: 550,
+          height: 490,
           child: BlocBuilder<UserDetailsCubit, UserDetailsState>(
             buildWhen: (previous, current) {
               return current is GetUserEnrolledCoursesFailure ||

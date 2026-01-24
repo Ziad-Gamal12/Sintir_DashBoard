@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/AppDialogs.dart';
-import 'package:sintir_dashboard/Core/widgets/CustomButton.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Managers/user_details_cubit/user_details_cubit.dart';
 
 class DelelteUserActionButton extends StatelessWidget {
@@ -21,10 +20,7 @@ class DelelteUserActionButton extends StatelessWidget {
             child: const CircularProgressIndicator(color: Colors.red),
           );
         }
-        return Custombutton(
-          text: "",
-          color: Colors.red.withOpacity(.1),
-          textColor: Colors.red,
+        return IconButton(
           onPressed: () {
             AppDialogs.warning(
               context,
@@ -34,16 +30,16 @@ class DelelteUserActionButton extends StatelessWidget {
               },
             );
           },
-          child: Row(
+          icon: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Icon(Icons.delete, color: Colors.red.shade700),
               Text(
                 "حذف المستخدم",
                 style: textStyles.regular14.copyWith(
                   color: Colors.red.shade700,
                 ),
               ),
-              Icon(Icons.delete, color: Colors.red.shade700),
             ],
           ),
         );

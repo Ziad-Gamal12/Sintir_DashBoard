@@ -14,7 +14,7 @@ class UserDetailsStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 100,
+      width: 120,
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),

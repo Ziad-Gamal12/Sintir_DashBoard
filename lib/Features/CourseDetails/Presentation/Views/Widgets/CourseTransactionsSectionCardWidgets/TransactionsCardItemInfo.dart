@@ -13,14 +13,15 @@ class TransactionsCardItemInfo extends StatelessWidget {
     final textStyles = AppTextStyles(context);
     final isDark = theme.brightness == Brightness.dark;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           "${transaction.amount} ${transaction.currency}",
-          style: textStyles.bold20.copyWith(
+          style: textStyles.semiBold24.copyWith(
             color: isDark ? Colors.greenAccent : Colors.green.shade700,
           ),
         ),
+        const SizedBox(height: 4),
         Text(
           "${transaction.method}-${transaction.issuer}",
           maxLines: 1,

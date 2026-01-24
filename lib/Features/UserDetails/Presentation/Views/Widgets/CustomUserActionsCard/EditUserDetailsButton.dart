@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
-import 'package:sintir_dashboard/Core/widgets/CustomButton.dart';
 
 class EditUserDetailsButton extends StatelessWidget {
   const EditUserDetailsButton({super.key});
@@ -9,23 +8,20 @@ class EditUserDetailsButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textStyles = AppTextStyles(context);
-    return Custombutton(
-      text: "",
-      color: Colors.transparent.withOpacity(.2),
-      textColor: theme.textTheme.bodySmall?.color ?? Colors.white,
+    return IconButton(
       onPressed: () {},
-      child: Row(
+      icon: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          Icon(
+            Icons.edit,
+            color: theme.textTheme.bodySmall?.color ?? Colors.white,
+          ),
           Text(
             "تعديل البيانات",
             style: textStyles.regular14.copyWith(
               color: theme.textTheme.bodySmall?.color ?? Colors.white,
             ),
-          ),
-          Icon(
-            Icons.edit,
-            color: theme.textTheme.bodySmall?.color ?? Colors.white,
           ),
         ],
       ),

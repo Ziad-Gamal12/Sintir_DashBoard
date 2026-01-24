@@ -76,10 +76,50 @@ class CustomUserDetailsCard extends StatelessWidget {
                         value: UsersStatusHelper.getUserStatusArabic(
                           userEntity.status,
                         ),
-                        icon: Icons.info_outline_rounded,
+                        icon: Icons.radio_button_checked_rounded,
                       ),
                       _buildDivider(),
-
+                      if (userEntity.studentExtraDataEntity != null)
+                        Column(
+                          children: [
+                            CustomInfoRow(
+                              label: "المرحلة الدراسية",
+                              value: userEntity
+                                  .studentExtraDataEntity!
+                                  .educationLevel,
+                              icon: Icons.school_outlined,
+                            ),
+                            _buildDivider(),
+                            CustomInfoRow(
+                              label: "تاريخ الميلاد",
+                              value:
+                                  userEntity.studentExtraDataEntity!.birthDate,
+                              icon: Icons.cake_outlined,
+                            ),
+                            _buildDivider(),
+                          ],
+                        )
+                      else if (userEntity.teacherExtraDataEntity != null)
+                        Column(
+                          children: [
+                            CustomInfoRow(
+                              label: "المادة",
+                              value: userEntity.teacherExtraDataEntity!.subject,
+                              icon: Icons.auto_stories_outlined,
+                            ),
+                            _buildDivider(),
+                            CustomInfoRow(
+                              label: "الخبرة",
+                              value: userEntity
+                                  .teacherExtraDataEntity!
+                                  .workExperience,
+                              icon: Icons.work_history_outlined,
+                            ),
+                            _buildDivider(),
+                          ],
+                        )
+                      else
+                        SizedBox(),
                       CustomInfoRow(
                         label: "تاريخ الانضمام",
                         value: DateFormat(

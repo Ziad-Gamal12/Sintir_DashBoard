@@ -1,4 +1,4 @@
-class TeacherWalletEntity {
+class WalletEntity {
   final int walletId;
   String teacherId;
   final double balance;
@@ -10,7 +10,7 @@ class TeacherWalletEntity {
   final String updatedAt;
   final String? lastTransactionId;
 
-  TeacherWalletEntity({
+  WalletEntity({
     required this.walletId,
     required this.teacherId,
     required this.balance,

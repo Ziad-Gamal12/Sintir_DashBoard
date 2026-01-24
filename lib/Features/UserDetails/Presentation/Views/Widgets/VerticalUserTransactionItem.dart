@@ -25,7 +25,7 @@ class VerticalUserTransactionItem extends StatelessWidget {
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -41,7 +41,11 @@ class VerticalUserTransactionItem extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          TransactionsCardItemInfo(transaction: transaction),
+          Align(
+            alignment: Alignment.center,
+            child: TransactionsCardItemInfo(transaction: transaction),
+          ),
+          const Spacer(),
           const SizedBox(height: 12),
           const Divider(height: 1),
           const SizedBox(height: 12),

@@ -24,6 +24,7 @@ class CustomUserActivityCardItem extends StatelessWidget {
 
     return Container(
       decoration: _buildCardDecoration(theme),
+      alignment: Alignment.center,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: Stack(
@@ -114,7 +115,7 @@ class CustomUserActivityCardItem extends StatelessWidget {
       right: isMobile ? 0 : -30,
       left: isMobile ? 0 : null,
       bottom: isMobile ? null : 0,
-      top: isMobile ? -30 : null,
+      top: isMobile ? 0 : null,
       child: CircleAvatar(
         radius: isMobile ? 40 : 50,
         backgroundColor: color.withOpacity(0.05),

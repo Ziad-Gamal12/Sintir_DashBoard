@@ -5,6 +5,7 @@ import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Managers/user_details_cubit/user_details_cubit.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/CustomUserInfoCard/UserDetailsInfoTile.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/CustomUserInfoCard/UserStatusActionSection.dart';
 
 class UserMainInfo extends StatelessWidget {
   final TextAlign textAlign;
@@ -19,9 +20,18 @@ class UserMainInfo extends StatelessWidget {
           ? CrossAxisAlignment.center
           : CrossAxisAlignment.start,
       children: [
-        Text(
-          "${userEntity.firstName} ${userEntity.lastName}",
-          style: AppTextStyles(context).bold24,
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Text(
+              "${userEntity.firstName} ${userEntity.lastName}",
+              style: AppTextStyles(context).bold24,
+            ),
+            IntrinsicWidth(child: const UserStatusActionSection()),
+          ],
         ),
         const SizedBox(height: 12),
         Wrap(

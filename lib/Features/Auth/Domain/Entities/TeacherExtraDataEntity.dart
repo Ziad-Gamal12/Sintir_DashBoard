@@ -3,7 +3,7 @@ import 'package:sintir_dashboard/Features/Auth/Domain/Entities/TeacherWalletEnti
 class TeacherExtraDataEntity {
   String subject;
   String workExperience;
-  TeacherWalletEntity wallet;
+  WalletEntity wallet;
   TeacherExtraDataEntity({
     required this.wallet,
     required this.subject,

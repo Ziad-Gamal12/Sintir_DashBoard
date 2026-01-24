@@ -30,7 +30,7 @@ class SectionDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 32),
+      padding: EdgeInsets.symmetric(vertical: 16),
       child: Divider(thickness: 0.5),
     );
   }

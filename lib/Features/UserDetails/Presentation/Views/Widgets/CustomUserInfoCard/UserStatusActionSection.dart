@@ -12,29 +12,24 @@ class UserStatusActionSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final UserEntity userEntity = context.watch<UserDetailsCubit>().userEntity;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        bool isNarrow = constraints.maxWidth < 600;
-        return Wrap(
-          direction: isNarrow ? Axis.horizontal : Axis.vertical,
-          spacing: 12,
-          runSpacing: 12,
-          alignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            UserDetailsStatusBadge(
-              text: UsersStatusHelper.getUserStatusArabic(userEntity.status),
-              color: UsersStatusHelper.getUserStatusColor(userEntity.status),
-            ),
-            UserDetailsStatusBadge(
-              text: UserRoleBadgeEntity.getUserRoleBadgeEntity(userEntity.role).title,
-              color: UserRoleBadgeEntity.getUserRoleBadgeEntity(userEntity.role).color,
-            ),
-          ],
-        );
-      },
+    return Row(
+      spacing: 12,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        UserDetailsStatusBadge(
+          text: UsersStatusHelper.getUserStatusArabic(userEntity.status),
+          color: UsersStatusHelper.getUserStatusColor(userEntity.status),
+        ),
+        UserDetailsStatusBadge(
+          text: UserRoleBadgeEntity.getUserRoleBadgeEntity(
+            userEntity.role,
+          ).title,
+          color: UserRoleBadgeEntity.getUserRoleBadgeEntity(
+            userEntity.role,
+          ).color,
+        ),
+      ],
     );
   }
-
-
 }

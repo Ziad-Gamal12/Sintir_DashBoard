@@ -38,9 +38,7 @@ class TeacherWalletModel {
       lastTransactionId: json['last_transaction_id'],
     );
   }
-  factory TeacherWalletModel.fromEntity(
-    TeacherWalletEntity teacherWalletEntity,
-  ) {
+  factory TeacherWalletModel.fromEntity(WalletEntity teacherWalletEntity) {
     return TeacherWalletModel(
       walletId: teacherWalletEntity.walletId,
       teacherId: teacherWalletEntity.teacherId,
@@ -55,8 +53,8 @@ class TeacherWalletModel {
     );
   }
 
-  TeacherWalletEntity toEntity() {
-    return TeacherWalletEntity(
+  WalletEntity toEntity() {
+    return WalletEntity(
       walletId: walletId,
       teacherId: teacherId,
       balance: balance,

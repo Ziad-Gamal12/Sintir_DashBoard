@@ -6,6 +6,7 @@ import 'package:sintir_dashboard/Core/Services/get_it_Service.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Domain/Repos/UserDetailRepo.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Managers/user_details_cubit/user_details_cubit.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/CustomUserInfoCard/CustomUserInfoCard.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/CustomUserWalletSecion.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/SectionHeader.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/UserDetailsDesktopLayout.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/UserDetailsMobileLayout.dart';
@@ -56,10 +57,13 @@ class UserDetailsViewBody extends StatelessWidget {
                     : UserDetailsMobileLayout(userID: userId),
               ),
               const SliverToBoxAdapter(child: SizedBox(height: 32)),
+              SliverToBoxAdapter(child: CustomUserWalletSecion()),
+              const SliverToBoxAdapter(child: SizedBox(height: 32)),
               SliverToBoxAdapter(
                 child: SectionHeader(title: "المعاملات المالية"),
               ),
               SliverToBoxAdapter(child: const SizedBox(height: 16)),
+
               UserTransactionsSliverGrid(),
             ],
           ),
