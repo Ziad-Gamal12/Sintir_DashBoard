@@ -25,7 +25,6 @@ class ResponsiveUserInfoLayout extends StatelessWidget {
               UserAvatar(imageUrl: userEntity.profilePicurl),
               const SizedBox(width: 24, height: 24),
               Flexible(
-                flex: isMobile ? 0 : 7,
                 child: UserMainInfo(
                   textAlign: isMobile ? TextAlign.center : TextAlign.start,
                 ),

@@ -16,11 +16,7 @@ class CustomUserInfoCard extends StatelessWidget {
       child: Stack(
         children: [
           const UserInfoStateWrapper(),
-          Positioned(
-            top: 0,
-            left: 0,
-            child: UserActionsMenu(uid: userEntity.uid),
-          ),
+          Positioned(top: 0, left: 0, child: UserActionsMenu(user: userEntity)),
         ],
       ),
     );

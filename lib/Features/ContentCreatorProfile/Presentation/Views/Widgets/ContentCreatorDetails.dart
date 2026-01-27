@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/ContentCreaterEntity.dart';
 import 'package:sintir_dashboard/Core/Managers/content_creator_courses_cubit/content_creator_courses_cubit.dart';
+import 'package:sintir_dashboard/Core/widgets/CustomButton.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseInstructorSectionCardWidgets/CreatorAvatar.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseInstructorSectionCardWidgets/CreatorNameTitle.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseInstructorSectionCardWidgets/CreatorStats.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/ResponsiveUserDetailsView.dart';
+import 'package:sintir_dashboard/constant.dart';
 
 class ContentCreatorDetails extends StatelessWidget {
   final ContentCreatorEntity contentcreaterentity;
@@ -54,6 +58,19 @@ class ContentCreatorDetails extends StatelessWidget {
           CreatorStats(
             coursesCount: coursesCount,
             subscribersCount: subscribersCount,
+          ),
+          const SizedBox(height: 24),
+          Custombutton(
+            text: "الملف الشخصي",
+            color: Colors.transparent,
+            side: BorderSide(color: KMainColor),
+            textColor: KMainColor,
+            onPressed: () {
+              GoRouter.of(context).push(
+                ResponsiveUserDetailsView.routeName,
+                extra: contentcreaterentity.id,
+              );
+            },
           ),
         ],
       ),

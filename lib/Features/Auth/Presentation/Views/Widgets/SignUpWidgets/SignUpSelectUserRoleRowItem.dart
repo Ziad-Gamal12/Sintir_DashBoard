@@ -17,6 +17,13 @@ class SignUpSelectUserRoleRowItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
+
+      constraints: const BoxConstraints(
+        minHeight: 120,
+        minWidth: 180,
+        maxWidth: 280,
+        maxHeight: 180,
+      ),
       curve: Curves.easeInOut,
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
       decoration: BoxDecoration(

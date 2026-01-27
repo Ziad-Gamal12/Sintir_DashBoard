@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/widgets/AppDialogs.dart';
+import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Domain/Helpers/EditUserDetailsDialogHelper.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Managers/user_details_cubit/user_details_cubit.dart';
 
 class UserActionsMenu extends StatelessWidget {
-  final String uid;
-  const UserActionsMenu({super.key, required this.uid});
+  final UserEntity user;
+  const UserActionsMenu({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +35,16 @@ class UserActionsMenu extends StatelessWidget {
       ],
       onSelected: (value) {
         if (value == 'edit') {
+          EditUserDetailsDialogHelper.showResponsiveEditUserDialog(
+            context,
+            user,
+          );
         } else if (value == 'delete') {
           AppDialogs.warning(
             context,
             "هل أنت متأكد من رغبتك في حذف هذا المستخدم؟ هذا الإجراء لا يمكن التراجع عنه.",
             onTap: () {
-              context.read<UserDetailsCubit>().deleteUser(userID: uid);
+              context.read<UserDetailsCubit>().deleteUser(userID: user.uid);
             },
           );
         }

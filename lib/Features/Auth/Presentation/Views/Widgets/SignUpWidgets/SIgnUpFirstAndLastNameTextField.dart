@@ -3,8 +3,13 @@ import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomTeaxtField.
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
 
 class SignUpFirstAndLastNameTextField extends StatelessWidget {
-  const SignUpFirstAndLastNameTextField({super.key, required this.userEntity});
-
+  SignUpFirstAndLastNameTextField({
+    super.key,
+    required this.userEntity,
+    this.firstNameController,
+    this.lastNameController,
+  });
+  TextEditingController? firstNameController, lastNameController;
   final UserEntity userEntity;
 
   @override
@@ -16,6 +21,7 @@ class SignUpFirstAndLastNameTextField extends StatelessWidget {
             hintText: "الأسم الأول",
             obscureText: false,
             prefixIcon: Icons.person,
+            controller: firstNameController,
             textInputType: TextInputType.text,
             onSaved: (val) {
               userEntity.firstName = val ?? "";
@@ -33,6 +39,7 @@ class SignUpFirstAndLastNameTextField extends StatelessWidget {
           child: CustomTextField(
             hintText: "الأسم الثاني",
             prefixIcon: Icons.person,
+            controller: lastNameController,
             obscureText: false,
             textInputType: TextInputType.text,
             onSaved: (val) {

@@ -14,7 +14,7 @@ class UserEntity {
   StudentExtraDataEntity? studentExtraDataEntity;
   String gender;
   final String profilePicurl;
-  final String status;
+  String status;
   String role;
   final DateTime joinedDate;
 

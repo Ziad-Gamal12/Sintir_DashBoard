@@ -15,6 +15,11 @@ class SignUpUserRoleEntity {
   static List<SignUpUserRoleEntity> getItems() {
     return [
       SignUpUserRoleEntity(
+        value: BackendEndpoints.adminRole,
+        role: "مدير عام",
+        icon: FontAwesomeIcons.bookOpenReader,
+      ),
+      SignUpUserRoleEntity(
         value: BackendEndpoints.coursesManagerrRole,
         role: "مدير محتوى",
         icon: FontAwesomeIcons.bookOpenReader,
@@ -28,6 +33,16 @@ class SignUpUserRoleEntity {
         value: BackendEndpoints.supportRole,
         role: "دعم فني",
         icon: FontAwesomeIcons.headset,
+      ),
+      SignUpUserRoleEntity(
+        value: BackendEndpoints.teacherRole,
+        role: "معلم",
+        icon: FontAwesomeIcons.bookOpenReader,
+      ),
+      SignUpUserRoleEntity(
+        value: BackendEndpoints.studentRole,
+        role: "طالب",
+        icon: FontAwesomeIcons.bookOpenReader,
       ),
     ];
   }
