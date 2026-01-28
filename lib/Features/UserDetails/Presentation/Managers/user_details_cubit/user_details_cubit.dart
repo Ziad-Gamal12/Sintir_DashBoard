@@ -4,6 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/Transactions/TransactionEntity.dart';
+import 'package:sintir_dashboard/Features/Auth/Domain/Entities/TeacherExtraDataEntity.dart';
+import 'package:sintir_dashboard/Features/Auth/Domain/Entities/TeacherWalletEntity.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Domain/Repos/UserDetailRepo.dart';
 
@@ -112,5 +114,16 @@ class UserDetailsCubit extends Cubit<UserDetailsState> {
     getUserCourses(userID: userID);
     getUserTransactions(userID: userID);
     getUserSupportTicketsCount(userID: userID);
+  }
+
+  void createWallet() {
+    userEntity.teacherExtraDataEntity =
+        userEntity.teacherExtraDataEntity ??
+        TeacherExtraDataEntity(
+          wallet: WalletEntity.empty().copyWith(teacherId: userEntity.uid),
+          subject: "",
+          workExperience: "",
+        );
+    emit(CreatedeEmptyWalletSuccess());
   }
 }

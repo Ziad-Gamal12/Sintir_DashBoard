@@ -4,20 +4,38 @@ import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/constant.dart';
 
 class UserWalletSectionCardHeader extends StatelessWidget {
-  const UserWalletSectionCardHeader({super.key});
+  const UserWalletSectionCardHeader({
+    super.key,
+    required this.isEditingOnChanged,
+    required this.isEditing,
+    this.isLoading = false,
+  });
+
+  final void Function(bool) isEditingOnChanged;
+  final bool isEditing;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(FontAwesomeIcons.wallet, color: KMainColor, size: 22),
+        const Icon(FontAwesomeIcons.wallet, color: KMainColor, size: 22),
         const SizedBox(width: 12),
         Text("المحفظة", style: AppTextStyles(context).semiBold16),
         const Spacer(),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.edit, color: Colors.grey),
-        ),
+        isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : IconButton(
+                onPressed: () => isEditingOnChanged(!isEditing),
+                icon: Icon(
+                  isEditing ? Icons.done : Icons.edit,
+                  color: isEditing ? Colors.green : Colors.grey,
+                ),
+              ),
       ],
     );
   }

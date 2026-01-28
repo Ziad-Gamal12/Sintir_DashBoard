@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomEmailTextField.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomTeaxtField.dart';
+import 'package:sintir_dashboard/Core/widgets/DatePickerField.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/SignUpWidgets/SIgnUpFirstAndLastNameTextField.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/SignUpWidgets/SignUpUserGender.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/EditCourseViewWidgets/CustomEducationLevelDropdownButton.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/EditCourseViewWidgets/CustomSubjectDropdownButton.dart';
-import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/EditUserDetails/BirthDatePickerField.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/EditUserDetails/CustomUserStatusDropDownButton.dart';
 
 class EditUserDetailsTextFields extends StatefulWidget {
@@ -140,7 +140,7 @@ class _EditUserDetailsTextFieldsState extends State<EditUserDetailsTextFields> {
           onValueChange: (value) =>
               widget.user.studentExtraDataEntity?.educationLevel = value ?? "",
         ),
-        BirthDatePickerField(
+        DatePickerField(
           initialDate: widget.user.studentExtraDataEntity?.birthDate ?? "",
           onDateChanged: (value) =>
               widget.user.studentExtraDataEntity?.birthDate = value.toString(),

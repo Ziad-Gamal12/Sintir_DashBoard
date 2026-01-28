@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 
 class CustomInfoRow extends StatelessWidget {
-  const CustomInfoRow({
+  CustomInfoRow({
     super.key,
     required this.label,
     required this.value,
     required this.icon,
+    this.child,
   });
   final String label, value;
+  Widget? child;
   final IconData icon;
   @override
   Widget build(BuildContext context) {
@@ -23,14 +25,16 @@ class CustomInfoRow extends StatelessWidget {
             label,
             style: const TextStyle(color: Color(0xFF8E99AF), fontSize: 15),
           ),
+          SizedBox(width: 12),
           Expanded(
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              overflow: TextOverflow.ellipsis,
-
-              style: textStyles.medium12,
-            ),
+            child:
+                child ??
+                Text(
+                  value,
+                  textAlign: TextAlign.end,
+                  overflow: TextOverflow.ellipsis,
+                  style: textStyles.medium12,
+                ),
           ),
         ],
       ),

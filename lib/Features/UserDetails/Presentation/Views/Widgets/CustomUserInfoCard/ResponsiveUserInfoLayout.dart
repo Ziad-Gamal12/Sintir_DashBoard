@@ -9,7 +9,7 @@ class ResponsiveUserInfoLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userEntity = context.read<UserDetailsCubit>().userEntity;
+    final userEntity = context.watch<UserDetailsCubit>().userEntity;
 
     return LayoutBuilder(
       builder: (context, constraints) {

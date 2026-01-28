@@ -54,3 +54,6 @@ final class DeleteUserFailure extends UserDetailsState {
   final String errmessage;
   DeleteUserFailure({required this.errmessage});
 }
+
+// created empty wallet object
+final class CreatedeEmptyWalletSuccess extends UserDetailsState {}

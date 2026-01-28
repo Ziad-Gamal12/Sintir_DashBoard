@@ -34,12 +34,11 @@ class CustomTextField extends StatelessWidget {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
-    // Premium Border Logic: adaptive to brightness
     final Color borderColor = isDarkMode
         ? Colors.white10
         : const Color(0xFFE4E6E8);
     final Color fillBg = isDarkMode
-        ? Colors.white.withOpacity(0.05)
+        ? Colors.white.withOpacity(0.02)
         : const Color(0xFFF8F9FA);
 
     return TextFormField(
@@ -78,7 +77,7 @@ class CustomTextField extends StatelessWidget {
         // Modern Borders
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: borderColor, width: 1),
+          borderSide: BorderSide(color: borderColor, width: .75),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),

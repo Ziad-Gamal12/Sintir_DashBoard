@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
+import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomTeaxtField.dart';
 
 class CustomWalletInfoCard extends StatelessWidget {
   const CustomWalletInfoCard({
@@ -11,12 +12,20 @@ class CustomWalletInfoCard extends StatelessWidget {
     required this.currency,
     this.icon,
     this.color = Colors.blue,
+    required this.isEditing,
+    required this.onValueChanged,
+    required this.onCurrencyChanged,
+    required this.valueController,
+    required this.currencyController,
   });
-
+  final bool isEditing;
   final String label, value, currency;
   final IconData? icon;
   final Color color;
-
+  final ValueChanged<String> onValueChanged;
+  final ValueChanged<String> onCurrencyChanged;
+  final TextEditingController valueController;
+  final TextEditingController currencyController;
   @override
   Widget build(BuildContext context) {
     final textStyles = AppTextStyles(context);
@@ -65,24 +74,65 @@ class CustomWalletInfoCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Text(
-                        value,
-                        style: textStyles.bold24.copyWith(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
+                  isEditing
+                      ? Row(
+                          children: [
+                            Expanded(
+                              child: CustomTextField(
+                                hintText: label,
+                                prefixIcon: Icons.attach_money_rounded,
+                                obscureText: false,
+                                controller: valueController,
+                                onSaved: (value) {
+                                  onValueChanged(value ?? "");
+                                },
+                                textInputType: TextInputType.number,
+                                validator: (val) {
+                                  if (val == null || val.isEmpty) {
+                                    return "$label مطلوب";
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: CustomTextField(
+                                hintText: "العملة",
+                                prefixIcon: Icons.currency_exchange_rounded,
+                                controller: currencyController,
+                                onSaved: (value) {
+                                  onCurrencyChanged(value ?? "");
+                                },
+                                obscureText: false,
+                                textInputType: TextInputType.text,
+                                validator: (val) => val == null || val.isEmpty
+                                    ? "العملة مطلوبة"
+                                    : null,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Row(
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            Text(
+                              value,
+                              style: textStyles.bold24.copyWith(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              currency,
+                              style: textStyles.semiBold14.copyWith(
+                                color: color,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        currency,
-                        style: textStyles.semiBold14.copyWith(color: color),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),

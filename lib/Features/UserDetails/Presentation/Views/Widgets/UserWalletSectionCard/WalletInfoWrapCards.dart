@@ -3,9 +3,47 @@ import 'package:sintir_dashboard/Features/Auth/Domain/Entities/TeacherWalletEnti
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/UserWalletSectionCard/CustomWalletInfoCard.dart';
 import 'package:sintir_dashboard/constant.dart';
 
-class WalletInfoWrapCards extends StatelessWidget {
-  const WalletInfoWrapCards({super.key, required this.wallet});
+class WalletInfoWrapCards extends StatefulWidget {
+  const WalletInfoWrapCards({
+    super.key,
+    required this.wallet,
+    required this.isEditing,
+  });
   final WalletEntity wallet;
+  final bool isEditing;
+
+  @override
+  State<WalletInfoWrapCards> createState() => _WalletInfoWrapCardsState();
+}
+
+class _WalletInfoWrapCardsState extends State<WalletInfoWrapCards> {
+  late TextEditingController currentBalanceValueController,
+      totalEarnedValueController,
+      payoutPending,
+      currencyController;
+  @override
+  void initState() {
+    super.initState();
+    currentBalanceValueController = TextEditingController(
+      text: widget.wallet.balance.toString(),
+    );
+    totalEarnedValueController = TextEditingController(
+      text: widget.wallet.totalEarned.toString(),
+    );
+    payoutPending = TextEditingController(
+      text: widget.wallet.payoutPending.toString(),
+    );
+    currencyController = TextEditingController(text: widget.wallet.currency);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    currentBalanceValueController.dispose();
+    totalEarnedValueController.dispose();
+    payoutPending.dispose();
+    currencyController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,31 +58,58 @@ class WalletInfoWrapCards extends StatelessWidget {
             _buildResponsiveItem(
               constraints,
               CustomWalletInfoCard(
+                isEditing: widget.isEditing,
+                onValueChanged: (value) {
+                  widget.wallet.balance = double.tryParse(value) ?? 0;
+                },
+                onCurrencyChanged: (value) {
+                  widget.wallet.currency = value;
+                },
+                currencyController: currencyController,
+                valueController: currentBalanceValueController,
                 label: "الرصيد المتاح",
-                currency: wallet.currency,
+                currency: widget.wallet.currency,
                 color: KMainColor,
                 icon: Icons.account_balance_wallet_outlined,
-                value: wallet.balance.toString(),
+                value: widget.wallet.balance.toString(),
               ),
             ),
             _buildResponsiveItem(
               constraints,
               CustomWalletInfoCard(
+                isEditing: widget.isEditing,
+                onValueChanged: (value) {
+                  widget.wallet.totalEarned = double.tryParse(value) ?? 0;
+                },
+                onCurrencyChanged: (value) {
+                  widget.wallet.currency = value;
+                },
+                currencyController: currencyController,
+                valueController: totalEarnedValueController,
                 label: "إجمالي الأرباح",
-                currency: wallet.currency,
+                currency: widget.wallet.currency,
                 color: Colors.green,
                 icon: Icons.trending_up_rounded,
-                value: wallet.totalEarned.toString(),
+                value: widget.wallet.totalEarned.toString(),
               ),
             ),
             _buildResponsiveItem(
               constraints,
               CustomWalletInfoCard(
+                isEditing: widget.isEditing,
+                onValueChanged: (value) {
+                  widget.wallet.payoutPending = double.tryParse(value) ?? 0;
+                },
+                onCurrencyChanged: (value) {
+                  widget.wallet.currency = value;
+                },
+                currencyController: currencyController,
+                valueController: payoutPending,
                 label: "المبالغ المعلقة",
-                currency: wallet.currency,
+                currency: widget.wallet.currency,
                 color: Colors.orange,
                 icon: Icons.hourglass_empty_rounded,
-                value: wallet.payoutPending.toString(),
+                value: widget.wallet.payoutPending.toString(),
               ),
             ),
           ],

@@ -43,7 +43,9 @@ import 'package:sintir_dashboard/Features/Support/Domain/Repos/SupportAnalyticsR
 import 'package:sintir_dashboard/Features/Support/Domain/Repos/SupportChatRepo.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Repos/SupportTicketsRepo.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Data/Repos/UserDetailRepoImpl.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Data/Repos/UserWalletRepoImpl.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Domain/Repos/UserDetailRepo.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Domain/Repos/UserWalletRepo.dart';
 import 'package:sintir_dashboard/Features/UsersManagement/Data/Repos/UsersRepoImpl.dart';
 import 'package:sintir_dashboard/Features/UsersManagement/Domain/Repos/UsersRepo.dart';
 
@@ -141,5 +143,8 @@ void setup_Getit() {
       firebaseAuthService: getIt<FirebaseAuthService>(),
       dataBaseService: getIt<DataBaseService>(),
     ),
+  );
+  getIt.registerLazySingleton<UserWalletRepo>(
+    () => UserWalletRepoImpl(dataBaseService: getIt<DataBaseService>()),
   );
 }

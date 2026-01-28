@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 
-class BirthDatePickerField extends StatefulWidget {
-  const BirthDatePickerField({
+class DatePickerField extends StatefulWidget {
+  const DatePickerField({
     super.key,
     required this.onDateChanged,
     required this.initialDate,
@@ -12,10 +12,10 @@ class BirthDatePickerField extends StatefulWidget {
   final ValueChanged<DateTime?> onDateChanged;
   final String initialDate;
   @override
-  State<BirthDatePickerField> createState() => _BirthDatePickerFieldState();
+  State<DatePickerField> createState() => _DatePickerFieldState();
 }
 
-class _BirthDatePickerFieldState extends State<BirthDatePickerField> {
+class _DatePickerFieldState extends State<DatePickerField> {
   DateTime? pickedDate;
 
   void showdatepicker() {
@@ -73,6 +73,10 @@ class _BirthDatePickerFieldState extends State<BirthDatePickerField> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final Color borderColor = isDark ? Colors.white10 : const Color(0xFFE4E6E8);
+    final Color fillBg = isDark
+        ? Colors.white.withOpacity(0.02)
+        : const Color(0xFFF8F9FA);
 
     return InkWell(
       onTap: showdatepicker,
@@ -80,25 +84,23 @@ class _BirthDatePickerFieldState extends State<BirthDatePickerField> {
         height: 56,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF2A2A2A) : const Color(0xffF9FAFA),
+          color: fillBg,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isDark ? Colors.grey.shade700 : const Color(0xffF9FAFA),
-            width: 2,
-          ),
+          border: Border.all(color: borderColor, width: 1),
         ),
         child: ListTile(
           title: Text(
             getBirthDate(),
-            style: AppTextStyles(context).bold14.copyWith(
-              color: pickedDate == null
+            style: AppTextStyles(context).regular14.copyWith(
+              color: pickedDate == null && widget.initialDate.isEmpty
                   ? (isDark ? Colors.white54 : const Color(0xffAEAEB2))
-                  : (isDark ? Colors.white70 : Colors.grey.shade700),
+                  : (isDark ? Colors.white : Colors.grey.shade700),
             ),
           ),
           leading: Icon(
-            Icons.date_range_outlined,
-            color: isDark ? Colors.white70 : const Color(0xFF6C6C70),
+            Icons.calendar_month_outlined,
+            size: 20,
+            color: theme.primaryColor.withOpacity(0.7),
           ),
         ),
       ),
@@ -106,12 +108,12 @@ class _BirthDatePickerFieldState extends State<BirthDatePickerField> {
   }
 
   String getBirthDate() {
-    if (pickedDate != null && widget.initialDate.isEmpty) {
+    if (pickedDate != null) {
       return "${pickedDate!.day}/${pickedDate!.month}/${pickedDate!.year}";
     } else if (pickedDate == null && widget.initialDate.isNotEmpty) {
       return widget.initialDate;
     } else {
-      return "تاريخ الميلاد";
+      return "أختر التاريخ";
     }
   }
 }
