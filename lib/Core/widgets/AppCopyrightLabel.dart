@@ -7,7 +7,7 @@ class AppCopyrightLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      "جميع الحقوق محفوظة لموقع سينتير 2026",
+      "جميع الحقوق محفوظة لموقع سينتير ${DateTime.now().year}",
       textAlign: TextAlign.center,
       style: AppTextStyles(
         context,

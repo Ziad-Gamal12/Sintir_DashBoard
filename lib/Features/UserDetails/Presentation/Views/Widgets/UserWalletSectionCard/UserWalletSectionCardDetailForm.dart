@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomTeaxtField.dart';
 import 'package:sintir_dashboard/Core/widgets/DatePickerField.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/TeacherWalletEntity.dart';
+import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/UserWalletSectionCard/CustomWalletStatusSelectorsWrap.dart';
 
 class UserWalletSectionCardDetailForm extends StatelessWidget {
   final WalletEntity wallet;
@@ -46,6 +47,12 @@ class UserWalletSectionCardDetailForm extends StatelessWidget {
           onDateChanged: (value) {
             wallet.createdAt = value.toString();
             onDateChanged();
+          },
+        ),
+        CustomWalletStatusSelectorsWrap(
+          initialStatus: wallet.status,
+          onStatusChanged: (val) {
+            wallet.status = val;
           },
         ),
         CustomTextField(

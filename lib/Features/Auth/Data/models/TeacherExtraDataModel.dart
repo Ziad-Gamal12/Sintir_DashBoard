@@ -13,8 +13,8 @@ class TeacherExtraDataModel {
 
   factory TeacherExtraDataModel.fromJson(Map<String, dynamic> json) {
     return TeacherExtraDataModel(
-      subject: json['subject'],
-      workExperience: json['workExperience'],
+      subject: json['subject'] ?? "",
+      workExperience: json['workExperience'] ?? "",
       wallet: json['wallet'],
     );
   }

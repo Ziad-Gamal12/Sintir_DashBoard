@@ -32,10 +32,10 @@ class TeacherWalletModel {
       totalEarned: (json['total_earned'] as num).toDouble(),
       payoutPending: (json['payout_pending'] as num).toDouble(),
       currency: json['currency'],
-      status: json['status'],
+      status: json['status'] ?? '',
       createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-      lastTransactionId: json['last_transaction_id'],
+      updatedAt: json['updated_at'] ?? '',
+      lastTransactionId: json['last_transaction_id'] ?? '',
     );
   }
   factory TeacherWalletModel.fromEntity(WalletEntity teacherWalletEntity) {

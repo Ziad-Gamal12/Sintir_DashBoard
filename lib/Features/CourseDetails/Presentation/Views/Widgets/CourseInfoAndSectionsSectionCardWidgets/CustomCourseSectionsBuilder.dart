@@ -13,11 +13,14 @@ class CustomCourseSectionsBuilder extends StatelessWidget {
     super.key,
     required this.course,
     required this.sections,
+    this.shrinkWrap = false,
+    this.physics = const BouncingScrollPhysics(),
   });
 
   final CourseEntity course;
   final List<CourseSectionEntity> sections;
-
+  final bool shrinkWrap;
+  final ScrollPhysics physics;
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CourseSectionsCubit, CourseSectionsState>(
@@ -42,7 +45,8 @@ class CustomCourseSectionsBuilder extends StatelessWidget {
             );
           }
           return ListView.separated(
-            physics: const BouncingScrollPhysics(),
+            physics: physics,
+            shrinkWrap: shrinkWrap,
             itemCount: (state is GetCourseSectionsLoading && state.isPaginate)
                 ? sections.length + 1
                 : sections.length,

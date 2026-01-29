@@ -32,14 +32,12 @@ class CustomCourseSectionsCardHeader extends StatelessWidget {
         ),
         const SizedBox(width: 12),
 
-        // 2. Title (Wrapped in Expanded to prevent overflow)
         Expanded(
           child: Text(
             title,
-            maxLines: 1, // Keep it on one line
-            overflow: TextOverflow.ellipsis, // Add "..." if text is too long
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: textStyles.semiBold16.copyWith(
-              // Slightly smaller for better fit
               color: theme.textTheme.bodyLarge?.color,
             ),
           ),

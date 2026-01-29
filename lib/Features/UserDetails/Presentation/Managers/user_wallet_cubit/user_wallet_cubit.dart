@@ -17,6 +17,8 @@ class UserWalletCubit extends Cubit<UserWalletState> {
          'payoutPending': initialWallet.payoutPending,
          'lastTransactionId': initialWallet.lastTransactionId,
          'createdAt': initialWallet.createdAt,
+         "updatedAt": initialWallet.updatedAt,
+         "status": initialWallet.status,
        },
        super(UserWalletInitial());
 
@@ -31,6 +33,8 @@ class UserWalletCubit extends Cubit<UserWalletState> {
         _initialData['walletId'] == updatedWallet.walletId &&
         _initialData['balance'] == updatedWallet.balance &&
         _initialData['currency'] == updatedWallet.currency &&
+        _initialData['updatedAt'] == updatedWallet.updatedAt &&
+        _initialData['status'] == updatedWallet.status &&
         _initialData['totalEarned'] == updatedWallet.totalEarned &&
         _initialData['payoutPending'] == updatedWallet.payoutPending &&
         _initialData['lastTransactionId'] == updatedWallet.lastTransactionId &&
@@ -40,13 +44,11 @@ class UserWalletCubit extends Cubit<UserWalletState> {
       emit(SetUserWalletSuccess());
       return;
     }
-
     emit(SetUserWalletLoading());
     final result = await walletRepo.setTeacherWallet(
       userID: userID,
       walletEntity: updatedWallet,
     );
-
     result.fold(
       (failure) => emit(SetUserWalletFailure(errMessage: failure.message)),
       (r) {
@@ -62,7 +64,9 @@ class UserWalletCubit extends Cubit<UserWalletState> {
     _initialData['currency'] = updated.currency;
     _initialData['totalEarned'] = updated.totalEarned;
     _initialData['payoutPending'] = updated.payoutPending;
+    _initialData['updatedAt'] = DateTime.now().toString();
     _initialData['lastTransactionId'] = updated.lastTransactionId;
     _initialData['createdAt'] = updated.createdAt;
+    _initialData['status'] = updated.status;
   }
 }

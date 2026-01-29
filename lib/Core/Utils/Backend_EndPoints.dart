@@ -9,6 +9,7 @@ class BackendEndpoints {
   static const String rejectedStatus = "Rejected";
   static const String blockedStatus = "Blocked";
   static const String walletActive = "active";
+  static const String walletPending = "pending";
   static const String walletSuspended = "suspended";
   static const String walletClosed = "closed";
   static String studentRole = "Student";

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/widgets/CourseTableWidgets/CustomCourseTable.dart';
+import 'package:sintir_dashboard/Core/widgets/CustomEmptyWidget.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomErrorWidget.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Managers/user_details_cubit/user_details_cubit.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/CustomUserActivityCardIsRow.dart';
@@ -30,6 +31,13 @@ class UserDetailsMainContent extends StatelessWidget {
               if (state is GetUserEnrolledCoursesFailure) {
                 return Center(
                   child: CustomErrorWidget(errormessage: state.errmessage),
+                );
+              } else if (state is GetUserEnrolledCoursesSuccess &&
+                  context.read<UserDetailsCubit>().userCourses.isEmpty) {
+                return const Center(
+                  child: CustomEmptyWidget(
+                    text: "لا يوجد كورسات لهذا المستخدم",
+                  ),
                 );
               }
               return ResponsiveCourseTable(

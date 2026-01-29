@@ -22,7 +22,7 @@ class _DatePickerFieldState extends State<DatePickerField> {
     showDatePicker(
       context: context,
       firstDate: DateTime(1990),
-      lastDate: DateTime(2025),
+      lastDate: DateTime.now(),
       initialEntryMode: DatePickerEntryMode.calendar,
       builder: (context, child) {
         final theme = Theme.of(context);

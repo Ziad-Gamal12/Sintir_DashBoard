@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Views/Widgets/CustomAddCourseShadowButton.dart';
 
 class CoursesManagmentHeader extends StatelessWidget {
   const CoursesManagmentHeader({super.key});
@@ -33,7 +32,6 @@ class CoursesManagmentHeader extends StatelessWidget {
             ],
           ),
         ),
-        CustomAddCourseShadowButton(),
       ],
     );
   }
