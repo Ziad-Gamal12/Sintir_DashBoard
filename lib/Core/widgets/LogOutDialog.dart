@@ -2,9 +2,11 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/Services/FireBase/FirebaseAuth_Service.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomButton.dart';
+import 'package:sintir_dashboard/Features/Auth/Presentation/Views/SignInView.dart';
 
 class LogoutDialog extends StatelessWidget {
   const LogoutDialog({super.key});
@@ -12,7 +14,6 @@ class LogoutDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final bool isDark = theme.brightness == Brightness.dark;
 
     // Theme-aware colors
     final Color dialogBackgroundColor =
@@ -45,7 +46,9 @@ class LogoutDialog extends StatelessWidget {
               child: Custombutton(
                 onPressed: () async {
                   await FirebaseAuthService().signout();
-                  if (context.mounted) {}
+                  if (context.mounted) {
+                    GoRouter.of(context).go(SignInView.routeName);
+                  }
                 },
                 text: "تأكيد",
                 color: confirmButtonColor,

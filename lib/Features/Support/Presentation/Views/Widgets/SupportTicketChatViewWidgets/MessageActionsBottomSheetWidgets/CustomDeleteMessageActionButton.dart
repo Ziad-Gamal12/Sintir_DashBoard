@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
 import 'package:sintir_dashboard/Core/Helper/ShowSnackBar.dart';
+import 'package:sintir_dashboard/Core/Permissions/Permissions%20Mapping.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomButton.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Entities/SupportChatMessageEntity.dart';
 import 'package:sintir_dashboard/Features/Support/Presentation/Managers/support_chat_cubit/support_chat_cubit.dart';
@@ -23,6 +25,18 @@ class _CustomDeleteMessageActionButtonState
     extends State<CustomDeleteMessageActionButton> {
   @override
   Widget build(BuildContext context) {
+    final user = getUserData();
+
+    final bool canDelete = PermissionsManager.can(
+      Permission.replyTickets,
+      role: user.role,
+      status: user.status,
+    );
+
+    if (!canDelete) {
+      return const SizedBox.shrink();
+    }
+
     return BlocConsumer<SupportChatCubit, SupportChatState>(
       buildWhen: (previous, current) {
         return current is RemoveMessageFailure ||

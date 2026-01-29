@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
 import 'package:sintir_dashboard/Core/Helper/ShowSnackBar.dart';
+import 'package:sintir_dashboard/Core/Permissions/Permissions%20Mapping.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Entities/SupportChatMessageEntity.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Entities/SupportSenderEntity.dart';
@@ -36,13 +37,26 @@ class _CustomSupportChatSendMessageSectionState
 
   @override
   void dispose() {
-    super.dispose();
     controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
+
+    // Check permission to reply
+    final bool canReply = PermissionsManager.can(
+      Permission.replyTickets,
+      role: userEntity.role,
+      status: userEntity.status,
+    );
+
+    // If no permission, hide the entire input section
+    if (!canReply) {
+      return const SizedBox.shrink();
+    }
+
     return BlocListener<SupportChatCubit, SupportChatState>(
       listener: (context, state) {
         if (state is PickAndUploadMessageImageFailure) {
@@ -68,7 +82,6 @@ class _CustomSupportChatSendMessageSectionState
         child: IntrinsicHeight(
           child: Container(
             padding: const EdgeInsets.all(8),
-
             decoration: BoxDecoration(
               color: theme.cardColor.withOpacity(0.4),
               borderRadius: BorderRadius.circular(20),

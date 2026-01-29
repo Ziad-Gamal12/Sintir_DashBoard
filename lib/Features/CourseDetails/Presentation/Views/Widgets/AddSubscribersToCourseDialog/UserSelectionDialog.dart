@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
+import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
 import 'package:sintir_dashboard/Core/Helper/ShowSnackBar.dart';
+import 'package:sintir_dashboard/Core/Permissions/Permissions%20Mapping.dart';
+import 'package:sintir_dashboard/Core/widgets/AccessDeniedWidget.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomSearchTextField.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/add_subscribers_to_course_cubit/add_subscribers_to_course_cubit.dart';
@@ -32,10 +35,19 @@ class _UserSelectionDialogState extends State<UserSelectionDialog> {
   @override
   void initState() {
     super.initState();
-    final cubit = context.read<UsersManagementCubit>();
-    cubit.getUsers(isPaginate: false);
+    
+    final user = getUserData();
+    final bool canAdd = PermissionsManager.can(
+      Permission.editCourse,
+      role: user.role,
+      status: user.status,
+    );
 
-    _scrollController.addListener(_onScroll);
+    if (canAdd) {
+      final cubit = context.read<UsersManagementCubit>();
+      cubit.getUsers(isPaginate: false);
+      _scrollController.addListener(_onScroll);
+    }
   }
 
   void _onScroll() {
@@ -52,8 +64,8 @@ class _UserSelectionDialogState extends State<UserSelectionDialog> {
     if (_debouncer?.isActive ?? false) _debouncer!.cancel();
     _debouncer = Timer(const Duration(milliseconds: 500), () {
       context.read<UsersManagementCubit>().filterUsers(
-        FilterUsersQueryEntity(keyword: query),
-      );
+            FilterUsersQueryEntity(keyword: query),
+          );
     });
   }
 
@@ -78,10 +90,27 @@ class _UserSelectionDialogState extends State<UserSelectionDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return BlocListener<
-      AddSubscribersToCourseCubit,
-      AddSubscribersToCourseState
-    >(
+    final user = getUserData();
+    
+    final bool canAdd = PermissionsManager.can(
+      Permission.editCourse,
+      role: user.role,
+      status: user.status,
+    );
+
+    if (!canAdd) {
+      return Dialog(
+        backgroundColor: theme.cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: const SizedBox(
+          width: 450,
+          height: 400,
+          child: AccessDeniedWidgetAr(featureNameAr: "إضافة مشتركين"),
+        ),
+      );
+    }
+
+    return BlocListener<AddSubscribersToCourseCubit, AddSubscribersToCourseState>(
       listener: (context, state) {
         if (state is AddSubscribersToCourseFailure) {
           CustomSnackBar.show(
@@ -102,7 +131,10 @@ class _UserSelectionDialogState extends State<UserSelectionDialog> {
         width: MediaQuery.of(context).size.width * 0.45,
         height: MediaQuery.of(context).size.height * 0.8,
         padding: const EdgeInsets.all(24),
-        color: theme.cardColor,
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(24),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -130,9 +162,9 @@ class _UserSelectionDialogState extends State<UserSelectionDialog> {
               selectedCount: _selectedUsers.length,
               onConfirm: () {
                 context.read<AddSubscribersToCourseCubit>().addSubscribers(
-                  usersEntity: _selectedUsers,
-                  course: widget.courseEntity,
-                );
+                      usersEntity: _selectedUsers,
+                      course: widget.courseEntity,
+                    );
               },
             ),
           ],

@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Helper/AppPadding.dart';
+import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
+import 'package:sintir_dashboard/Core/Permissions/Permissions%20Mapping.dart';
 import 'package:sintir_dashboard/Core/Services/get_it_Service.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseAnalyticsRepo.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseAnalyticsCubit/course_analytics_cubit.dart';
@@ -17,6 +19,15 @@ class CourseDetailsBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = getUserData();
+    
+    // Check permission for sensitive analytics data
+    final bool canViewAnalytics = PermissionsManager.can(
+      Permission.viewAnalytics,
+      role: user.role,
+      status: user.status,
+    );
+
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: AppPadding.horizontal(context),
@@ -26,25 +37,33 @@ class CourseDetailsBody extends StatelessWidget {
         value: course,
         child: CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(child: CourseDetailsHeader()),
-            SliverToBoxAdapter(child: Divider(height: 48)),
-            BlocProvider(
-              create: (context) => CourseAnalyticsCubit(
-                courseAnalyticsRepo: getIt<CourseAnalyticsRepo>(),
-              ),
-              child: CourseDetailsSummaryCardsGrid(courseId: course.id),
-            ),
-            SliverToBoxAdapter(child: Divider(height: 48)),
+            const SliverToBoxAdapter(child: CourseDetailsHeader()),
+            const SliverToBoxAdapter(child: Divider(height: 48)),
+            if (canViewAnalytics)
+              BlocProvider(
+                create: (context) => CourseAnalyticsCubit(
+                  courseAnalyticsRepo: getIt<CourseAnalyticsRepo>(),
+                ), // Trigger fetch only if permitted
+                child: CourseDetailsSummaryCardsGrid(courseId: course.id),
+              )
+            else
+              const SliverToBoxAdapter(child: SizedBox.shrink()),
+
+            if (canViewAnalytics) const SliverToBoxAdapter(child: Divider(height: 48)),
+
+            // 3. Info Section: Always visible
             SliverToBoxAdapter(
               child: CourseDetailsSectionAndInstructorLayoutBuilder(
                 course: course,
               ),
             ),
 
-            SliverToBoxAdapter(child: Divider(height: 48)),
-            SliverToBoxAdapter(
-              child: CourseAnalyticsAndEngagementAdaptiveLayout(course: course),
-            ),
+            if (canViewAnalytics) ...[
+              const SliverToBoxAdapter(child: Divider(height: 48)),
+              SliverToBoxAdapter(
+                child: CourseAnalyticsAndEngagementAdaptiveLayout(course: course),
+              ),
+            ],
           ],
         ),
       ),

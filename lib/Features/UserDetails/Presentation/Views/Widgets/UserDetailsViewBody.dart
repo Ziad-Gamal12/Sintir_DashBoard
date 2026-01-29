@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/Helper/AppPadding.dart';
+import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
 import 'package:sintir_dashboard/Core/Helper/ShowSnackBar.dart';
+import 'package:sintir_dashboard/Core/Permissions/Permissions%20Mapping.dart';
 import 'package:sintir_dashboard/Core/Services/get_it_Service.dart';
+import 'package:sintir_dashboard/Core/widgets/AccessDeniedWidget.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Domain/Repos/UserDetailRepo.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Managers/user_details_cubit/user_details_cubit.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/CustomUserInfoCard/CustomUserInfoCard.dart';
@@ -18,7 +21,20 @@ class UserDetailsViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = getUserData();
     final bool isWideLayout = MediaQuery.sizeOf(context).width > 1100;
+
+    final bool canViewDetails = PermissionsManager.can(
+      Permission.viewUsers,
+      role: user.role,
+      status: user.status,
+    );
+
+    if (!canViewDetails) {
+      return const AccessDeniedWidgetAr(
+        featureNameAr: "تفاصيل المستخدم والمعاملات",
+      );
+    }
 
     return BlocProvider(
       create: (context) =>
@@ -57,14 +73,13 @@ class UserDetailsViewBody extends StatelessWidget {
                     : UserDetailsMobileLayout(userID: userId),
               ),
               const SliverToBoxAdapter(child: SizedBox(height: 32)),
-              SliverToBoxAdapter(child: CustomUserWalletSecion()),
+              const SliverToBoxAdapter(child: CustomUserWalletSecion()),
               const SliverToBoxAdapter(child: SizedBox(height: 32)),
-              SliverToBoxAdapter(
+              const SliverToBoxAdapter(
                 child: SectionHeader(title: "المعاملات المالية"),
               ),
-              SliverToBoxAdapter(child: const SizedBox(height: 16)),
-
-              UserTransactionsSliverGrid(),
+              const SliverToBoxAdapter(child: SizedBox(height: 16)),
+              const UserTransactionsSliverGrid(),
             ],
           ),
         ),

@@ -64,29 +64,6 @@ class AccessDeniedWidgetAr extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 40),
-
-              // Premium Action Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: onActionPressed ?? () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isDarkMode
-                        ? const Color(0xFF32323D)
-                        : const Color(0xFF1E1E26),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: isDarkMode
-                          ? const BorderSide(color: Colors.white10)
-                          : BorderSide.none,
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text('العودة للخلف', style: styles.semiBold16),
-                ),
-              ),
             ],
           ),
         ),

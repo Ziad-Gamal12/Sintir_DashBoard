@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
 import 'package:sintir_dashboard/Core/Helper/ShowSnackBar.dart';
+import 'package:sintir_dashboard/Core/Permissions/Permissions%20Mapping.dart';
+import 'package:sintir_dashboard/Core/widgets/AccessDeniedWidget.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomButton.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomTeaxtField.dart';
 import 'package:sintir_dashboard/Core/widgets/Custom_Loading_Widget.dart';
@@ -45,6 +48,20 @@ class _UpdateMessageBottomSheetBodyState
 
   @override
   Widget build(BuildContext context) {
+    final user = getUserData();
+    final bool canEditMessage = PermissionsManager.can(
+      Permission.replyTickets,
+      role: user.role,
+      status: user.status,
+    );
+
+    if (!canEditMessage) {
+      return const SizedBox(
+        height: 300,
+        child: AccessDeniedWidgetAr(featureNameAr: "تعديل الرسالة"),
+      );
+    }
+
     return BlocListener<SupportChatCubit, SupportChatState>(
       listener: (context, state) {
         if (state is UpdateMessageContentSuccess) {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
+import 'package:sintir_dashboard/Core/Permissions/Permissions%20Mapping.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomButton.dart';
 import 'package:sintir_dashboard/Core/widgets/Custom_Loading_Widget.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
@@ -17,6 +19,18 @@ class EditUserActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = getUserData();
+
+    final bool canEdit = PermissionsManager.can(
+      Permission.editUser,
+      role: user.role,
+      status: user.status,
+    );
+
+    if (!canEdit) {
+      return const SizedBox.shrink();
+    }
+
     return BlocSelector<EditUserCubit, EditUserState, bool>(
       selector: (state) => state is EditUserLoading,
       builder: (context, isLoading) {

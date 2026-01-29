@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
+import 'package:sintir_dashboard/Core/Permissions/Permissions%20Mapping.dart';
 import 'package:sintir_dashboard/Core/Services/get_it_Service.dart';
 import 'package:sintir_dashboard/Core/repos/CoursesRepo/CoursesRepo.dart';
+import 'package:sintir_dashboard/Core/widgets/AccessDeniedWidget.dart';
 import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Manager/courses_management_cubit/courses_management_cubit.dart';
 import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Views/Widgets/CoursesManagmentBodyHandler.dart';
 
@@ -10,10 +13,19 @@ class CoursesManagmentBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = getUserData();
+    final bool hasAccess = PermissionsManager.can(
+      Permission.viewCourses,
+      role: user.role,
+      status: user.status,
+    );
+    if (!hasAccess) {
+      return const AccessDeniedWidgetAr(featureNameAr: "إدارة الكورسات");
+    }
     return BlocProvider(
       create: (context) =>
           CoursesManagementCubit(coursesrepo: getIt<Coursesrepo>()),
-      child: CoursesManagmentBodyHandler(),
+      child: const CoursesManagmentBodyHandler(),
     );
   }
 }

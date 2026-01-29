@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:sintir_dashboard/Core/Themes/theme_cubit.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomDateHeader.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomToggleThemeIconButton.dart';
@@ -36,7 +38,12 @@ class CustomDesktopDashbaordLayoutAppBar extends StatelessWidget {
               Spacer(),
               CustomDateHeader(date: DateTime.now()),
               const SizedBox(width: 24),
-              CustomToggleThemeIconButton(),
+              InkWell(
+                onTap: () {
+                  context.read<ThemeCubit>().toggleTheme();
+                },
+                child: CustomToggleThemeIconButton(),
+              ),
             ],
           ),
           Divider(height: 32),

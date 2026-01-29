@@ -5,6 +5,7 @@ import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
 import 'package:sintir_dashboard/Core/widgets/AppVersionLabel.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomUserListTile.dart';
 import 'package:sintir_dashboard/Core/widgets/Drawer/CustomDrawerItem.dart';
+import 'package:sintir_dashboard/Core/widgets/LogOutDialog.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
 import 'package:sintir_dashboard/constant.dart';
 
@@ -116,7 +117,9 @@ class _CustomDrawerBodyState extends State<CustomDrawerBody> {
         border: Border.all(color: Colors.red.withOpacity(0.3)),
       ),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          showDialog(context: context, builder: (context) => LogoutDialog());
+        },
         borderRadius: BorderRadius.circular(12),
         child: CustomDrawerItem(
           isSelected: false,
