@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseReportsItemEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseReportsResponseEntity.dart';
-import 'package:sintir_dashboard/Core/errors/Failures.dart';
+import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 
 abstract class CourseReportsRepo {
   Future<Either<Failure, GetCourseReportsResponseEntity>> getCourseReports({

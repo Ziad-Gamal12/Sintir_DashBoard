@@ -3,7 +3,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseSectionEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseSectionsResonseEntity.dart';
-import 'package:sintir_dashboard/Core/errors/Failures.dart';
+import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 
 abstract class CourseSectionsRepo {
   Future<Either<Failure, void>> addCourseSection({

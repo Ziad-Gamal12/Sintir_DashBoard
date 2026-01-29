@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:sintir_dashboard/Core/errors/Exceptioons.dart';
+import 'package:sintir_dashboard/Core/Errors/Exceptioons.dart';
 
 class FirebaseAuthService {
   FirebaseAuth auth = FirebaseAuth.instance;

@@ -5,7 +5,7 @@ import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseTestItemEnti
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseTestItemEntities/CourseTestQuestionEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseTestItemEntities/TestResulteEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetExamResultsReponseEntity.dart';
-import 'package:sintir_dashboard/Core/errors/Failures.dart';
+import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 
 abstract class Testitemrepo {
   Future<Either<Failure, void>> uploadTestQuestionsImages({

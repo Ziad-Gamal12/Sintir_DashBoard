@@ -7,12 +7,12 @@ import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseVideoItemEnt
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseVideoItemEntities/VideoNoteEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetVideoItemNotesResponseEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStoreRequirmentsEntity.dart';
+import 'package:sintir_dashboard/Core/Errors/Exceptioons.dart';
+import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 import 'package:sintir_dashboard/Core/Models/VideoItemModels/VideoNoteModel.dart';
 import 'package:sintir_dashboard/Core/Services/DataBaseService.dart';
 import 'package:sintir_dashboard/Core/Services/StorageService.dart';
 import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
-import 'package:sintir_dashboard/Core/errors/Exceptioons.dart';
-import 'package:sintir_dashboard/Core/errors/Failures.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/Video-Item-Repo/VideoItemRepo.dart';
 
 class VideoItemRepoImpli implements VideoItemRepo {

@@ -7,14 +7,14 @@ import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseVideoItemEnt
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStorePaginateResponse.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStoreRequirmentsEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/JoinedByEntity.dart';
+import 'package:sintir_dashboard/Core/Errors/Exceptioons.dart';
+import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 import 'package:sintir_dashboard/Core/Models/FileItemModels/CoursefileModel.dart';
 import 'package:sintir_dashboard/Core/Models/JoinedByModel.dart';
 import 'package:sintir_dashboard/Core/Models/TestItemModels/CourseTestModel.dart';
 import 'package:sintir_dashboard/Core/Models/VideoItemModels/CoursevedioitemModel.dart';
 import 'package:sintir_dashboard/Core/Services/DataBaseService.dart';
 import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
-import 'package:sintir_dashboard/Core/errors/Exceptioons.dart';
-import 'package:sintir_dashboard/Core/errors/Failures.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/SectionItemsActionsRepo/SectionItemsActionRepo.dart';
 
 class SectionItemsActionsRepoImpli implements SectionItemsActionsRepo {

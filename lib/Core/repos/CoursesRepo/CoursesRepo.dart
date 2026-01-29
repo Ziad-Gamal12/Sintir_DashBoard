@@ -8,7 +8,7 @@ import 'package:dartz/dartz.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/FilterCoursesQueryEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseResonseEntity.dart';
-import 'package:sintir_dashboard/Core/errors/Failures.dart';
+import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 
 abstract class Coursesrepo {
   Future<Either<Failure, void>> addCourse({required CourseEntity courseEntity});

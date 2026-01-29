@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:dartz/dartz.dart';
-import 'package:sintir_dashboard/Core/errors/Failures.dart';
+import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
 
 abstract class AuthRepo {

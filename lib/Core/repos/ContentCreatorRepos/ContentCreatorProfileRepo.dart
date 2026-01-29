@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
-import 'package:sintir_dashboard/Core/errors/Failures.dart';
+import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 
 abstract class ContentCreatorProfileRepo {
   Future<Either<Failure, List<CourseEntity>>> getContentCreatorCourses({

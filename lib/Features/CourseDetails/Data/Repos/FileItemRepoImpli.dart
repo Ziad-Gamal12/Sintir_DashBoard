@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseFileItemEntities/CourseFileEntity.dart';
+import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 import 'package:sintir_dashboard/Core/Services/StorageService.dart';
-import 'package:sintir_dashboard/Core/errors/Failures.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/File-Item-Repo/FileItemRepo.dart';
 
 class FileItemRepoImpli implements FileItemRepo {

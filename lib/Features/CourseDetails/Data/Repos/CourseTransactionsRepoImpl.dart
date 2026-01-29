@@ -3,11 +3,11 @@ import 'package:dartz/dartz.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/FetchTransactionsResponseEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStoreRequirmentsEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/Transactions/TransactionEntity.dart';
+import 'package:sintir_dashboard/Core/Errors/Exceptioons.dart';
+import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 import 'package:sintir_dashboard/Core/Models/Transactions/TransactionModel.dart';
 import 'package:sintir_dashboard/Core/Services/DataBaseService.dart';
 import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
-import 'package:sintir_dashboard/Core/errors/Exceptioons.dart';
-import 'package:sintir_dashboard/Core/errors/Failures.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseTransactionsRepo.dart';
 
 class CourseTransactionsRepoImpl implements CourseTransactionsRepo {

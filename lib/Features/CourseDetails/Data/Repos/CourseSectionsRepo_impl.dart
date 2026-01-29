@@ -9,14 +9,14 @@ import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseTestItemEnti
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseVideoItemEntities/CourseVedioItemEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseSectionsResonseEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStoreRequirmentsEntity.dart';
+import 'package:sintir_dashboard/Core/Errors/Exceptioons.dart';
+import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 import 'package:sintir_dashboard/Core/Models/CourseSectionModel.dart';
 import 'package:sintir_dashboard/Core/Models/FileItemModels/CoursefileModel.dart';
 import 'package:sintir_dashboard/Core/Models/TestItemModels/CourseTestModel.dart';
 import 'package:sintir_dashboard/Core/Models/VideoItemModels/CoursevedioitemModel.dart';
 import 'package:sintir_dashboard/Core/Services/DataBaseService.dart';
 import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
-import 'package:sintir_dashboard/Core/errors/Exceptioons.dart';
-import 'package:sintir_dashboard/Core/errors/Failures.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseSectionsRepos/CourseSectionsRepo.dart';
 
 class CourseSectionsRepoImpl implements CourseSectionsRepo {

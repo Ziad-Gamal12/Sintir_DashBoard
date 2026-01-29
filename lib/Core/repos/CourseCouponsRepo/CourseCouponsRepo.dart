@@ -3,7 +3,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseCouponEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseCouponsResponseEntity.dart';
-import 'package:sintir_dashboard/Core/errors/Failures.dart';
+import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 
 abstract class CourseCouponsRepo {
   Future<Either<Failure, GetCourseCouponsResponseEntity>> getCourseCoupons({

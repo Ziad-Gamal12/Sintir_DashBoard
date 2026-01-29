@@ -4,7 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseVideoItemEntities/CourseVedioItemEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseVideoItemEntities/VideoNoteEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetVideoItemNotesResponseEntity.dart';
-import 'package:sintir_dashboard/Core/errors/Failures.dart';
+import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 
 abstract class VideoItemRepo {
   Future<Either<Failure, String>> uploadVideo({

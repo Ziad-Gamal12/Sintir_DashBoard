@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:sintir_dashboard/Core/errors/Failures.dart';
+import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/TeacherWalletEntity.dart';
 
 abstract class UserWalletRepo {

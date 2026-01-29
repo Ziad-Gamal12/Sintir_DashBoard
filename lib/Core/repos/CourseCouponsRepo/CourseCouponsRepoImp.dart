@@ -4,11 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseCouponEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseCouponsResponseEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStoreRequirmentsEntity.dart';
+import 'package:sintir_dashboard/Core/Errors/Exceptioons.dart';
+import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 import 'package:sintir_dashboard/Core/Models/CourseCouponModel.dart';
 import 'package:sintir_dashboard/Core/Services/DataBaseService.dart';
 import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
-import 'package:sintir_dashboard/Core/errors/Exceptioons.dart';
-import 'package:sintir_dashboard/Core/errors/Failures.dart';
 import 'package:sintir_dashboard/Core/repos/CourseCouponsRepo/CourseCouponsRepo.dart';
 
 class CourseCouponsRepoImp implements CourseCouponsRepo {

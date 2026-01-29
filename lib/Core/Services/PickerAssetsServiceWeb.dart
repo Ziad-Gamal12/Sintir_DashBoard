@@ -5,8 +5,8 @@ import 'dart:typed_data';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:sintir_dashboard/Core/Entities/imagePickerResult.dart';
+import 'package:sintir_dashboard/Core/Errors/Exceptioons.dart';
 import 'package:sintir_dashboard/Core/Services/picker_assets_interface.dart';
-import 'package:sintir_dashboard/Core/errors/Exceptioons.dart';
 
 class PickerAssetsService implements PickerAssetsInterface {
   @override

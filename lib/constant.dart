@@ -2,8 +2,6 @@
 
 import 'package:flutter/material.dart';
 
-/// UI Constants
-
 const Color KMainColor = Color(0xff4169E2);
 const Color KSecondaryColor = Color(0xffff8c1a);
 const String currentVersion = "1.0.0";
