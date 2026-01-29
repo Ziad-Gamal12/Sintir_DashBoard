@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sintir_dashboard/constant.dart';
 
 class AppTheme {
   // -----------------------------
@@ -8,19 +7,19 @@ class AppTheme {
   static final ThemeData light = ThemeData(
     brightness: Brightness.light,
     fontFamily: "Cairo",
-    primaryColor: KMainColor,
+    primaryColor: Color(0xff4169E2),
     scaffoldBackgroundColor: Colors.white,
     useMaterial3: true,
     colorScheme: const ColorScheme.light().copyWith(
-      primary: KMainColor,
-      secondary: KSecondaryColor,
+      primary: Color(0xff4169E2),
+      secondary: Color(0xffff8c1a),
       surface: Colors.white,
       onSurface: Colors.black,
     ),
     scrollbarTheme: ScrollbarThemeData(
       thickness: WidgetStateProperty.all(6),
       radius: const Radius.circular(10),
-      thumbColor: WidgetStateProperty.all(KMainColor.withOpacity(0.3)),
+      thumbColor: WidgetStateProperty.all(Color(0xff4169E2).withOpacity(0.3)),
       thumbVisibility: WidgetStateProperty.all(false),
       interactive: true,
     ),
@@ -50,7 +49,7 @@ class AppTheme {
     dividerTheme: DividerThemeData(color: Colors.grey.shade300),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Colors.white,
-      selectedItemColor: KMainColor,
+      selectedItemColor: Color(0xff4169E2),
       unselectedItemColor: Colors.grey,
     ),
   );
@@ -58,21 +57,21 @@ class AppTheme {
   static final ThemeData dark = ThemeData(
     brightness: Brightness.dark,
     fontFamily: "Cairo",
-    primaryColor: KMainColor,
+    primaryColor: Color(0xff4169E2),
 
     // Background: Neutral Deep Charcoal (No blue tint)
     scaffoldBackgroundColor: const Color(0xFF0F0F12),
     scrollbarTheme: ScrollbarThemeData(
       thickness: WidgetStateProperty.all(6),
       radius: const Radius.circular(10),
-      thumbColor: WidgetStateProperty.all(KMainColor.withOpacity(0.3)),
+      thumbColor: WidgetStateProperty.all(Color(0xff4169E2).withOpacity(0.3)),
       thumbVisibility: WidgetStateProperty.all(false),
       interactive: true,
     ),
     useMaterial3: true,
     colorScheme: const ColorScheme.dark().copyWith(
-      primary: KMainColor,
-      secondary: KSecondaryColor,
+      primary: Color(0xff4169E2),
+      secondary: Color(0xffff8c1a),
       // Surface: Slightly lighter charcoal for cards/modals
       surface: const Color(0xFF18181C),
       onSurface: Colors.white,
@@ -113,7 +112,7 @@ class AppTheme {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: KMainColor.withOpacity(0.5)),
+        borderSide: BorderSide(color: Color(0xff4169E2).withOpacity(0.5)),
       ),
       hintStyle: const TextStyle(color: Colors.white38, fontSize: 13),
       labelStyle: const TextStyle(color: Colors.white60),
@@ -135,7 +134,7 @@ class AppTheme {
     // BOTTOM NAVIGATION
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Color(0xFF0F0F12),
-      selectedItemColor: KMainColor,
+      selectedItemColor: Color(0xff4169E2),
       unselectedItemColor: Colors.white30,
       type: BottomNavigationBarType.fixed,
       elevation: 0,
