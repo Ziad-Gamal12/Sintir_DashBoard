@@ -16,10 +16,6 @@ class ContentCreatorCoursesGridDisplayedCourses extends StatelessWidget {
     return SliverToBoxAdapter(
       child: LayoutBuilder(
         builder: (context, constraints) {
-          // 1. Logic for a side-sheet (typically ~35% width)
-          // On a standard desktop (1920px), 35% is ~670px.
-          // On smaller screens, it could be ~400px.
-
           int crossAxisCount;
           double aspectRatio;
 
