@@ -3,7 +3,7 @@
 import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:sintir_dashboard/Core/Errors/Exceptioons.dart';
+import 'package:sintir_dashboard/Core/Errors/Exceptions.dart';
 import 'package:sintir_dashboard/Core/Services/StorageService.dart';
 import 'package:sintir_dashboard/Core/Services/picker_assets_interface.dart';
 

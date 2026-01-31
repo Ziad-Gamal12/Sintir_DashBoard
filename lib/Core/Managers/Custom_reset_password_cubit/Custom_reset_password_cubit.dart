@@ -2,7 +2,7 @@
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:sintir_dashboard/Core/Errors/Exceptioons.dart';
+import 'package:sintir_dashboard/Core/Errors/Exceptions.dart';
 import 'package:sintir_dashboard/Core/repos/ResetPaswordRepo/ResetPaswordRepo.dart';
 
 part 'Custom_reset_password_state.dart';

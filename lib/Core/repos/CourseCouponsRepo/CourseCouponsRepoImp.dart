@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseCouponEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseCouponsResponseEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStoreRequirmentsEntity.dart';
-import 'package:sintir_dashboard/Core/Errors/Exceptioons.dart';
+import 'package:sintir_dashboard/Core/Errors/Exceptions.dart';
 import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 import 'package:sintir_dashboard/Core/Models/CourseCouponModel.dart';
 import 'package:sintir_dashboard/Core/Services/DataBaseService.dart';

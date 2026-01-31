@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseReportsItemEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseReportsResponseEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStoreRequirmentsEntity.dart';
-import 'package:sintir_dashboard/Core/Errors/Exceptioons.dart';
+import 'package:sintir_dashboard/Core/Errors/Exceptions.dart';
 import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 import 'package:sintir_dashboard/Core/Models/CoursereportsitemModel.dart';
 import 'package:sintir_dashboard/Core/Services/DataBaseService.dart';

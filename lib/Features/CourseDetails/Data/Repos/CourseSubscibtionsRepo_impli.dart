@@ -7,7 +7,7 @@ import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart'
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/SubscriberEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseSubscribersEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStoreRequirmentsEntity.dart';
-import 'package:sintir_dashboard/Core/Errors/Exceptioons.dart';
+import 'package:sintir_dashboard/Core/Errors/Exceptions.dart';
 import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 import 'package:sintir_dashboard/Core/Models/CourseModel.dart';
 import 'package:sintir_dashboard/Core/Models/SubscriberModel.dart';
