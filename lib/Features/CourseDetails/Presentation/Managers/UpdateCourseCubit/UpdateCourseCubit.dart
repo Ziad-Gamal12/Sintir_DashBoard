@@ -1,6 +1,5 @@
 // ignore_for_file: depend_on_referenced_packages
 
-import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
@@ -53,7 +52,6 @@ class UpdateCourseCubit extends Cubit<UpdateCourseCubitState> {
         (success) => emit(UpdateCourseCubitSuccess()),
       );
     } catch (e) {
-      log(e.toString());
       emit(UpdateCourseCubitFailure("حدث خطأ ما، يرجى المحاولة مرة أخرى"));
     }
   }

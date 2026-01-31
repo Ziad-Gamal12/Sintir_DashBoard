@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
@@ -24,7 +22,6 @@ class UserDetailsCubit extends Cubit<UserDetailsState> {
 
   Future<void> getUserDetails({required String userID}) async {
     emit(GetUserDetailsLoading());
-    log(userID);
     final result = await userDetailRepo.getUser(userID: userID);
     result.fold(
       (failure) {

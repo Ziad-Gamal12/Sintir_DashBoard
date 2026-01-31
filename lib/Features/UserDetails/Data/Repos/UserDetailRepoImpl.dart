@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
@@ -54,7 +52,6 @@ class UserDetailsRepoImpl implements UserDetailsRepo {
           docId: userID,
         ),
       );
-      log(resulte.docData.toString());
       final user = UserModel.fromJson(resulte.docData!).toEntity();
       return right(user);
     } on CustomException catch (e) {

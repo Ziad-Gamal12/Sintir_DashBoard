@@ -1,6 +1,5 @@
 // ignore_for_file: file_names, depend_on_referenced_packages
 
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
@@ -63,7 +62,6 @@ class AuthRepoImpl implements AuthRepo {
         return const Right(null);
       }
     } on FirebaseAuthException catch (e) {
-      log(e.toString());
       await authService.signout();
       if (e.code == 'too-many-requests') {
         return Left(
@@ -77,7 +75,6 @@ class AuthRepoImpl implements AuthRepo {
       await authService.signout();
       return Left(ServerFailure(message: e.message));
     } catch (e, s) {
-      log(e.toString(), stackTrace: s);
       await authService.signout();
       return Left(_toFailure(e, s));
     }
@@ -134,8 +131,6 @@ class AuthRepoImpl implements AuthRepo {
         value: userJson,
       );
     } catch (e) {
-      log(e.toString());
-
       throw CustomException(
         message: "حدث خطأ أثناء حفظ بيانات المستخدم محلياً",
       );
@@ -201,13 +196,9 @@ class AuthRepoImpl implements AuthRepo {
           );
       }
     } on CustomException catch (e) {
-      log(e.toString());
-
       await authService.signout();
       return Left(ServerFailure(message: e.message));
     } catch (e) {
-      log(e.toString());
-
       await authService.signout();
       return Left(_toFailure(e));
     }
