@@ -9,7 +9,7 @@ UserEntity getUserData() {
   Map<String, dynamic> userJson = Hive_Services.jsonGetter(
     key: BackendEndpoints.storeUserLocaly,
   );
-  if (userJson == {}) {
+  if (userJson.isEmpty) {
     return UserEntity.empty();
   } else {
     UserEntity userEntity = UserModel.fromJson(userJson).toEntity();

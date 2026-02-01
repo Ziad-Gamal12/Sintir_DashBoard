@@ -2,6 +2,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/ContentCreaterEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
+import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
+import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/CustomResetPasswordView.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/SignInView.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/SignUpView.dart';
@@ -15,9 +17,32 @@ import 'package:sintir_dashboard/Features/Support/Presentation/Views/ResponsiveT
 import 'package:sintir_dashboard/Features/Support/Presentation/Views/SupportChatMobileView.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/ResponsiveUserDetailsView.dart';
 import 'package:sintir_dashboard/Features/UsersManagement/Presentation/Views/ResponsiveUsersManagementView.dart';
+import 'package:sintir_dashboard/core/widgets/AppErrorView.dart';
 
 class App_router {
   static GoRouter router = GoRouter(
+    initialLocation: SplashView.routeName,
+    errorPageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: AppErrorView(exception: state.error),
+      );
+    },
+    redirect: (context, state) {
+      final user = getUserData();
+      final bool loggedIn =
+          user.uid.isNotEmpty && user.status == BackendEndpoints.activeStatus;
+      final String currentLocation = state.matchedLocation;
+      final String loginPath = SignInView.routeName;
+      final String dashboardPath = ResponsiveDashboardView.routeName;
+      if (!loggedIn && currentLocation != loginPath) {
+        return loginPath;
+      }
+      if (loggedIn && currentLocation == loginPath) {
+        return dashboardPath;
+      }
+      return null;
+    },
     routes: <RouteBase>[
       GoRoute(
         path: SplashView.routeName,
