@@ -8,6 +8,7 @@ import 'package:sintir_dashboard/Core/widgets/Drawer/CustomDrawerItem.dart';
 import 'package:sintir_dashboard/Core/widgets/LogOutDialog.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
 import 'package:sintir_dashboard/constant.dart';
+import 'package:sintir_dashboard/core/widgets/Drawer/CustomToggleThemeWidget.dart';
 
 class CustomDrawerBody extends StatefulWidget {
   const CustomDrawerBody({
@@ -94,8 +95,9 @@ class _CustomDrawerBodyState extends State<CustomDrawerBody> {
                   },
                 ),
               ),
+              Divider(color: subtleDivider, height: 40, thickness: 1),
 
-              // Divider using the custom subtle color
+              CustomToggleThemeWidget(),
               Divider(color: subtleDivider, height: 40, thickness: 1),
 
               _buildLogoutButton(subtleDivider),
