@@ -6,7 +6,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sintir_dashboard/Core/Services/BlocObserver.dart';
 import 'package:sintir_dashboard/Core/Services/HiveService.dart';
 import 'package:sintir_dashboard/Core/Services/get_it_Service.dart';
 import 'package:sintir_dashboard/Core/Themes/app_theme.dart';
@@ -34,7 +33,6 @@ void main() async {
     Hive_Services.init(),
   ]);
 
-  Bloc.observer = Custom_Blocobserver();
   setup_Getit();
   runApp(SintirDashboard());
 }
