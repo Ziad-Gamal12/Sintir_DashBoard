@@ -65,6 +65,8 @@ dependencies:
 
 dev_dependencies:
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: "^0.14.4"
+
   flutter_test:
     sdk: flutter
 
@@ -120,3 +122,20 @@ flutter_assets:
     - assets/Icons/
   output_path: lib/Core/utils/
   filename: imageAssets.dart
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/Icons/SintiAppIcon.png"
+  min_sdk_android: 21 
+  web:
+    generate: true
+    image_path: "assets/Icons/SintiAppIcon.png"
+    background_color: "#ffffff00" 
+    theme_color: "#ffffff00"
+  windows:
+    generate: true
+    image_path: "assets/Icons/SintiAppIcon.png"
+    icon_size: 48 
+  macos:
+    generate: true
+    image_path: "assets/Icons/SintiAppIcon.png"

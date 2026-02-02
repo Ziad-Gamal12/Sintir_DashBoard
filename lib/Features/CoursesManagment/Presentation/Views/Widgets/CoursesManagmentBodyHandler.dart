@@ -61,17 +61,15 @@ class _CoursesManagmentBodyHandlerState
               return SliverToBoxAdapter(
                 child: SizedBox(
                   width: double.infinity,
-                  child: AspectRatio(
-                    aspectRatio: 3 / 2,
-                    child: ResponsiveCourseTable(
-                      isLoading: isLoading,
-                      onLoadMore: (rowIndex) {
-                        if (cubit.hasMore && !isLoading) {
-                          cubit.getCourses(isPaginate: true);
-                        }
-                      },
-                      courses: cubit.courses,
-                    ),
+                  height: 600,
+                  child: ResponsiveCourseTable(
+                    isLoading: isLoading,
+                    onLoadMore: (rowIndex) {
+                      if (cubit.hasMore && !isLoading) {
+                        cubit.getCourses(isPaginate: true);
+                      }
+                    },
+                    courses: cubit.courses,
                   ),
                 ),
               );

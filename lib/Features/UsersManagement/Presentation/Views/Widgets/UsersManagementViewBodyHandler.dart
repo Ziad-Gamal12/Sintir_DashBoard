@@ -57,18 +57,16 @@ class _UsersManagementViewBodyHandlerState
               return SliverToBoxAdapter(
                 child: SizedBox(
                   width: double.infinity,
-                  child: AspectRatio(
-                    aspectRatio: 3 / 2,
-                    child: ResponsiveUsersTable(
-                      users: cubit.users,
-                      isLoading: state is GetUsersManagementLoading,
-                      onLoadMore: (val) {
-                        if (cubit.hasMore &&
-                            state is! GetUsersManagementLoading) {
-                          cubit.getUsers(isPaginate: true);
-                        }
-                      },
-                    ),
+                  height: 600,
+                  child: ResponsiveUsersTable(
+                    users: cubit.users,
+                    isLoading: state is GetUsersManagementLoading,
+                    onLoadMore: (val) {
+                      if (cubit.hasMore &&
+                          state is! GetUsersManagementLoading) {
+                        cubit.getUsers(isPaginate: true);
+                      }
+                    },
                   ),
                 ),
               );

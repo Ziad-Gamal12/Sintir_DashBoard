@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/Helper/AppPadding.dart';
-import 'package:sintir_dashboard/Core/Services/FireBase/FirebaseAuth_Service.dart';
+import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
+import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/AppCopyrightLabel.dart';
 import 'package:sintir_dashboard/Core/widgets/AppVersionLabel.dart';
@@ -57,14 +58,15 @@ class _SplashViewBodyState extends State<SplashViewBody> {
   }
 
   void initNavigator() async {
-    bool isLogin = await FirebaseAuthService().isLoggedIn();
-    Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      if (isLogin) {
-        GoRouter.of(context).go(ResponsiveDashboardView.routeName);
-      } else {
-        GoRouter.of(context).go(SignInView.routeName);
-      }
-    });
+    await Future.delayed(const Duration(seconds: 3));
+    if (!mounted) return;
+    final user = getUserData();
+    final bool loggedIn =
+        user.uid.isNotEmpty && user.status == BackendEndpoints.activeStatus;
+    if (loggedIn) {
+      context.go(ResponsiveDashboardView.routeName);
+    } else {
+      context.go(SignInView.routeName);
+    }
   }
 }

@@ -30,9 +30,12 @@ class App_router {
     },
     redirect: (context, state) {
       final user = getUserData();
+      final String currentLocation = state.matchedLocation;
+      if (currentLocation == SplashView.routeName) {
+        return null;
+      }
       final bool loggedIn =
           user.uid.isNotEmpty && user.status == BackendEndpoints.activeStatus;
-      final String currentLocation = state.matchedLocation;
       final String loginPath = SignInView.routeName;
       final String dashboardPath = ResponsiveDashboardView.routeName;
       if (!loggedIn && currentLocation != loginPath) {
@@ -41,6 +44,7 @@ class App_router {
       if (loggedIn && currentLocation == loginPath) {
         return dashboardPath;
       }
+
       return null;
     },
     routes: <RouteBase>[
