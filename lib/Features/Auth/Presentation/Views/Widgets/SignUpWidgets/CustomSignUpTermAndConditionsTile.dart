@@ -24,6 +24,7 @@ class _CustomSignUpTermAndConditionsTileState
       children: [
         // Using the custom checkbox
         Customcheckbox(
+          isChecked: isChecked,
           onChanged: (value) {
             setState(() {
               isChecked = value;
