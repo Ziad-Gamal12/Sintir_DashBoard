@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/ContentCreaterEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
-import 'package:sintir_dashboard/Core/Services/FireBase/FirebaseAuth_Service.dart';
 import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/CustomResetPasswordView.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/SignInView.dart';
@@ -29,23 +28,28 @@ class App_router {
         child: AppErrorView(exception: state.error),
       );
     },
-    redirect: (context, state) async {
+    redirect: (context, state) {
       final user = getUserData();
-      final bool authenticated = await FirebaseAuthService().isLoggedIn();
       final String currentLocation = state.matchedLocation;
-      if (currentLocation == SplashView.routeName) {
+      final List<String> publicRoutes = [
+        SplashView.routeName,
+        SignUpView.routeName,
+        SignInView.routeName,
+        CustomResetPasswordView.routeName,
+      ];
+      if (publicRoutes.contains(currentLocation)) {
         return null;
       }
-      final bool loggedIn =
-          (user.uid.isNotEmpty &&
-              user.status == BackendEndpoints.activeStatus) &&
-          authenticated;
+      final bool hasLocalSession =
+          user.uid.isNotEmpty && user.status == BackendEndpoints.activeStatus;
+
       final String loginPath = SignInView.routeName;
       final String dashboardPath = ResponsiveDashboardView.routeName;
-      if (!loggedIn && currentLocation != loginPath) {
+
+      if (!hasLocalSession && !publicRoutes.contains(currentLocation)) {
         return loginPath;
       }
-      if (loggedIn && currentLocation == loginPath) {
+      if (hasLocalSession && currentLocation == loginPath) {
         return dashboardPath;
       }
 
