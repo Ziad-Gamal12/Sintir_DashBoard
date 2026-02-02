@@ -23,7 +23,7 @@ class LogoutDialog extends StatelessWidget {
     final Color confirmTextColor = theme.colorScheme.onError;
     final Color cancelButtonColor = theme.scaffoldBackgroundColor;
     final Color cancelTextColor = primaryTextColor;
-    final BorderSide cancelButtonBorder = BorderSide(color: theme.dividerColor);
+    final BorderSide cancelButtonBorder = BorderSide(color: Colors.transparent);
 
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -46,9 +46,7 @@ class LogoutDialog extends StatelessWidget {
               child: Custombutton(
                 onPressed: () async {
                   await FirebaseAuthService().signout();
-                  if (context.mounted) {
-                    GoRouter.of(context).go(SignInView.routeName);
-                  }
+                  GoRouter.of(context).go(SignInView.routeName);
                 },
                 text: "تأكيد",
                 color: confirmButtonColor,

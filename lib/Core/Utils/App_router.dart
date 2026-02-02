@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/ContentCreaterEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
+import 'package:sintir_dashboard/Core/Services/FireBase/FirebaseAuth_Service.dart';
 import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/CustomResetPasswordView.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/SignInView.dart';
@@ -28,14 +29,17 @@ class App_router {
         child: AppErrorView(exception: state.error),
       );
     },
-    redirect: (context, state) {
+    redirect: (context, state) async {
       final user = getUserData();
+      final bool authenticated = await FirebaseAuthService().isLoggedIn();
       final String currentLocation = state.matchedLocation;
       if (currentLocation == SplashView.routeName) {
         return null;
       }
       final bool loggedIn =
-          user.uid.isNotEmpty && user.status == BackendEndpoints.activeStatus;
+          (user.uid.isNotEmpty &&
+              user.status == BackendEndpoints.activeStatus) &&
+          authenticated;
       final String loginPath = SignInView.routeName;
       final String dashboardPath = ResponsiveDashboardView.routeName;
       if (!loggedIn && currentLocation != loginPath) {
