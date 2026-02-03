@@ -33,6 +33,7 @@ class _SignUpUserGenderState extends State<SignUpUserGender> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -41,6 +42,7 @@ class _SignUpUserGenderState extends State<SignUpUserGender> {
             child: _buildGenderOption(
               label: "ذكر",
               value: "Male",
+              theme: theme,
               icon: FontAwesomeIcons.mars,
             ),
           ),
@@ -49,6 +51,7 @@ class _SignUpUserGenderState extends State<SignUpUserGender> {
             child: _buildGenderOption(
               label: "أنثى",
               value: "Female",
+              theme: theme,
               icon: FontAwesomeIcons.venus,
             ),
           ),
@@ -61,6 +64,7 @@ class _SignUpUserGenderState extends State<SignUpUserGender> {
     required String label,
     required String value,
     required IconData icon,
+    required ThemeData theme,
   }) {
     final bool isSelected = groupValue == value;
     return InkWell(
@@ -88,15 +92,15 @@ class _SignUpUserGenderState extends State<SignUpUserGender> {
             Icon(
               icon,
               size: 14,
-              color: isSelected ? KMainColor : Colors.white.withOpacity(0.4),
+              color: isSelected ? KMainColor : theme.iconTheme.color,
             ),
             const SizedBox(width: 8),
             Text(
               label,
               style: AppTextStyles(context).regular14.copyWith(
                 color: isSelected
-                    ? Colors.white
-                    : Colors.white.withOpacity(0.6),
+                    ? KMainColor
+                    : theme.textTheme.bodyMedium?.color,
               ),
             ),
           ],

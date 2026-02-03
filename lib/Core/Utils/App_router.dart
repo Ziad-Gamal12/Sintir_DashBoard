@@ -46,7 +46,7 @@ class App_router {
       final String loginPath = SignInView.routeName;
       final String dashboardPath = ResponsiveDashboardView.routeName;
 
-      if (!hasLocalSession && !publicRoutes.contains(currentLocation)) {
+      if (!hasLocalSession && currentLocation != loginPath) {
         return loginPath;
       }
       if (hasLocalSession && currentLocation == loginPath) {

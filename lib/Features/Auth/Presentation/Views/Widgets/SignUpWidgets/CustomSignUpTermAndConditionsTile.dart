@@ -19,6 +19,7 @@ class _CustomSignUpTermAndConditionsTileState
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -41,7 +42,7 @@ class _CustomSignUpTermAndConditionsTileState
                   text: "أوافق على ",
                   style: AppTextStyles(
                     context,
-                  ).regular13.copyWith(color: Colors.white.withOpacity(0.7)),
+                  ).regular13.copyWith(color: theme.textTheme.bodyLarge!.color),
                 ),
                 TextSpan(
                   text: "شروط الخدمة",
@@ -53,7 +54,7 @@ class _CustomSignUpTermAndConditionsTileState
                   text: " و ",
                   style: AppTextStyles(
                     context,
-                  ).regular13.copyWith(color: Colors.white.withOpacity(0.7)),
+                  ).regular13.copyWith(color: theme.textTheme.bodyLarge!.color),
                 ),
                 TextSpan(
                   text: "سياسة الخصوصية",

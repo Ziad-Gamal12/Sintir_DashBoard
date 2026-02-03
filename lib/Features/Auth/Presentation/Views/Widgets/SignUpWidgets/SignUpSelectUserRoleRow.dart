@@ -43,8 +43,7 @@ class _SignUpSelectUserRoleRowState extends State<SignUpSelectUserRoleRow> {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: GestureDetector(
               onTap: () {
-                if (selectedIndex == index)
-                  return; // Performance: Don't rebuild if same
+                if (selectedIndex == index) return;
                 setState(() => selectedIndex = index);
                 widget.onRoleSelected?.call(entity.value);
               },

@@ -6,6 +6,7 @@ import 'package:sintir_dashboard/Core/Helper/AppPadding.dart';
 import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
 import 'package:sintir_dashboard/Core/Permissions/Permissions%20Mapping.dart';
 import 'package:sintir_dashboard/Core/Services/get_it_Service.dart';
+import 'package:sintir_dashboard/Core/widgets/AccessDeniedWidget.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseAnalyticsRepo.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/CourseAnalyticsCubit/course_analytics_cubit.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/CourseAnalyticsAndEngagementAdaptiveLayout.dart';
@@ -20,14 +21,15 @@ class CourseDetailsBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = getUserData();
-    
-    // Check permission for sensitive analytics data
+
     final bool canViewAnalytics = PermissionsManager.can(
-      Permission.viewAnalytics,
+      Permission.viewCourses,
       role: user.role,
       status: user.status,
     );
-
+    if (!canViewAnalytics) {
+      return AccessDeniedWidgetAr(featureNameAr: "عرض تحليلات الكورس");
+    }
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: AppPadding.horizontal(context),
@@ -49,7 +51,8 @@ class CourseDetailsBody extends StatelessWidget {
             else
               const SliverToBoxAdapter(child: SizedBox.shrink()),
 
-            if (canViewAnalytics) const SliverToBoxAdapter(child: Divider(height: 48)),
+            if (canViewAnalytics)
+              const SliverToBoxAdapter(child: Divider(height: 48)),
 
             // 3. Info Section: Always visible
             SliverToBoxAdapter(
@@ -61,7 +64,9 @@ class CourseDetailsBody extends StatelessWidget {
             if (canViewAnalytics) ...[
               const SliverToBoxAdapter(child: Divider(height: 48)),
               SliverToBoxAdapter(
-                child: CourseAnalyticsAndEngagementAdaptiveLayout(course: course),
+                child: CourseAnalyticsAndEngagementAdaptiveLayout(
+                  course: course,
+                ),
               ),
             ],
           ],

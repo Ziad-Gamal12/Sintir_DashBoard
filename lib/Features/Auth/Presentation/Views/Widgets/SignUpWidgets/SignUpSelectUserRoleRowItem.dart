@@ -15,6 +15,7 @@ class SignUpSelectUserRoleRowItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
 
@@ -40,13 +41,15 @@ class SignUpSelectUserRoleRowItem extends StatelessWidget {
           Icon(
             entity.icon,
             size: 24,
-            color: isSelected ? KMainColor : Colors.white.withOpacity(0.7),
+            color: isSelected ? KMainColor : theme.iconTheme.color,
           ),
           const SizedBox(height: 12),
           Text(
             entity.role,
             style: AppTextStyles(context).medium12.copyWith(
-              color: isSelected ? Colors.white : Colors.white.withOpacity(0.5),
+              color: isSelected
+                  ? KMainColor
+                  : theme.textTheme.bodyMedium?.color,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
             textAlign: TextAlign.center,

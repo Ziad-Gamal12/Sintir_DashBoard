@@ -53,9 +53,12 @@ final getIt = GetIt.instance;
 
 void setup_Getit() {
   getIt.registerLazySingleton<Dio>(() => Dio());
+
   getIt.registerSingleton<FirebaseAuthService>(FirebaseAuthService());
   getIt.registerSingleton<PickerAssetsInterface>(PickerAssetsService());
   getIt.registerSingleton<DioService>(DioService());
+  getIt.registerSingleton<DataBaseService>(FirebaseFirestoreservice());
+
   getIt.registerSingleton<SupabaseAnalyticsService>(
     SupabaseAnalyticsService(getIt<DioService>()),
   );
@@ -63,13 +66,14 @@ void setup_Getit() {
     FireBaseStorageService(pickerassetsservice: getIt<PickerAssetsInterface>()),
   );
   getIt.registerSingleton<StorageService>(getIt<FireBaseStorageService>());
-  getIt.registerSingleton<DataBaseService>(FirebaseFirestoreservice());
-  getIt.registerLazySingleton<AuthRepo>(
-    () => AuthRepoImpl(
+
+  getIt.registerSingleton<AuthRepo>(
+    AuthRepoImpl(
       authService: getIt<FirebaseAuthService>(),
       databaseservice: getIt<DataBaseService>(),
     ),
   );
+
   getIt.registerLazySingleton<ResetPaswordRepo>(
     () => ResetPaswordRepoImp(authService: FirebaseAuth.instance),
   );
@@ -80,18 +84,22 @@ void setup_Getit() {
       dataBaseService: getIt<DataBaseService>(),
     ),
   );
+
   getIt.registerLazySingleton<CourseAnalyticsService>(
     () => CourseAnalyticsService(getIt<DioService>()),
   );
+
   getIt.registerLazySingleton<Coursesrepo>(
     () => CoursesrepoImpl(
       databaseservice: getIt<DataBaseService>(),
       storageService: getIt<StorageService>(),
     ),
   );
+
   getIt.registerLazySingleton<CourseSectionsRepo>(
     () => CourseSectionsRepoImpl(datebaseservice: getIt<DataBaseService>()),
   );
+
   getIt.registerLazySingleton<ContentCreatorProfileRepo>(
     () => ContentCreatorProfileRepoImpl(
       dataBaseService: getIt<DataBaseService>(),
@@ -103,6 +111,7 @@ void setup_Getit() {
       courseAnalyticsService: getIt<CourseAnalyticsService>(),
     ),
   );
+
   getIt.registerLazySingleton<CourseReportsRepo>(
     () => CourseReportsRepoimpli(databaseservice: getIt<DataBaseService>()),
   );
@@ -110,12 +119,15 @@ void setup_Getit() {
   getIt.registerLazySingleton<CourseFeedBacksRepo>(
     () => CourseFeedBacksRepoImpli(databaseservice: getIt<DataBaseService>()),
   );
+
   getIt.registerLazySingleton<CourseTransactionsRepo>(
     () => CourseTransactionsRepoImpl(databaseService: getIt<DataBaseService>()),
   );
+
   getIt.registerLazySingleton<SupportTicketsRepo>(
     () => SupportTicketsRepoImpl(dataBaseService: getIt<DataBaseService>()),
   );
+
   getIt.registerLazySingleton<SupportChatRepo>(
     () => SupportChatRepoImpl(
       dataBaseService: getIt<DataBaseService>(),
@@ -123,27 +135,33 @@ void setup_Getit() {
       storageService: getIt<StorageService>(),
     ),
   );
+
   getIt.registerLazySingleton<SupportAnalyticsService>(
     () => SupportAnalyticsService(getIt<DioService>()),
   );
+
   getIt.registerLazySingleton<SupportAnalyticsRepo>(
     () => SupportAnalyticsRepoImpl(
       supportAnalyticsService: getIt<SupportAnalyticsService>(),
     ),
   );
+
   getIt.registerLazySingleton<UsersRepo>(
     () => UsersRepoImpl(dataBaseService: getIt<DataBaseService>()),
   );
+
   getIt.registerLazySingleton<CourseSubscibtionsRepo>(
     () =>
         CourseSubscriptionsRepoImpl(databaseService: getIt<DataBaseService>()),
   );
+
   getIt.registerLazySingleton<UserDetailsRepo>(
     () => UserDetailsRepoImpl(
       firebaseAuthService: getIt<FirebaseAuthService>(),
       dataBaseService: getIt<DataBaseService>(),
     ),
   );
+
   getIt.registerLazySingleton<UserWalletRepo>(
     () => UserWalletRepoImpl(dataBaseService: getIt<DataBaseService>()),
   );

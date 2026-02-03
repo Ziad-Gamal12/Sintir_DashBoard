@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,7 +24,7 @@ class AuthRepoImpl implements AuthRepo {
   final DataBaseService databaseservice;
 
   AuthRepoImpl({required this.authService, required this.databaseservice});
-
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   Failure _toFailure(Object e, [StackTrace? s]) {
     if (e is CustomException) return ServerFailure(message: e.message);
     return ServerFailure(message: "حدث خطأ غير متوقع، يرجى المحاولة لاحقاً");
@@ -355,5 +356,29 @@ class AuthRepoImpl implements AuthRepo {
     } catch (e, s) {
       return Left(_toFailure(e, s));
     }
+  }
+
+  @override
+  Stream<Either<Failure, UserEntity>> watchUser({required String uid}) {
+    return firestore
+        .collection(BackendEndpoints.usersCollectionName)
+        .doc(uid)
+        .snapshots()
+        .distinct((prev, curr) => mapEquals(prev.data(), curr.data()))
+        .asyncMap((snapshot) async {
+          try {
+            if (snapshot.exists && snapshot.data() != null) {
+              final userData = snapshot.data()!;
+              final user = UserModel.fromJson(userData).toEntity();
+              await storeUserLocally(UserModel.fromEntity(user).toMap());
+
+              return Right(user);
+            } else {
+              return Left(ServerFailure(message: "User not found"));
+            }
+          } catch (e) {
+            return Left(ServerFailure(message: e.toString()));
+          }
+        });
   }
 }

@@ -22,4 +22,5 @@ abstract class AuthRepo {
   Future<Either<Failure, void>> resetPassword({required String email});
   Future<Either<Failure, void>> fetchUserAndStoreLocally({required String uid});
   Future<String> getDeviceId();
+  Stream<Either<Failure, UserEntity>> watchUser({required String uid});
 }
