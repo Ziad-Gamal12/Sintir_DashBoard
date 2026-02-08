@@ -56,48 +56,44 @@ class _CustomFilterUsersSectionState extends State<CustomFilterUsersSection> {
               ],
             ),
             const SizedBox(height: 16),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _buildSearchField(),
-                  const SizedBox(width: 24),
-                  _buildFilterDropdown(
-                    hint: "الدور",
-                    options: UsersFilterConstants.getRolesFilters(),
-                    onChanged: (valEn) {
-                      setState(() {
-                        filters.role = valEn;
-                      });
-                      widget.onFilter(filters);
-                    },
-                  ),
-                  const SizedBox(width: 12),
-                  _buildFilterDropdown(
-                    hint: "الحالة",
-                    options: UsersFilterConstants.getUsersStatusFilters(),
-                    onChanged: (valEn) {
-                      setState(() {
-                        filters.status = valEn;
-                      });
-                      widget.onFilter(filters);
-                    },
-                  ),
-                  const SizedBox(width: 12),
-                  _buildFilterDropdown(
-                    hint: "الجنس",
-                    options: UsersFilterConstants.getGenderFilters(),
-                    onChanged: (valEn) {
-                      setState(() {
-                        filters.gender = valEn;
-                      });
-                      widget.onFilter(filters);
-                    },
-                  ),
-                ],
-              ),
+            Wrap(
+              alignment: WrapAlignment.start,
+              children: [
+                _buildSearchField(),
+                const SizedBox(width: 24),
+                _buildFilterDropdown(
+                  hint: "الدور",
+                  options: UsersFilterConstants.getRolesFilters(),
+                  onChanged: (valEn) {
+                    setState(() {
+                      filters.role = valEn;
+                    });
+                    widget.onFilter(filters);
+                  },
+                ),
+                const SizedBox(width: 12),
+                _buildFilterDropdown(
+                  hint: "الحالة",
+                  options: UsersFilterConstants.getUsersStatusFilters(),
+                  onChanged: (valEn) {
+                    setState(() {
+                      filters.status = valEn;
+                    });
+                    widget.onFilter(filters);
+                  },
+                ),
+                const SizedBox(width: 12),
+                _buildFilterDropdown(
+                  hint: "الجنس",
+                  options: UsersFilterConstants.getGenderFilters(),
+                  onChanged: (valEn) {
+                    setState(() {
+                      filters.gender = valEn;
+                    });
+                    widget.onFilter(filters);
+                  },
+                ),
+              ],
             ),
           ],
         ),

@@ -57,52 +57,48 @@ class _CustomFilterCoursesSectionState
               ],
             ),
             const SizedBox(height: 16),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _buildSearchField(),
-                  const SizedBox(width: 24),
-                  _buildFilterDropdown(
-                    hint: "المادة الدراسية",
-                    options: CourseFilterConstants.getSubjectFilters(),
-                    onChanged: (valEn) {
-                      setState(() {
-                        filters.subject = valEn;
-                      });
-                      widget.onFilterChanged(filters);
-                    },
-                  ),
-                  const SizedBox(width: 12),
+            Wrap(
+              alignment: WrapAlignment.start,
+              children: [
+                _buildSearchField(),
+                const SizedBox(width: 24),
+                _buildFilterDropdown(
+                  hint: "المادة الدراسية",
+                  options: CourseFilterConstants.getSubjectFilters(),
+                  onChanged: (valEn) {
+                    setState(() {
+                      filters.subject = valEn;
+                    });
+                    widget.onFilterChanged(filters);
+                  },
+                ),
+                const SizedBox(width: 12),
 
-                  // 3. Level Filter
-                  _buildFilterDropdown(
-                    hint: "المستوى الدراسي",
-                    options: CourseFilterConstants.getLevelFilters(),
-                    onChanged: (valEn) {
-                      setState(() {
-                        filters.level = valEn;
-                      });
-                      widget.onFilterChanged(filters);
-                    },
-                  ),
-                  const SizedBox(width: 12),
+                // 3. Level Filter
+                _buildFilterDropdown(
+                  hint: "المستوى الدراسي",
+                  options: CourseFilterConstants.getLevelFilters(),
+                  onChanged: (valEn) {
+                    setState(() {
+                      filters.level = valEn;
+                    });
+                    widget.onFilterChanged(filters);
+                  },
+                ),
+                const SizedBox(width: 12),
 
-                  // 4. Status Filter
-                  _buildFilterDropdown(
-                    hint: "حالة الكورس",
-                    options: CourseFilterConstants.getStatusFilters(),
-                    onChanged: (valEn) {
-                      setState(() {
-                        filters.state = valEn;
-                      });
-                      widget.onFilterChanged(filters);
-                    },
-                  ),
-                ],
-              ),
+                // 4. Status Filter
+                _buildFilterDropdown(
+                  hint: "حالة الكورس",
+                  options: CourseFilterConstants.getStatusFilters(),
+                  onChanged: (valEn) {
+                    setState(() {
+                      filters.state = valEn;
+                    });
+                    widget.onFilterChanged(filters);
+                  },
+                ),
+              ],
             ),
           ],
         ),
