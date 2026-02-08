@@ -58,6 +58,7 @@ class _CustomFilterUsersSectionState extends State<CustomFilterUsersSection> {
             const SizedBox(height: 16),
             Wrap(
               alignment: WrapAlignment.start,
+              spacing: 12,
               children: [
                 _buildSearchField(),
                 const SizedBox(width: 24),

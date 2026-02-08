@@ -59,6 +59,8 @@ class _CustomFilterCoursesSectionState
             const SizedBox(height: 16),
             Wrap(
               alignment: WrapAlignment.start,
+              spacing: 12,
+
               children: [
                 _buildSearchField(),
                 const SizedBox(width: 24),
@@ -131,7 +133,7 @@ class _CustomFilterCoursesSectionState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 200,
+          width: 240,
           height: 48,
           child: CustomAnimatedDropDownButton(
             items: options.map((e) => e.labelAr).toList(),
