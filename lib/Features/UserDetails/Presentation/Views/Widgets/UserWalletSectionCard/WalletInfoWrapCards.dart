@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/TeacherWalletEntity.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/UserWalletSectionCard/CustomWalletInfoCard.dart';
 import 'package:sintir_dashboard/constant.dart';

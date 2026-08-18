@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomButton.dart';
@@ -29,7 +29,7 @@ class NoWalletPlaceholder extends StatelessWidget {
               color: KMainColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: const FaIcon(
               FontAwesomeIcons.wallet,
               color: KMainColor,
               size: 40,

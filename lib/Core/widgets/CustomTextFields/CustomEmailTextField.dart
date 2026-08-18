@@ -1,6 +1,6 @@
 // ignore_for_file: must_be_immutable, file_names
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomTeaxtField.dart';
 

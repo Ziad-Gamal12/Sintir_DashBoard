@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/Managers/Custom_reset_password_cubit/Custom_reset_password_cubit.dart';
 import 'package:sintir_dashboard/Core/Services/get_it_Service.dart';

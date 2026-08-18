@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Core/Entities/CustomDrawerEntity.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
@@ -6,11 +6,10 @@ import 'package:sintir_dashboard/constant.dart';
 
 class CustomDrawerItem extends StatelessWidget {
   const CustomDrawerItem({
-    // Removed mutable 'color' and 'ignore' tag
     super.key,
     required this.drawerItem,
     required this.isSelected,
-    this.overrideColor, // Renamed for clarity
+    this.overrideColor, 
   });
 
   final CustomDrawerEntity drawerItem;

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/ContentCreaterEntity.dart';
 import 'package:sintir_dashboard/Core/widgets/Custom%20Course%20Widgets/CustomContentCreatorCircleAvartar.dart';
 

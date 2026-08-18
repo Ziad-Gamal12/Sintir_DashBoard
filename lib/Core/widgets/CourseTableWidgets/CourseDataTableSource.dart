@@ -1,5 +1,5 @@
 import 'package:data_table_2/data_table_2.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
@@ -22,7 +22,6 @@ class CourseDataTableSource extends DataTableSource {
     if (index >= courses.length) return null;
     final course = courses[index];
     final textStyles = AppTextStyles(context);
-
     return DataRow2(
       onTap: () {
         GoRouter.of(

@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Core/Models/CardAnalyticsModels/AnalyticsCardViewModel.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Data/Mappers/analytics_card_mapper.dart';
@@ -80,7 +81,7 @@ class DashboardSummaryStatCard extends StatelessWidget {
                                 ),
                                 borderRadius: BorderRadius.circular(14),
                               ),
-                              child: Icon(
+                              child: FaIcon(
                                 summaryCardEntity.icon,
                                 color: summaryCardEntity.color,
                                 size: 20,

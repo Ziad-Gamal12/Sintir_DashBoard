@@ -1,5 +1,5 @@
 import 'package:data_table_2/data_table_2.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/CourseTableWidgets/CourseDataTableSource.dart';

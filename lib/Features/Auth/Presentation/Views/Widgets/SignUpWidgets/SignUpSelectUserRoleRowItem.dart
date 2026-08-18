@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/SignUpUserRoleEntity.dart';
 import 'package:sintir_dashboard/constant.dart'; // Assuming KMainColor is here
@@ -38,7 +39,7 @@ class SignUpSelectUserRoleRowItem extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
+          FaIcon(
             entity.icon,
             size: 24,
             color: isSelected ? KMainColor : theme.iconTheme.color,

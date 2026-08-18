@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sintir_dashboard/Core/Themes/theme_cubit.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomDateHeader.dart';

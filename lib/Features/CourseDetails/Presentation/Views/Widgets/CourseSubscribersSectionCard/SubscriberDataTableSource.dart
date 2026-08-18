@@ -1,5 +1,5 @@
 import 'package:data_table_2/data_table_2.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/SubscriberEntity.dart';
@@ -14,6 +14,7 @@ class SubscriberDataTableSource extends DataTableSource {
   SubscriberDataTableSource(this.subscribers, this.context, this.deleteUser);
 
   @override
+
   DataRow? getRow(int index) {
     if (index >= subscribers.length) return null;
     final user = subscribers[index];

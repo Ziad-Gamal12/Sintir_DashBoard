@@ -1,11 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/constant.dart';
 
 class CustomTextField extends StatelessWidget {
   final String hintText;
-  final IconData? prefixIcon;
+  final dynamic prefixIcon;
   final Widget? suffixIcon;
   final bool obscureText;
   final TextEditingController? controller;
@@ -60,16 +61,7 @@ class CustomTextField extends StatelessWidget {
 
         filled: true,
         fillColor: fillBg,
-        prefixIcon: prefixIcon != null
-            ? Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Icon(
-                  prefixIcon,
-                  size: 20,
-                  color: theme.primaryColor.withOpacity(0.7),
-                ),
-              )
-            : null,
+        prefixIcon: getPrefixWidget(icon: prefixIcon, color: theme.primaryColor.withOpacity(0.7)),
         prefixIconConstraints: const BoxConstraints(minWidth: 40, minHeight: 0),
 
         suffixIcon: suffixIcon,
@@ -99,4 +91,27 @@ class CustomTextField extends StatelessWidget {
       ),
     );
   }
+}
+Widget getPrefixWidget({required dynamic icon,required Color color}){
+   if(icon is IconData){
+    return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Icon(
+                  icon,
+                  size: 20,
+                  color:color,
+                ),
+              );
+   }else if (icon is FaIconData){
+  return  Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: FaIcon(
+                  icon,
+                  size: 20,
+                  color:color,
+                ),
+              );
+   }else {
+    return SizedBox();
+   }
 }

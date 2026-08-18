@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CustomDrawerEntity {
   final String title;
-  final IconData icon;
+  final FaIconData icon;
 
   CustomDrawerEntity({required this.title, required this.icon});
 

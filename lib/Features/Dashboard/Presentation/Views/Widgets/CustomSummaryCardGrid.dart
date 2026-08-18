@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Domain/Entities/DashboardSummaryCardEntity.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Presentation/Views/Widgets/DashboardSummaryStatCard.dart';
 

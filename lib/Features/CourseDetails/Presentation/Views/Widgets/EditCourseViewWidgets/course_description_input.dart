@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomTeaxtField.dart';
 
 class CourseDescriptionInput extends StatelessWidget {

@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/FilterCoursesQueryEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FilterOptionEntity.dart';
-import 'package:sintir_dashboard/Core/widgets/CustomAnimatedDropDownButton.dart';
+import 'package:sintir_dashboard/Core/widgets/CustomDropDownButton/CustomAnimatedDropDownButton.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomCard.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomSearchTextField.dart';
 import 'package:sintir_dashboard/Features/CoursesManagment/Domain/Entities/CourseFilterConstants.dart';

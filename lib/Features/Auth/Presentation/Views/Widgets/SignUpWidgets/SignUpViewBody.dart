@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/SignUpWidgets/SignUpSection.dart';

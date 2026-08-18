@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/widgets/Drawer/CustomDrawerBody.dart';
 import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Views/ResponsiveCoursesManagmentView.dart';

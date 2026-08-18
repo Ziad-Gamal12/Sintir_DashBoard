@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 
 class CustomUserActivityCardItem extends StatelessWidget {
@@ -14,7 +15,7 @@ class CustomUserActivityCardItem extends StatelessWidget {
   final String value;
   final String title;
   final Color color;
-  final IconData icon;
+  final FaIconData icon;
   final String? unit;
 
   @override
@@ -67,7 +68,7 @@ class CustomUserActivityCardItem extends StatelessWidget {
         color: color.withOpacity(0.12),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Icon(icon, color: color, size: 24),
+      child: FaIcon(icon, color: color, size: 24),
     );
   }
 

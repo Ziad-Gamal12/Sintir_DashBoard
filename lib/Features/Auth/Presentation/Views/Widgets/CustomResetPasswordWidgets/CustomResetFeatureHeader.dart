@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/InfoHighlightIconCard.dart';
@@ -12,7 +12,7 @@ class CustomResetFeatureHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const InfoHighlightIconCard(
+         InfoHighlightIconCard(
           icon: FontAwesomeIcons.key,
           color: Colors.amberAccent,
         ),

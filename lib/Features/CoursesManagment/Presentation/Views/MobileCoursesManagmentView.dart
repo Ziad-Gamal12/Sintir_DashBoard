@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomAppBar.dart';
 import 'package:sintir_dashboard/Core/widgets/Drawer/CustomDrawer.dart';
 import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Views/Widgets/CoursesManagmentBody.dart';

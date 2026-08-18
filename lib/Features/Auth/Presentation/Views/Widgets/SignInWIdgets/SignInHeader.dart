@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/Utils/imageAssets.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:svg_flutter/svg_flutter.dart';

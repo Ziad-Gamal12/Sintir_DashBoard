@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class InfoHighlightIconCard extends StatelessWidget {
   const InfoHighlightIconCard({
@@ -6,7 +7,7 @@ class InfoHighlightIconCard extends StatelessWidget {
     required this.icon,
     required this.color,
   });
-  final IconData icon;
+  final FaIconData icon;
   final Color color;
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class InfoHighlightIconCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
 
-      child: Icon(icon, color: color, size: 20),
+      child: FaIcon(icon, color: color, size: 20),
     );
   }
 }

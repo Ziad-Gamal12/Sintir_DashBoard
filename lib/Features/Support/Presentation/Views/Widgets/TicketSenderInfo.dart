@@ -1,5 +1,5 @@
 // lib/Features/TicketsManagement/Presentation/Views/Widgets/TicketSenderInfo.dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomCachedNetworkImage.dart';
 import 'package:sintir_dashboard/Core/widgets/UsersTableWidgets/UserRole.dart';

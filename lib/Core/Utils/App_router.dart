@@ -4,6 +4,7 @@ import 'package:sintir_dashboard/Core/Entities/CourseEntities/ContentCreaterEnti
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
 import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
+import 'package:sintir_dashboard/Core/widgets/UnauthorizedPageWidgets/UnauthorizedView.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/CustomResetPasswordView.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/SignInView.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/SignUpView.dart';
@@ -109,6 +110,12 @@ class App_router {
         builder: (context, state) => ResponsiveSupportChatView(
           supportTicket: state.extra as SupportTicketEntity,
         ),
+      ),
+      GoRoute(
+        path: UnauthorizedView.routeName,
+        builder: (context, state) {
+          return UnauthorizedView(message: state.extra as String);
+        },
       ),
     ],
   );

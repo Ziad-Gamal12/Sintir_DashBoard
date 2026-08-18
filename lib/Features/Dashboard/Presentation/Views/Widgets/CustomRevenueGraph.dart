@@ -1,5 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/Entities/Transactions/TransactionEntity.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 

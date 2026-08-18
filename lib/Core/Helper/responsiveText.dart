@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 getresposiveTet({required BuildContext context, required double basesize}) {
   double scaleFactor = getScaleFactor(context);

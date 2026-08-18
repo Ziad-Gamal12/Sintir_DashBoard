@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Entities/CourseDetailsSummaryCardType.dart';
 
 class CourseDetailsSummaryCardEntity {
-  final IconData icon;
+  final FaIconData icon;
   final Color color;
   final String label;
   final CourseDetailsSummaryCardType type;

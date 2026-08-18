@@ -1,5 +1,5 @@
 // lib/Features/TicketsManagement/Presentation/Views/Widgets/TicketStatusIndicator.dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Entities/SupportTicketEntity.dart';
 
 class TicketStatusIndicator extends StatelessWidget {

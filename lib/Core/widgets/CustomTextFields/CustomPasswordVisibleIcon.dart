@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class Custompasswordvisibleicon extends StatefulWidget {
   const Custompasswordvisibleicon({super.key, required this.visibilityChanged});

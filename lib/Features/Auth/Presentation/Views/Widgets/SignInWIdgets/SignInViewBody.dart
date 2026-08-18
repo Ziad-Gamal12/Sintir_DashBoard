@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/Helper/AppPadding.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/SignInWIdgets/SignInSection.dart';
 import 'package:sintir_dashboard/Features/Auth/Presentation/Views/Widgets/SignInWIdgets/SignInWelcomePlaceHolder.dart';

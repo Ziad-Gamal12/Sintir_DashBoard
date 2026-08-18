@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/SlidingUserDetailsAndActionsCards.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Presentation/Views/Widgets/UserDetailsMainContent.dart';
 

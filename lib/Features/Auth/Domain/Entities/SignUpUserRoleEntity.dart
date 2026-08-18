@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
 
 class SignUpUserRoleEntity {
   final String role;
   final String value;
-  final IconData icon;
+  final FaIconData icon;
   SignUpUserRoleEntity({
     required this.role,
     required this.value,

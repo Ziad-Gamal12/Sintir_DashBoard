@@ -315,7 +315,7 @@ class AuthRepoImpl implements AuthRepo {
 
       if (Platform.isAndroid) {
         var androidDeviceInfo = await deviceInfo.androidInfo;
-        return androidDeviceInfo.id; // Unique ID for the app/device pair
+        return androidDeviceInfo.id;
       }
 
       // 3. Handle Desktop Platforms

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomRadioWidget.dart';
@@ -63,7 +63,7 @@ class _SignUpUserGenderState extends State<SignUpUserGender> {
   Widget _buildGenderOption({
     required String label,
     required String value,
-    required IconData icon,
+    required FaIconData icon,
     required ThemeData theme,
   }) {
     final bool isSelected = groupValue == value;
@@ -89,7 +89,7 @@ class _SignUpUserGenderState extends State<SignUpUserGender> {
               onchange: _updateGender,
             ),
             const SizedBox(width: 8),
-            Icon(
+            FaIcon(
               icon,
               size: 14,
               color: isSelected ? KMainColor : theme.iconTheme.color,

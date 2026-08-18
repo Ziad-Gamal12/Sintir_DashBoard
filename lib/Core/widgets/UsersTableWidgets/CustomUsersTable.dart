@@ -1,5 +1,5 @@
 import 'package:data_table_2/data_table_2.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/UsersTableWidgets/UsersDataTableSource.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/Helper/ShowSnackBar.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
@@ -39,7 +39,7 @@ class _EditUserDetailsViewBodyState extends State<EditUserDetailsViewBody> {
       },
       child: Form(
         key: _formKey,
-        autovalidateMode: AutovalidateMode.onUserInteraction, // Improved UX
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           child: Column(

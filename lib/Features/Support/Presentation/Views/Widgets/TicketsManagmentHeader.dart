@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class TicketsManagmentHeader extends StatelessWidget {
@@ -15,7 +15,7 @@ class TicketsManagmentHeader extends StatelessWidget {
           height: 32,
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            child: Icon(FontAwesomeIcons.headset),
+            child: FaIcon(FontAwesomeIcons.headset),
           ),
         ),
         SizedBox(width: 16),

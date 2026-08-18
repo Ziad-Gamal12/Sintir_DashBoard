@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/Utils/imageAssets.dart';
 import 'package:sintir_dashboard/constant.dart';
 import 'package:svg_flutter/svg.dart';

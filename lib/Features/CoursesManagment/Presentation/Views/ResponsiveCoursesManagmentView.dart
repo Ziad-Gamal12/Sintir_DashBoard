@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/Helper/ResponsiveLayout%20.dart';
 import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Views/DesktopCoursesManagmentView.dart';
 import 'package:sintir_dashboard/Features/CoursesManagment/Presentation/Views/MobileCoursesManagmentView.dart';

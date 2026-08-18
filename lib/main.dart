@@ -1,10 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sintir_dashboard/Core/Managers/user_cubit/user_cubit.dart';
 import 'package:sintir_dashboard/Core/Services/HiveService.dart';
@@ -12,6 +11,7 @@ import 'package:sintir_dashboard/Core/Services/get_it_Service.dart';
 import 'package:sintir_dashboard/Core/Themes/app_theme.dart';
 import 'package:sintir_dashboard/Core/Themes/theme_cubit.dart';
 import 'package:sintir_dashboard/Core/Utils/App_router.dart';
+import 'package:sintir_dashboard/Core/widgets/UnauthorizedPageWidgets/UnauthorizedView.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Repos/AuthRepo.dart';
 import 'package:sintir_dashboard/constant.dart';
 import 'package:sintir_dashboard/firebase_options.dart';
@@ -76,10 +76,13 @@ class _SintirDashboardState extends State<SintirDashboard> {
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) {
           return BlocListener<UserCubit, UserState>(
-            listenWhen: (previous, current) =>
-                previous.runtimeType != current.runtimeType,
             listener: (context, state) {
-              App_router.router.refresh();
+              if (state is UserStateFetchUserFailure) {
+                App_router.router.go(
+                  UnauthorizedView.routeName,
+                  extra: state.message,
+                );
+              }
             },
             child: MaterialApp.router(
               theme: AppTheme.light,
@@ -87,12 +90,12 @@ class _SintirDashboardState extends State<SintirDashboard> {
               themeMode: themeMode,
               localizationsDelegates: [
                 S.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
+                S.delegate,
+                ...GlobalMaterialLocalizations.delegates,
               ],
               supportedLocales: S.delegate.supportedLocales,
               locale: Locale("ar"),
+
               debugShowCheckedModeBanner: false,
               routerConfig: App_router.router,
             ),

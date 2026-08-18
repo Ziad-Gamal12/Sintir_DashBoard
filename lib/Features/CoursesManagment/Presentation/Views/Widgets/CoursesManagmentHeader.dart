@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CoursesManagmentHeader extends StatelessWidget {
@@ -10,7 +10,7 @@ class CoursesManagmentHeader extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     return Row(
       children: [
-        Icon(FontAwesomeIcons.bookOpen, size: 32),
+        FaIcon(FontAwesomeIcons.bookOpen, size: 32),
         SizedBox(width: 16),
         Expanded(
           flex: 3,

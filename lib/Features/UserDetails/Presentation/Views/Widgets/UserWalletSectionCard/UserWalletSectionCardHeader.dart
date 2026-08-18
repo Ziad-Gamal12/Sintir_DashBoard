@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/constant.dart';
@@ -19,7 +19,7 @@ class UserWalletSectionCardHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Icon(FontAwesomeIcons.wallet, color: KMainColor, size: 22),
+        const FaIcon(FontAwesomeIcons.wallet, color: KMainColor, size: 22),
         const SizedBox(width: 12),
         Text("المحفظة", style: AppTextStyles(context).semiBold16),
         const Spacer(),

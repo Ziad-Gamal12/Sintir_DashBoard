@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomCard.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomSearchTextField.dart';
 import 'package:sintir_dashboard/Features/Support/Domain/Entities/FilterTicketsContants.dart';

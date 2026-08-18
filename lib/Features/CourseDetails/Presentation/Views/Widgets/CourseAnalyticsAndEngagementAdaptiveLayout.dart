@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Services/get_it_Service.dart';

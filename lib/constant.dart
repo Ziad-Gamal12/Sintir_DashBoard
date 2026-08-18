@@ -1,6 +1,6 @@
 // ignore_for_file: constant_identifier_names, non_constant_identifier_names
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 const Color KMainColor = Color(0xff4169E2);
 const Color KSecondaryColor = Color(0xffff8c1a);

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomCachedNetworkImage.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/UserEntity.dart';
@@ -29,11 +29,15 @@ class UserInfo extends StatelessWidget {
               Text(
                 "${user.firstName} ${user.lastName}",
                 style: textStyles.semiBold14,
+                maxLines: 1,
+
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 4),
               Text(
                 user.email,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: textStyles.regular13.copyWith(color: Colors.grey),
               ),
             ],

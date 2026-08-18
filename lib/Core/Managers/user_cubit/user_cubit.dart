@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
@@ -36,11 +37,26 @@ class UserCubit extends Cubit<UserState> {
       (failure) => emit(UserStateFetchUserFailure(message: failure.message)),
       (user) {
         if (user.status == BackendEndpoints.blockedStatus) {
-          emit(UserStateFetchUserFailure(message: "Your account is blocked"));
+          emit(
+            UserStateFetchUserFailure(message: "تم حظر حسابك من قبل المسؤول"),
+          );
+        } else if (user.role == BackendEndpoints.studentRole ||
+            user.role == BackendEndpoints.teacherRole) {
+          emit(
+            UserStateFetchUserFailure(
+              message: "غير مصرح لك بالدخول يرجى التواصل من إدارة التطبيق ",
+            ),
+          );
         } else {
           emit(UserStateFetchUserSuccess());
         }
       },
     );
+  }
+
+  @override
+  Future<void> close() async {
+    await _userSubscription?.cancel();
+    return super.close();
   }
 }

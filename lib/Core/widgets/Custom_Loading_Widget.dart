@@ -1,6 +1,6 @@
 // ignore_for_file: file_names, camel_case_types
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sintir_dashboard/constant.dart';
 

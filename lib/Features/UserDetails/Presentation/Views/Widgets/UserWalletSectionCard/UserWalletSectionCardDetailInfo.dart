@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomInfoRow.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/TeacherWalletEntity.dart';
@@ -39,7 +39,7 @@ class UserWalletSectionCardDetailInfo extends StatelessWidget {
         CustomInfoRow(
           label: "أخر تحويل",
           value: wallet.lastTransactionId.toString(),
-          icon: FontAwesomeIcons.moneyBillTransfer,
+          icon: Icons.published_with_changes_rounded,
         ),
       ],
     );

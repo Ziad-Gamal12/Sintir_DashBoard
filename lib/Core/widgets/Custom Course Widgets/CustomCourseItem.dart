@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/widgets/Custom%20Course%20Widgets/CourseItemDetails.dart';
 import 'package:sintir_dashboard/Core/widgets/Custom%20Course%20Widgets/CourseItemImage.dart';

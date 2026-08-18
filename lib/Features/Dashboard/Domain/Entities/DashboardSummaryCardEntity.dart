@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Features/Dashboard/Domain/Entities/DashboardSummaryCardType.dart';
 
 class DashboardSummaryCardEntity {
-  final IconData icon;
+  final FaIconData icon;
   final Color color;
   final String label;
   final DashboardSummaryCardType type;
