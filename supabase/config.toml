@@ -1,0 +1,7 @@
+[functions.teacher-withdrawal]
+# This function validates Firebase ID tokens itself; they are not Supabase JWTs.
+verify_jwt = false
+
+[functions.paymob-payout-webhook]
+# Paymob does not send Supabase JWTs. Its signature is verified in the handler.
+verify_jwt = false
