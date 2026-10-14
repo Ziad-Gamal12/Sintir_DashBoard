@@ -240,14 +240,6 @@ firebase deploy --only hosting   # serves build/web with an SPA rewrite
 
 ---
 
-## 🗺 Roadmap
-
-- [ ] Unit and widget tests for cubits, repositories and permission mapping
-- [ ] CI workflow (analyze + test + build web)
-- [ ] Firestore security rules tracked in the repo
-- [ ] Enforce module permissions at the router level
-
----
 
 ## 👤 Author
 
