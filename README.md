@@ -12,8 +12,11 @@
 
 [**Live Demo**](https://sintir-2f0be.web.app/) · [Features](#-features) · [Architecture](#-architecture) · [Getting Started](#-getting-started)
 
-<!-- Replace with a real screenshot or GIF: docs/screenshots/hero.png -->
-<img src="docs/screenshots/hero.png" alt="Sintir Admin Panel" width="90%" />
+<div align="center">
+
+<img src="assets/Icons/SVG_Icons/AppLogo.svg" alt="Sintir logo" width="110" />
+
+# Sintir Admin Panel
 
 </div>
 
