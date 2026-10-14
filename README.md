@@ -191,7 +191,7 @@ More details on the video pipeline: [`MUX_VIDEO.md`](MUX_VIDEO.md).
 ### Run locally
 
 ```bash
-git clone https://github.com/<your-username>/Sintir_DashBoard.git
+git clone https://github.com/Ziad-Gamal12/Sintir_DashBoard.git
 cd Sintir_DashBoard
 flutter pub get
 flutter run -d chrome
@@ -253,7 +253,7 @@ firebase deploy --only hosting   # serves build/web with an SPA rewrite
 
 **Ziad** · Flutter Developer
 
-[LinkedIn](#) · [GitHub](#) · [Email](#) <!-- add your links -->
+[LinkedIn](https://www.linkedin.com/in/ziad-gamal-54b052375/) · [GitHub](https://github.com/Ziad-Gamal12) · [Email](mailto:ziadgamal.work@gmail.com) 
 
 ---
 
