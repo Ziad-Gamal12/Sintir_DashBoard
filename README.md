@@ -247,8 +247,3 @@ firebase deploy --only hosting   # serves build/web with an SPA rewrite
 
 [LinkedIn](https://www.linkedin.com/in/ziad-gamal-54b052375/) · [GitHub](https://github.com/Ziad-Gamal12) · [Email](mailto:ziadgamal.work@gmail.com) 
 
----
-
-## 📄 License
-
-<!-- Add a LICENSE file (e.g. MIT) and update this line. -->
