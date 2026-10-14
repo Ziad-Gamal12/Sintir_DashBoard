@@ -1,25 +1,26 @@
-&lt;div align=&quot;center&quot;&gt;
 
-&lt;img src=&quot;assets/Icons/SVG_Icons/AppLogo.svg&quot; alt=&quot;Sintir Admin Panel Logo&quot; width=&quot;96&quot; /&gt;
+<div align="center">
+
+<img src="assets/Icons/SVG_Icons/AppLogo.svg" alt="Sintir Admin Panel Logo" width="96" />
 
 # Sintir Admin Panel
 
 **A responsive Flutter Web back-office platform for managing users, courses, support operations, payouts, and real-time analytics across the Sintir educational ecosystem.**
 
+![Flutter](https://img.shields.io/badge/Flutter-Web%20%26%20Desktop-02569B?logo=flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-3.10.4%2B-0175C2?logo=dart&logoColor=white)
+![State Management](https://img.shields.io/badge/State-BLoC%20%2F%20Cubit-4169E2)
+![Architecture](https://img.shields.io/badge/Architecture-MVVM%20%2B%20Feature--First-2E7D32)
+![Firebase](https://img.shields.io/badge/Firebase-Auth%20%7C%20Firestore%20%7C%20Storage-FFCA28?logo=firebase&logoColor=black)
+![Supabase](https://img.shields.io/badge/Supabase-Edge%20Functions-3ECF8E?logo=supabase&logoColor=white)
 
+[**Live Demo**](https://sintir-2f0be.web.app/) · [**Companion Mobile App Repo**](https://github.com/Ziad-Gamal12/Sintir)
 
-
-
-
-
-
-[Live Demo](https://www.google.com/search?q=https%3A%2F%2Fsintir-2f0be.web.app%2F) · [Companion Mobile App Repo](https://www.google.com/search?q=https%3A%2F%2Fgithub.com%2FZiad-Gamal12%2FSintir)
-
-&lt;/div&gt;
+</div>
 
 ## 📖 Overview
 
-**Sintir Admin Panel** (`sintir_dashboard`) is the administrative control center for the [Sintir digital learning platform](https://www.google.com/search?q=https%3A%2F%2Fgithub.com%2FZiad-Gamal12%2FSintir). Built with Flutter Web, it empowers operations teams, course managers, and support staff to oversee platform activity from a single responsive interface:
+**Sintir Admin Panel** (`sintir_dashboard`) is the administrative control center for the [**Sintir digital learning platform**](https://github.com/Ziad-Gamal12/Sintir). Built with Flutter Web, it empowers operations teams, course managers, and support staff to oversee platform activity from a single responsive interface:
 
 - **Executive Analytics & KPIs:** Monitor platform revenue, user demographics, enrollment trends, and course performance through interactive charts (`fl_chart`).
 - **Granular Role-Based Access Control (RBAC):** Enforce database-driven permissions across 5 distinct operational roles (`Admin`, `CoursesManager`, `UsersManager`, `Support`, and `Viewer`) with active-status verification.
@@ -32,9 +33,9 @@
 
 | Light Mode | Dark Mode |
 | :---: | :---: |
-| &lt;img src=&quot;docs/screenshots/dashboard-light.png&quot; alt=&quot;Dashboard Light Mode&quot; width=&quot;420&quot; /&gt; | &lt;img src=&quot;docs/screenshots/dashboard-dark.png&quot; alt=&quot;Dashboard Dark Mode&quot; width=&quot;420&quot; /&gt; |
-| &lt;img src=&quot;docs/screenshots/users-light.png&quot; alt=&quot;Users Management Light Mode&quot; width=&quot;420&quot; /&gt; | &lt;img src=&quot;docs/screenshots/users-dark.png&quot; alt=&quot;Users Management Dark Mode&quot; width=&quot;420&quot; /&gt; |
-| &lt;img src=&quot;docs/screenshots/course-details-light.png&quot; alt=&quot;Course Details Light Mode&quot; width=&quot;420&quot; /&gt; | &lt;img src=&quot;docs/screenshots/support-dark.png&quot; alt=&quot;Support Chat Dark Mode&quot; width=&quot;420&quot; /&gt; |
+| <img src="docs/screenshots/dashboard-light.png" alt="Dashboard Light Mode" width="420" /> | <img src="docs/screenshots/dashboard-dark.png" alt="Dashboard Dark Mode" width="420" /> |
+| <img src="docs/screenshots/users-light.png" alt="Users Management Light Mode" width="420" /> | <img src="docs/screenshots/users-dark.png" alt="Users Management Dark Mode" width="420" /> |
+| <img src="docs/screenshots/course-details-light.png" alt="Course Details Light Mode" width="420" /> | <img src="docs/screenshots/support-dark.png" alt="Support Chat Dark Mode" width="420" /> |
 
 ## ✨ Features by Module
 
@@ -107,7 +108,7 @@ Configured in `lib/Core/Utils/App_router.dart`, the router enforces active sessi
 
 The project follows a **feature-first MVVM / Clean Architecture** pattern powered by **BLoC/Cubit** and **Repository abstractions**. Shared services and repositories are registered in `lib/Core/Services/get_it_Service.dart` after `main.dart` initializes Firebase, Supabase, Hive, and `HydratedBloc` storage.
 
-```mermaid
+~~~mermaid
 flowchart LR
     V[Responsive View / Widgets] --> C[Feature Cubit]
     C --> R[Repository Abstraction]
@@ -115,7 +116,7 @@ flowchart LR
     RI --> S[Shared Service<br/>DataBaseService / Dio]
     S --> F[(Cloud Firestore &<br/>Firebase Auth)]
     S --> SB[(Supabase<br/>Edge Functions)]
-```
+~~~
 
 ### Example Workflow: Paginated Users Management
 1. **Permission Check:** `UsersManagementViewBody` reads the locally cached user profile and verifies `Permission.viewUsers`.
@@ -125,7 +126,7 @@ flowchart LR
 
 ### Folder Structure
 
-```text
+~~~text
 lib/
 ├── Core/
 │   ├── Entities/          # Shared domain entities
@@ -156,7 +157,7 @@ lib/
 └── main.dart              # Application bootstrap
 supabase/
 └── functions/             # Serverless Edge Functions (Mux video & Paymob payouts)
-```
+~~~
 
 ## ☁️ Backend & Serverless Infrastructure
 
@@ -176,7 +177,7 @@ supabase/
 | `teacher-withdrawal` | Reserves and executes instructor wallet payouts via **Paymob** with reconciliation support |
 | `sintir-analytics` | Aggregates platform analytics queried by the dashboard via `Dio` |
 
-For detailed documentation on the video streaming and webhook architecture, see [MUX\_VIDEO.md](https://www.google.com/search?q=MUX_VIDEO.md).
+For detailed documentation on the video streaming and webhook architecture, see [`MUX_VIDEO.md`](MUX_VIDEO.md).
 
 ## 🎨 Theming & Localization
 
@@ -188,26 +189,26 @@ For detailed documentation on the video streaming and webhook architecture, see 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- [Flutter SDK](https://www.google.com/search?q=https%3A%2F%2Fdocs.flutter.dev%2Fget-started%2Finstall) with Dart `^3.10.4`
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) with Dart `^3.10.4`
 - A **Firebase** project (Authentication, Cloud Firestore, Storage, Hosting)
-- A **Supabase** project + [Supabase CLI](https://www.google.com/search?q=https%3A%2F%2Fsupabase.com%2Fdocs%2Fguides%2Fcli) (for Edge Functions)
-- [Firebase CLI](https://www.google.com/search?q=https%3A%2F%2Ffirebase.google.com%2Fdocs%2Fcli) or [Vercel CLI](https://www.google.com/search?q=https%3A%2F%2Fvercel.com%2Fdocs%2Fcli) (for web deployment)
+- A **Supabase** project + [Supabase CLI](https://supabase.com/docs/guides/cli) (for Edge Functions)
+- [Firebase CLI](https://firebase.google.com/docs/cli) or [Vercel CLI](https://vercel.com/docs/cli) (for web deployment)
 
 ### 1. Clone & Run Locally
 
-```bash
+~~~bash
 git clone https://github.com/Ziad-Gamal12/Sintir_DashBoard.git
 cd Sintir_DashBoard
 flutter pub get
 flutter run -d chrome
-```
+~~~
 
 ### 2. Configure Client & Serverless Environment
 
 1. **Firebase:** Generate `lib/firebase_options.dart` for your Firebase project using `flutterfire configure`.
 2. **Supabase Client:** Set `supaBaseUrl` and `supaAnonKey` in `lib/constant.dart`.
 3. **Edge Function Secrets:** Copy `supabase/functions/.env.example` to `supabase/functions/.env` and populate the required server-side credentials:
-   ```text
+   ~~~text
    FB_PROJECT_ID
    FB_CLIENT_EMAIL
    FB_PRIVATE_KEY
@@ -221,21 +222,21 @@ flutter run -d chrome
    MUX_WEBHOOK_SECRET
    MUX_SIGNING_KEY_ID
    MUX_SIGNING_KEY_PRIVATE_BASE64
-   ```
+   ~~~
    > **Security Note:** Never commit `supabase/functions/.env` or private keys to Git. Only the public `supaAnonKey` belongs in the Flutter client.
 
 4. **Serve or Deploy Edge Functions:**
-   ```bash
+   ~~~bash
    # Serve locally
    supabase functions serve --env-file supabase/functions/.env
 
    # Deploy to Supabase
    supabase functions deploy <function-name> --no-verify-jwt
-   ```
+   ~~~
 
 ### 3. Build & Deploy Web Dashboard
 
-```bash
+~~~bash
 # Build production web bundle
 flutter build web
 
@@ -244,12 +245,12 @@ firebase deploy --only hosting
 
 # Option B: Deploy to Vercel (SPA rewrite configured in vercel.json)
 vercel --prod
-```
+~~~
 
 ## 👤 Author
 
 **Ziad Gamal** — Flutter Developer
 
-- **LinkedIn:** [linkedin.com/in/ziad-gamal-54b052375](https://www.google.com/search?q=https%3A%2F%2Fwww.linkedin.com%2Fin%2Fziad-gamal-54b052375%2F)
-- **GitHub:** [@Ziad-Gamal12](https://www.google.com/search?q=https%3A%2F%2Fgithub.com%2FZiad-Gamal12)
+- **LinkedIn:** [linkedin.com/in/ziad-gamal-54b052375](https://www.linkedin.com/in/ziad-gamal-54b052375/)
+- **GitHub:** [@Ziad-Gamal12](https://github.com/Ziad-Gamal12)
 - **Email:** [ziadgamal.work@gmail.com](mailto:ziadgamal.work@gmail.com)
