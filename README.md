@@ -33,7 +33,7 @@ Sintir is an educational platform with student and teacher mobile apps. **Sintir
 
 The panel is fully responsive, supports **light and dark themes**, and ships with **Arabic and English** localization.
 
-> Related project: [Sintir mobile app](#) <!-- add link -->
+> Related project: [Sintir mobile app](https://github.com/Ziad-Gamal12/Sintir)
 
 ---
 
