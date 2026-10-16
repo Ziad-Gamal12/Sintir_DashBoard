@@ -1,7 +1,9 @@
 class StudentExtraDataEntity {
-  String educationLevel;
-  String birthDate;
+  String? educationLevel;
+  DateTime? birthDate;
 
-  StudentExtraDataEntity(
-      {required this.educationLevel, required this.birthDate});
+  StudentExtraDataEntity({
+    required this.educationLevel,
+    required this.birthDate,
+  });
 }

@@ -54,9 +54,7 @@ class UserModel {
       profilePicurl: json['profilePicurl'],
       status: json['status'],
       role: json['role'],
-      joinedDate: (json['joinedDate'] is Timestamp)
-          ? (json['joinedDate'] as Timestamp).toDate()
-          : (json['joinedDate'] as DateTime),
+      joinedDate: parseDate(json['joinedDate']),
     );
   }
   factory UserModel.fromEntity(UserEntity entity) {
@@ -129,5 +127,17 @@ class UserModel {
       'joinedDate': joinedDate,
       'studentExtraData': studentExtraData,
     };
+  }
+
+  static DateTime parseDate(dynamic value) {
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+
+    if (value is String) {
+      final parsed = DateTime.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+
+    throw FormatException('Invalid date value: $value');
   }
 }

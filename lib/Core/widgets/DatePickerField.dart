@@ -10,7 +10,7 @@ class DatePickerField extends StatefulWidget {
     required this.initialDate,
   });
   final ValueChanged<DateTime?> onDateChanged;
-  final String initialDate;
+  final DateTime initialDate;
   @override
   State<DatePickerField> createState() => _DatePickerFieldState();
 }
@@ -92,7 +92,7 @@ class _DatePickerFieldState extends State<DatePickerField> {
           title: Text(
             getBirthDate(),
             style: AppTextStyles(context).regular14.copyWith(
-              color: pickedDate == null && widget.initialDate.isEmpty
+              color: pickedDate == null
                   ? (isDark ? Colors.white54 : const Color(0xffAEAEB2))
                   : (isDark ? Colors.white : Colors.grey.shade700),
             ),
@@ -110,8 +110,8 @@ class _DatePickerFieldState extends State<DatePickerField> {
   String getBirthDate() {
     if (pickedDate != null) {
       return "${pickedDate!.day}/${pickedDate!.month}/${pickedDate!.year}";
-    } else if (pickedDate == null && widget.initialDate.isNotEmpty) {
-      return widget.initialDate;
+    } else if (pickedDate == null) {
+      return "${widget.initialDate.day}/${widget.initialDate.month}/${widget.initialDate.year}";
     } else {
       return "أختر التاريخ";
     }

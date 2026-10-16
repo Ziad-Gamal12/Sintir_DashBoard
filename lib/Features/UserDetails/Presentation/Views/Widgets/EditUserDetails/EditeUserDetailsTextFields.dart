@@ -141,9 +141,13 @@ class _EditUserDetailsTextFieldsState extends State<EditUserDetailsTextFields> {
               widget.user.studentExtraDataEntity?.educationLevel = value ?? "",
         ),
         DatePickerField(
-          initialDate: widget.user.studentExtraDataEntity?.birthDate ?? "",
-          onDateChanged: (value) =>
-              widget.user.studentExtraDataEntity?.birthDate = value.toString(),
+          initialDate:
+              widget.user.studentExtraDataEntity?.birthDate ?? DateTime.now(),
+          onDateChanged: (value) {
+            if (value != null) {
+              widget.user.studentExtraDataEntity?.birthDate = value;
+            }
+          },
         ),
       ],
     );

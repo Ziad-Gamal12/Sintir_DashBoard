@@ -59,12 +59,21 @@ export async function disburse(input: { amount: number; mobileNumber: string; is
 }
 
 export async function inquire(transactionId: string): Promise<Record<string, unknown>> {
-  const response = await fetch(`${baseUrl}transaction/inquire/`, {
+  // The Paymob collection describes this as a GET request. Do not attach a
+  // JSON body to GET: standards-compliant fetch implementations (including
+  // Edge Runtime) reject it before the request reaches Paymob.
+  const query = new URLSearchParams({
+    transactions_ids_list: transactionId,
+    bank_transactions: "false",
+  });
+  const response = await fetch(`${baseUrl}transaction/inquire/?${query}`, {
     method: "GET",
     headers: { authorization: `Bearer ${await accessToken()}`, "content-type": "application/json" },
-    body: JSON.stringify({ transactions_ids_list: [transactionId], bank_transactions: false }),
   });
   const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error("Could not obtain Paymob payout status.");
+  if (!response.ok) {
+    console.error("Paymob inquiry rejected", { status: response.status, body });
+    throw new Error("Could not obtain Paymob payout status.");
+  }
   return Array.isArray(body.results) ? (body.results[0] ?? {}) : body;
 }

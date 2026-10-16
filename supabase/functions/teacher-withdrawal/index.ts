@@ -69,7 +69,7 @@ async function create(uid: string, input: CreateInput): Promise<Response> {
 
   try {
     const payout = await disburse({ amount: amount / 100, mobileNumber, issuer, reference: id });
-    await updateAfterPaymob(firestore, uid, id, payout.transactionId, payout.status);
+    await updateAfterPaymob(firestore, uid, id, payout.transactionId, payout.status, payout.raw);
     const finalStatus = await settleIfFinal(firestore, uid, id, payout.status);
     return json({
       ok: true,
@@ -172,16 +172,42 @@ async function reserve(firestore: Firestore, uid: string, id: string, amountCent
   return { kind: "reserved" as const };
 }
 
-async function updateAfterPaymob(firestore: Firestore, uid: string, id: string, paymobTransactionId: string, status: string) {
+function providerDetails(result: Record<string, unknown>) {
+  const code = result.transaction_status_code ?? result.status_code;
+  const description = result.transaction_status_description ?? result.status_description ?? result.error_description;
+  return {
+    code: code == null ? undefined : String(code),
+    description: typeof description === "string" ? description.slice(0, 500) : undefined,
+  };
+}
+
+async function updateAfterPaymob(
+  firestore: Firestore,
+  uid: string,
+  id: string,
+  paymobTransactionId: string,
+  status: string,
+  result: Record<string, unknown> = {},
+) {
   const transaction = await firestore.beginTransaction();
   const doc = await firestore.get(withdrawalPath(uid, id), transaction);
   if (!doc) throw new Error("Reserved withdrawal was not found.");
+  // A terminal reconciliation is immutable. In particular, a delayed or
+  // duplicate provider lookup must never turn SUCCESS/FAILED back into
+  // PENDING after the wallet was settled.
+  if (firestoreBoolean(getField(doc.fields, ["isReconciled"])) === true) return;
+  const provider = providerDetails(result);
   const update = firestore.document(withdrawalPath(uid, id), {
     paymob_transaction_id: stringValue(paymobTransactionId),
     status: stringValue(status),
+    ...(provider.code ? { provider_status_code: stringValue(provider.code) } : {}),
+    ...(provider.description ? { provider_status_description: stringValue(provider.description) } : {}),
     updated_at: timestampValue(),
   });
-  await firestore.commit(transaction, [updateWrite(update, ["paymob_transaction_id", "status", "updated_at"], doc.updateTime)]);
+  const fields = ["paymob_transaction_id", "status", "updated_at"];
+  if (provider.code) fields.push("provider_status_code");
+  if (provider.description) fields.push("provider_status_description");
+  await firestore.commit(transaction, [updateWrite(update, fields, doc.updateTime)]);
 }
 
 async function markUnknown(firestore: Firestore, uid: string, id: string, exception: unknown) {
@@ -201,15 +227,35 @@ async function reconcile(uid: string, rawId: unknown): Promise<Response> {
   const firestore = new Firestore();
   const current = await firestore.get(withdrawalPath(uid, rawId));
   if (!current) return error("not_found", "Withdrawal was not found.", 404);
+  if (firestoreBoolean(getField(current.fields, ["isReconciled"])) === true) {
+    const status = firestoreString(getField(current.fields, ["status"])) ?? "UNKNOWN";
+    return json({
+      ok: true,
+      withdrawalId: rawId,
+      paymobTransactionId: firestoreString(getField(current.fields, ["paymob_transaction_id"])),
+      status,
+      message: withdrawalMessage(status),
+    });
+  }
   const externalId = firestoreString(getField(current.fields, ["paymob_transaction_id"]));
-  if (!externalId) return json({ ok: true, withdrawalId: rawId, status: firestoreString(getField(current.fields, ["status"])) ?? "PROCESSING_UNKNOWN" });
+  if (!externalId) {
+    // Never refund a legacy/ambiguous reservation without a provider ID: Paymob
+    // may have accepted the payout even though its response was lost.
+    return error(
+      "provider_reference_missing",
+      "This withdrawal has no Paymob transaction ID, so it cannot be reconciled safely. Funds remain reserved; contact an administrator to verify it in Paymob before any refund.",
+      409,
+    );
+  }
 
   const result = await inquire(externalId);
-  const status = typeof result.disbursement_status === "string" ? result.disbursement_status.toUpperCase() : "PENDING";
+  const rawStatus = result.disbursement_status ?? result.status ?? result.transaction_status;
+  const status = typeof rawStatus === "string" ? rawStatus.toUpperCase() : "PENDING";
+  // Save Paymob's exact result before settlement. This keeps the provider's
+  // diagnostic code/description visible even when the final status is mapped
+  // to our canonical SUCCESS or FAILED value below.
+  await updateAfterPaymob(firestore, uid, rawId, externalId, status, result);
   const finalStatus = await settleIfFinal(firestore, uid, rawId, status);
-  if (finalStatus === status && !isFinal(status)) {
-    await updateAfterPaymob(firestore, uid, rawId, externalId, status);
-  }
   return json({
     ok: true,
     withdrawalId: rawId,
@@ -246,15 +292,30 @@ async function settle(firestore: Firestore, uid: string, id: string, status: str
   const [user, withdrawal] = await Promise.all([firestore.get(userPath(uid), transaction), firestore.get(withdrawalPath(uid, id), transaction)]);
   if (!user || !withdrawal) throw new Error("Settlement documents are missing.");
   if (firestoreBoolean(getField(withdrawal.fields, ["isReconciled"])) === true) return;
-  const amount = firestoreNumber(getField(withdrawal.fields, ["amount_cents"])) ?? 0;
-  const balance = firestoreNumber(getField(user.fields, ["teacherExtraData", "wallet", "balance"])) ?? 0;
+  // amount_cents is canonical. The amount fallback is solely for legacy
+  // documents created before cents were stored; never settle an invalid value
+  // as zero because that would falsely mark the transaction reconciled.
+  const storedCents = firestoreNumber(getField(withdrawal.fields, ["amount_cents"]));
+  const legacyAmount = firestoreNumber(getField(withdrawal.fields, ["amount"]));
+  const amount = storedCents ?? (legacyAmount == null ? null : Math.round(legacyAmount * 100));
+  if (amount === null || !Number.isSafeInteger(amount) || amount <= 0) {
+    throw new Error("Withdrawal amount is invalid; settlement was not applied.");
+  }
+  const balance = firestoreNumber(getField(user.fields, ["teacherExtraData", "wallet", "balance"]));
+  if (balance === null || balance < 0) {
+    throw new Error("Wallet balance is invalid; settlement was not applied.");
+  }
   const pending = Math.max(
     firestoreNumber(getField(user.fields, ["teacherExtraData", "wallet", "payoutPending"])) ?? 0,
     firestoreNumber(getField(user.fields, ["teacherExtraData", "wallet", "payout_pending"])) ?? 0,
   );
+  const pendingCents = Math.round(pending * 100);
+  if (!Number.isSafeInteger(pendingCents) || pendingCents < amount) {
+    throw new Error("Wallet pending balance is inconsistent; settlement was not applied.");
+  }
   const walletUpdate = firestore.document(userPath(uid), { teacherExtraData: mapValue({ wallet: mapValue({
     balance: numberValue((Math.round(balance * 100) + (restoreBalance ? amount : 0)) / 100),
-    payout_pending: numberValue(Math.max(0, Math.round(pending * 100) - amount) / 100),
+    payout_pending: numberValue((pendingCents - amount) / 100),
     updated_at: timestampValue(),
   }) }) });
   const withdrawalUpdate = firestore.document(withdrawalPath(uid, id), {

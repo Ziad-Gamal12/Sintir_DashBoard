@@ -5,3 +5,19 @@ verify_jwt = false
 [functions.paymob-payout-webhook]
 # Paymob does not send Supabase JWTs. Its signature is verified in the handler.
 verify_jwt = false
+
+[functions.create-video-upload]
+verify_jwt = false
+
+[functions.resume-video-upload]
+verify_jwt = false
+
+[functions.cancel-video-upload]
+verify_jwt = false
+
+[functions.get-video-playback-token]
+verify_jwt = false
+
+[functions.mux-webhook]
+# Mux signs webhook requests; this function validates Mux-Signature itself.
+verify_jwt = false

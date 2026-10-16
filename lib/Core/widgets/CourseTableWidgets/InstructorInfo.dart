@@ -24,7 +24,13 @@ class InstructorInfo extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 10),
-        Text(instructor?.name ?? 'Unknown', style: textStyles.semiBold12),
+        Expanded(
+          child: Text(
+            instructor?.name ?? 'Unknown',
+            style: textStyles.semiBold12,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ],
     );
   }

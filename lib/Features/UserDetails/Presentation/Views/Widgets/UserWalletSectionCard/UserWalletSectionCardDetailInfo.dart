@@ -1,5 +1,4 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomInfoRow.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/TeacherWalletEntity.dart';
 import 'package:sintir_dashboard/Features/UserDetails/Domain/Helpers/UserWalletStatusHelper.dart';
@@ -21,7 +20,8 @@ class UserWalletSectionCardDetailInfo extends StatelessWidget {
         ),
         CustomInfoRow(
           label: "تاريخ الانشاء",
-          value: wallet.createdAt,
+          value:
+              "${wallet.createdAt.day}/${wallet.createdAt.month}/${wallet.createdAt.year}",
           icon: Icons.event_available_outlined,
         ),
         CustomInfoRow(
@@ -33,7 +33,8 @@ class UserWalletSectionCardDetailInfo extends StatelessWidget {
         ),
         CustomInfoRow(
           label: "أخر تحديث",
-          value: wallet.updatedAt,
+          value:
+              "${wallet.updatedAt.day}/${wallet.updatedAt.month}/${wallet.updatedAt.year}",
           icon: Icons.published_with_changes_rounded,
         ),
         CustomInfoRow(

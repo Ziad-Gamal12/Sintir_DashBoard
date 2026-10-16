@@ -8,8 +8,8 @@ class WalletEntity {
   double payoutPending;
   String currency;
   String status;
-  String createdAt;
-  String updatedAt;
+  DateTime createdAt;
+  DateTime updatedAt;
   String? lastTransactionId;
 
   WalletEntity({
@@ -33,8 +33,8 @@ class WalletEntity {
     double? payoutPending,
     String? currency,
     String? status,
-    String? createdAt,
-    String? updatedAt,
+    DateTime? createdAt,
+    DateTime? updatedAt,
     String? lastTransactionId,
   }) {
     return WalletEntity(
@@ -60,8 +60,8 @@ class WalletEntity {
       payoutPending: 0.0,
       currency: '',
       status: BackendEndpoints.walletPending,
-      createdAt: DateTime.now().toString(),
-      updatedAt: DateTime.now().toString(),
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
       lastTransactionId: "",
     );
   }

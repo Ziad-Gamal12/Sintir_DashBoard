@@ -1,6 +1,6 @@
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/Entities/UserRoleBadgeEntity.dart';
 import 'package:sintir_dashboard/Core/Utils/textStyles.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomCard.dart';
@@ -84,16 +84,27 @@ class CustomUserDetailsCard extends StatelessWidget {
                           children: [
                             CustomInfoRow(
                               label: "المرحلة الدراسية",
-                              value: userEntity
-                                  .studentExtraDataEntity!
-                                  .educationLevel,
+                              value:
+                                  userEntity
+                                      .studentExtraDataEntity!
+                                      .educationLevel ??
+                                  "",
                               icon: Icons.school_outlined,
                             ),
                             _buildDivider(),
                             CustomInfoRow(
                               label: "تاريخ الميلاد",
                               value:
-                                  userEntity.studentExtraDataEntity!.birthDate,
+                                  userEntity
+                                          .studentExtraDataEntity!
+                                          .birthDate !=
+                                      null
+                                  ? DateFormat('yyyy/MM/dd').format(
+                                      userEntity
+                                          .studentExtraDataEntity!
+                                          .birthDate!,
+                                    )
+                                  : "",
                               icon: Icons.cake_outlined,
                             ),
                             _buildDivider(),

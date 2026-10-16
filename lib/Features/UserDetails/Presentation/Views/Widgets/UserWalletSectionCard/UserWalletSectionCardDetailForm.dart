@@ -1,5 +1,5 @@
-import 'package:material_ui/material_ui.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomTextFields/CustomTeaxtField.dart';
 import 'package:sintir_dashboard/Core/widgets/DatePickerField.dart';
 import 'package:sintir_dashboard/Features/Auth/Domain/Entities/TeacherWalletEntity.dart';
@@ -45,8 +45,10 @@ class UserWalletSectionCardDetailForm extends StatelessWidget {
         DatePickerField(
           initialDate: wallet.createdAt,
           onDateChanged: (value) {
-            wallet.createdAt = value.toString();
-            onDateChanged();
+            if (value != null) {
+              wallet.createdAt = value;
+              onDateChanged();
+            }
           },
         ),
         CustomWalletStatusSelectorsWrap(

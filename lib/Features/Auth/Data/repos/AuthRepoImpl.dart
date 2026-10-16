@@ -1,5 +1,6 @@
 // ignore_for_file: file_names, depend_on_referenced_packages
 
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,6 +12,7 @@ import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStorePagina
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStoreRequirmentsEntity.dart';
 import 'package:sintir_dashboard/Core/Errors/Exceptions.dart';
 import 'package:sintir_dashboard/Core/Errors/Failures.dart';
+import 'package:sintir_dashboard/Core/Helper/HiveValueNormalizer.dart';
 import 'package:sintir_dashboard/Core/Services/DataBaseService.dart';
 import 'package:sintir_dashboard/Core/Services/FireBase/FirebaseAuth_Service.dart';
 import 'package:sintir_dashboard/Core/Services/HiveService.dart';
@@ -37,11 +39,9 @@ class AuthRepoImpl implements AuthRepo {
   }) async {
     try {
       User user = await authService.signInWithEmailAndPassword(email, password);
-      await user.reload();
-      User? fresh = FirebaseAuth.instance.currentUser ?? user;
 
-      if (fresh.emailVerified == false) {
-        await fresh.sendEmailVerification();
+      if (user.emailVerified == false) {
+        await user.sendEmailVerification();
         await authService.signout();
         return Left(
           ServerFailure(
@@ -50,32 +50,25 @@ class AuthRepoImpl implements AuthRepo {
           ),
         );
       } else {
-        final updateDeviceIdResult = await updateDeviceId(uid: fresh.uid);
+        final updateDeviceIdResult = await updateDeviceId(uid: user.uid);
         if (updateDeviceIdResult.isLeft()) {
           await authService.signout();
           return updateDeviceIdResult;
         }
-        final result = await fetchUserAndStoreLocally(uid: fresh.uid);
+        final result = await fetchUserAndStoreLocally(uid: user.uid);
         if (result.isLeft()) {
           await authService.signout();
           return result;
         }
         return const Right(null);
       }
-    } on FirebaseAuthException catch (e) {
-      await authService.signout();
-      if (e.code == 'too-many-requests') {
-        return Left(
-          ServerFailure(message: "محاولات كثيرة جداً، تم حظر الدخول مؤقتاً"),
-        );
-      }
-      return Left(
-        ServerFailure(message: e.message ?? "حدث خطأ أثناء تسجيل الدخول"),
-      );
-    } on CustomException catch (e) {
+    } on CustomException catch (e, s) {
+      log("Error during sign in: ${e.message}", stackTrace: s);
       await authService.signout();
       return Left(ServerFailure(message: e.message));
     } catch (e, s) {
+      log("Error during sign in: ${e.toString()}", stackTrace: s);
+
       await authService.signout();
       return Left(_toFailure(e, s));
     }
@@ -127,13 +120,23 @@ class AuthRepoImpl implements AuthRepo {
 
   Future<void> storeUserLocally(Map<String, dynamic> userJson) async {
     try {
+      final userEntity = UserModel.fromJson(userJson).toEntity();
+
+      final userModel = UserModel.fromEntity(userEntity);
+
+      final normalizedData =
+          HiveValueNormalizer.normalize(userModel.toMap())
+              as Map<String, dynamic>;
+
       await Hive_Services.jsonSetter(
         key: BackendEndpoints.storeUserLocaly,
-        value: userJson,
+        value: normalizedData,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log('Error during storing user locally: $e', stackTrace: stackTrace);
+
       throw CustomException(
-        message: "حدث خطأ أثناء حفظ بيانات المستخدم محلياً",
+        message: 'حدث خطأ أثناء حفظ بيانات المستخدم محلياً',
       );
     }
   }
@@ -196,10 +199,14 @@ class AuthRepoImpl implements AuthRepo {
             ServerFailure(message: "حدث خطأ غير معروف في حالة الحساب"),
           );
       }
-    } on CustomException catch (e) {
+    } on CustomException catch (e, s) {
+      log("Error during sign in: ${e.message}", stackTrace: s);
+
       await authService.signout();
       return Left(ServerFailure(message: e.message));
-    } catch (e) {
+    } catch (e, s) {
+      log("Error during sign in: ${e.toString()}", stackTrace: s);
+
       await authService.signout();
       return Left(_toFailure(e));
     }
@@ -354,6 +361,8 @@ class AuthRepoImpl implements AuthRepo {
 
       return const Right(null);
     } catch (e, s) {
+      log("Error during sign in: ${e.toString()}", stackTrace: s);
+
       return Left(_toFailure(e, s));
     }
   }
