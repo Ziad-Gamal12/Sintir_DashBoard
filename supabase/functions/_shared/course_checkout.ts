@@ -49,7 +49,13 @@ export async function checkoutLockPath(uid: string, courseId: string): Promise<s
   return `${checkoutLocks}/${key}`;
 }
 
-export type ActiveCheckout = { id: string; attempt: Record<string, any> } | { stale: true } | null;
+export type ActiveCheckout = { id: string; attempt: Record<string, any> } | {
+  stale: true;
+  reason: "missing_attempt_id" | "attempt_missing" | "ownership_mismatch";
+  attemptIdentifierPresent: boolean;
+  attemptRecordExists: boolean;
+  ownershipChecksPassed: boolean;
+} | null;
 
 /** Resolve only the lock derived from the verified caller and exact course ID. */
 export async function findActiveCheckout(db: Firestore, uid: string, courseId: string): Promise<ActiveCheckout> {
@@ -57,12 +63,29 @@ export async function findActiveCheckout(db: Firestore, uid: string, courseId: s
   if (!lock) return null;
   const lockData = decodeFields(lock.fields);
   const id = typeof lockData.paymentAttemptId === "string" ? lockData.paymentAttemptId : "";
-  if (!id) return { stale: true };
+  if (!id) return { stale: true, reason: "missing_attempt_id", attemptIdentifierPresent: false, attemptRecordExists: false, ownershipChecksPassed: false };
   const doc = await db.get(attemptPath(id));
-  if (!doc) return { stale: true };
+  if (!doc) return { stale: true, reason: "attempt_missing", attemptIdentifierPresent: true, attemptRecordExists: false, ownershipChecksPassed: false };
   const attempt = decodeFields(doc.fields);
-  if (attempt.uid !== uid || attempt.courseId !== courseId) return { stale: true };
+  if (attempt.uid !== uid || attempt.courseId !== courseId) return { stale: true, reason: "ownership_mismatch", attemptIdentifierPresent: true, attemptRecordExists: true, ownershipChecksPassed: false };
   return { id, attempt };
+}
+
+/** Resolve a competing reservation once, then make at most one transaction-safe retry. */
+export async function reserveWithSingleConflictRecovery<T>(
+  reserve: () => Promise<void>,
+  recover: () => Promise<T | null>,
+): Promise<{ kind: "reserved" } | { kind: "recovered"; value: T }> {
+  try {
+    await reserve();
+    return { kind: "reserved" };
+  } catch (cause) {
+    if (!(cause instanceof Error) || cause.message !== "checkout_in_progress") throw cause;
+    const recovered = await recover();
+    if (recovered !== null) return { kind: "recovered", value: recovered };
+    await reserve();
+    return { kind: "reserved" };
+  }
 }
 
 /** Find a prior confirmed outcome for installations whose old success path deleted its lock. */

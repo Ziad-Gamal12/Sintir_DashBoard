@@ -16,6 +16,8 @@ import {
   reconcileAttempt,
   releaseTerminalCheckoutLock,
   reserveAttempt,
+  reserveWithSingleConflictRecovery,
+  classifyPaymobInquiry,
   safeError,
   updateActiveAttempt,
   updateAttempt,
@@ -38,6 +40,21 @@ async function recoverLockedCheckout(
   requestId: string,
 ): Promise<Response | null> {
   const active = await findActiveCheckout(db, uid, courseId);
+  logCheckoutEvent(requestId, "checkout_lock_resolution", {
+    lockFound: active !== null,
+    resolution: !active ? "no_active_lock" : "stale" in active ? "review_required" : "attempt_found",
+    ...(active && "stale" in active ? {
+      staleReason: active.reason,
+      attemptIdentifierPresent: active.attemptIdentifierPresent,
+      attemptRecordExists: active.attemptRecordExists,
+      ownershipChecksPassed: active.ownershipChecksPassed,
+    } : {
+      attemptIdentifierPresent: Boolean(active && "id" in active),
+      attemptRecordExists: Boolean(active && "id" in active),
+      ownershipChecksPassed: Boolean(active && "id" in active),
+    }),
+    attemptStatus: active && !("stale" in active) ? String(active.attempt.status ?? "unknown") : undefined,
+  });
   if (!active) {
     const resolved = await findResolvedCheckout(db, uid, courseId);
     if (!resolved) return null;
@@ -64,16 +81,20 @@ async function recoverLockedCheckout(
   }
 
   if (["creating", "creation_unknown", "pending"].includes(String(attempt.status))) {
+    let inquiryOutcome = "not_attempted";
     try {
       const result = await inquireIntention({
         orderId: attempt.paymobOrderId ? String(attempt.paymobOrderId) : undefined,
         merchantReference: String(attempt.paymobSpecialReference ?? id),
       });
+      inquiryOutcome = classifyPaymobInquiry(result);
       await reconcileAttempt(db, id, result);
     } catch (cause) {
       const code = cause instanceof Error ? cause.message : "unknown";
-      console.error("Active course checkout recovery inquiry failed", { requestId, attemptId: id, code });
+      inquiryOutcome = "unavailable";
+      console.error("Active course checkout recovery inquiry failed", { requestId, code });
     }
+    logCheckoutEvent(requestId, "checkout_active_attempt_inquiry", { attempted: true, outcome: inquiryOutcome });
     const refreshed = await db.get(attemptPath(id));
     if (refreshed) attempt = decodeFields(refreshed.fields);
     if (activeCheckoutDisposition(attempt) === "resolved_failure") {
@@ -219,8 +240,19 @@ Deno.serve(async (request) => {
         paymobSpecialReference: attemptId,
       };
       stage = "checkout_reservation";
-      await reserveAttempt(db, attemptId, freeAttempt, courseId);
-      attemptReserved = true;
+      const reservation = await reserveWithSingleConflictRecovery(
+        async () => {
+          await reserveAttempt(db!, attemptId, freeAttempt, courseId);
+          attemptReserved = true;
+        },
+        async () => {
+          logCheckoutEvent(requestId, "checkout_reservation_conflict", { recoveryAttempted: true, freeEnrollment: true });
+          return callerUid && requestCourseId
+            ? await recoverLockedCheckout(db!, callerUid, requestCourseId, requestedCoupon, requestId)
+            : null;
+        },
+      );
+      if (reservation.kind === "recovered") return reservation.value;
       stage = "checkout_reservation_created";
       logCheckoutEvent(requestId, stage, { freeEnrollment: true });
       stage = "free_enrollment_fulfillment";
@@ -264,8 +296,19 @@ Deno.serve(async (request) => {
       paymobSpecialReference: attemptId,
     };
     stage = "checkout_reservation";
-    await reserveAttempt(db, attemptId, attempt, courseId);
-    attemptReserved = true;
+    const reservation = await reserveWithSingleConflictRecovery(
+      async () => {
+        await reserveAttempt(db!, attemptId, attempt, courseId);
+        attemptReserved = true;
+      },
+      async () => {
+        logCheckoutEvent(requestId, "checkout_reservation_conflict", { recoveryAttempted: true, freeEnrollment: false });
+        return callerUid && requestCourseId
+          ? await recoverLockedCheckout(db!, callerUid, requestCourseId, requestedCoupon, requestId)
+          : null;
+      },
+    );
+    if (reservation.kind === "recovered") return reservation.value;
     stage = "checkout_reservation_created";
     logCheckoutEvent(requestId, stage, { freeEnrollment: false });
 
@@ -370,6 +413,8 @@ Deno.serve(async (request) => {
       errorMessage: exception.message,
       ...(exception.stack ? { errorStack: exception.stack } : {}),
       attemptMayExist: attemptReserved || paymobRequestStarted,
+      newAttemptMayExist: attemptReserved || paymobRequestStarted,
+      activeLockMayExist: result.code === "checkout_in_progress",
       paymobRequestStarted,
       paymobResponseStatus,
       paymobIntentionMayExist: paymobIntentionCreated || (paymobRequestStarted && (
@@ -406,10 +451,16 @@ Deno.serve(async (request) => {
           const recovered = await recoverLockedCheckout(db, callerUid, requestCourseId, requestedCoupon, requestId);
           if (recovered) return recovered;
         }
-      } catch {
-        // Preserve the original safe error if the winning request has already
-        // resolved and released its lock or recovery itself is unavailable.
+      } catch (recoveryCause) {
+        const recoveryError = diagnosticError(recoveryCause);
+        logCheckoutEvent(requestId, "checkout_lock_resolution", {
+          lockFound: null,
+          resolution: "recovery_unavailable",
+          errorName: recoveryError.name,
+          errorMessage: recoveryError.message,
+        });
       }
+      return checkoutErrorResponse("checkout_retry_required", "Checkout status changed while this request was starting. Check payment status or retry shortly.", 409, requestId);
     }
     if (cause instanceof Error && cause.message === "unauthorized") {
       return checkoutErrorResponse("unauthorized", "Authentication is required.", 401, requestId);

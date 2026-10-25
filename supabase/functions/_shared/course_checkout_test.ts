@@ -1,4 +1,4 @@
-import { activeCheckoutDisposition, attemptPath, calculateQuote, checkoutLockPath, couponPath, couponReservationDisposition, coursePath, decodeFields, encode, failAttemptAndReleaseReservation, findActiveCheckout, inquiryCorrelatesToAttempt, paymobHmacFields, requiredCourseId, requireCaller, safeError, verifyPaymobHmac } from "./course_checkout.ts";
+import { activeCheckoutDisposition, attemptPath, calculateQuote, checkoutLockPath, classifyPaymobInquiry, couponPath, couponReservationDisposition, coursePath, decodeFields, encode, enrollPath, failAttemptAndReleaseReservation, findActiveCheckout, inquiryCorrelatesToAttempt, paymobHmacFields, requiredCourseId, requireCaller, reserveWithSingleConflictRecovery, safeError, verifyPaymobHmac } from "./course_checkout.ts";
 import type { Firestore } from "./firebase.ts";
 
 class MemoryFirestore {
@@ -164,7 +164,53 @@ Deno.test("active checkout lock lookup is scoped to the caller and retains stale
       : null,
   } as unknown as Firestore;
   const missing = await findActiveCheckout(missingDb, uid, courseId);
-  if (!missing || !("stale" in missing)) throw new Error("A stale lock was not retained for review.");
+  if (!missing || !("stale" in missing) || missing.reason !== "attempt_missing" || !missing.attemptIdentifierPresent || missing.attemptRecordExists) throw new Error("A stale lock was not retained and classified for review.");
+});
+
+Deno.test("reservation conflict resolves the winning attempt before a bounded retry", async () => {
+  let reserveCalls = 0;
+  const recovered = await reserveWithSingleConflictRecovery(
+    async () => {
+      reserveCalls++;
+      if (reserveCalls === 1) throw new Error("checkout_in_progress");
+    },
+    async () => ({ id: "winning-attempt" }),
+  );
+  if (reserveCalls !== 1 || recovered.kind !== "recovered" || recovered.value.id !== "winning-attempt") {
+    throw new Error("An authoritative competing attempt was not returned before reserving again.");
+  }
+});
+
+Deno.test("reservation retries only once after the competing lock is resolved", async () => {
+  let reserveCalls = 0;
+  let recoverCalls = 0;
+  const result = await reserveWithSingleConflictRecovery(
+    async () => {
+      reserveCalls++;
+      if (reserveCalls === 1) throw new Error("checkout_in_progress");
+    },
+    async () => { recoverCalls++; return null; },
+  );
+  if (result.kind !== "reserved" || reserveCalls !== 2 || recoverCalls !== 1) {
+    throw new Error("Reservation did not use exactly one bounded retry.");
+  }
+});
+
+Deno.test("reservation does not retry after a second concurrent conflict", async () => {
+  let reserveCalls = 0;
+  let recoverCalls = 0;
+  let rejected = false;
+  try {
+    await reserveWithSingleConflictRecovery(
+      async () => { reserveCalls++; throw new Error("checkout_in_progress"); },
+      async () => { recoverCalls++; return null; },
+    );
+  } catch (cause) {
+    rejected = cause instanceof Error && cause.message === "checkout_in_progress";
+  }
+  if (!rejected || reserveCalls !== 2 || recoverCalls !== 1) {
+    throw new Error("Repeated conflicts must stop after one retry and one recovery read.");
+  }
 });
 
 Deno.test("coupon reservation cleanup is owned and idempotent per attempt", () => {
