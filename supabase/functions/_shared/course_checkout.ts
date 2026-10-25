@@ -424,6 +424,18 @@ export function classifyPaymobInquiry(obj: Record<string, any> | null): "missing
   return "invalid";
 }
 
+export function inquiryCorrelatesToAttempt(result: Record<string, any>, attempt: Record<string, any>, id: string): boolean {
+  const expectedReference = String(attempt.paymobSpecialReference ?? id);
+  const reference = result.merchant_order_id ?? result.order?.merchant_order_id;
+  const orderId = result.order?.id;
+  if (!Number.isSafeInteger(Number(orderId)) || Number(orderId) <= 0) return false;
+  if (reference != null && String(reference) !== expectedReference) return false;
+  const referenceMatches = reference != null && String(reference) === expectedReference;
+  const storedOrderMatches = Boolean(attempt.paymobOrderId) && String(orderId) === String(attempt.paymobOrderId);
+  if (attempt.paymobOrderId && !storedOrderMatches) return false;
+  return referenceMatches || storedOrderMatches;
+}
+
 export async function reconcileAttempt(db: Firestore, id: string, result: Record<string, any> | null): Promise<string> {
   const doc = await db.get(attemptPath(id));
   if (!doc) return "missing_attempt";
@@ -435,9 +447,8 @@ export async function reconcileAttempt(db: Firestore, id: string, result: Record
     return "no_transaction_yet";
   }
   const state = classifyPaymobInquiry(result);
-  const ref = result.merchant_order_id ?? result.order?.merchant_order_id;
   const orderId = result.order?.id;
-  if (String(ref ?? "") !== String(attempt.paymobSpecialReference ?? id) || (attempt.paymobOrderId && (orderId == null || String(orderId) !== String(attempt.paymobOrderId))) || !Number.isSafeInteger(Number(orderId))) throw new Error("reconciliation_reference_mismatch");
+  if (!inquiryCorrelatesToAttempt(result, attempt, id)) throw new Error("reconciliation_reference_mismatch");
   if (!Number.isSafeInteger(Number(result.id)) || Number(result.id) <= 0 || !Number.isSafeInteger(Number(result.integration_id)) || !Number.isSafeInteger(Number(result.amount_cents)) || Number(result.amount_cents) !== Number(attempt.amountCents) || result.currency !== "EGP") throw new Error("reconciliation_payment_mismatch");
   const integrations = ["PAYMOB_WALLET_INTEGRATION_ID", "PAYMOB_ONLINE_CARD_INTEGRATION_ID", "PAYMOB_ACCEPT_KIOSK_INTEGRATION_ID", "PAYMOB_CASH_COLLECTION_INTEGRATION_ID"].map((name) => Number(Deno.env.get(name))).filter((value) => Number.isSafeInteger(value) && value > 0);
   if (!integrations.includes(Number(result.integration_id))) throw new Error("reconciliation_integration_mismatch");

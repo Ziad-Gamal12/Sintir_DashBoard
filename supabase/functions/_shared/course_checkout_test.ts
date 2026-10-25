@@ -1,4 +1,4 @@
-import { activeCheckoutDisposition, attemptPath, calculateQuote, checkoutLockPath, couponPath, couponReservationDisposition, coursePath, decodeFields, encode, failAttemptAndReleaseReservation, findActiveCheckout, paymobHmacFields, requiredCourseId, requireCaller, safeError, verifyPaymobHmac } from "./course_checkout.ts";
+import { activeCheckoutDisposition, attemptPath, calculateQuote, checkoutLockPath, couponPath, couponReservationDisposition, coursePath, decodeFields, encode, failAttemptAndReleaseReservation, findActiveCheckout, inquiryCorrelatesToAttempt, paymobHmacFields, requiredCourseId, requireCaller, safeError, verifyPaymobHmac } from "./course_checkout.ts";
 import type { Firestore } from "./firebase.ts";
 
 class MemoryFirestore {
@@ -105,6 +105,18 @@ Deno.test("Paymob reconciliation distinguishes pending, definitive failure, succ
   if (classifyPaymobInquiry({ pending: false, success: true, error_occured: false, is_auth: false }) !== "succeeded") throw new Error("Successful captured transaction was not classified.");
   if (classifyPaymobInquiry({ pending: false, success: true, is_refunded: true }) !== "action") throw new Error("Refund callback was misclassified as a payment.");
   if (classifyPaymobInquiry({ pending: false, success: true, is_auth: true, is_capture: false }) !== "invalid") throw new Error("Auth-only transaction was misclassified as paid.");
+});
+
+Deno.test("Paymob inquiry must correlate by stable reference or the persisted order ID", () => {
+  const id = "attempt-1";
+  const unknownOrder = { paymobSpecialReference: id };
+  if (!inquiryCorrelatesToAttempt({ merchant_order_id: id, order: { id: 44 } }, unknownOrder, id)) throw new Error("Matching stable merchant reference was rejected.");
+  if (inquiryCorrelatesToAttempt({ order: { id: 44 } }, unknownOrder, id)) throw new Error("Uncorrelated order was accepted for an attempt with no saved order ID.");
+
+  const persistedOrder = { paymobSpecialReference: id, paymobOrderId: "44" };
+  if (!inquiryCorrelatesToAttempt({ order: { id: 44 } }, persistedOrder, id)) throw new Error("Matching persisted Paymob order ID was rejected.");
+  if (inquiryCorrelatesToAttempt({ merchant_order_id: "another-attempt", order: { id: 44 } }, persistedOrder, id)) throw new Error("Mismatched merchant reference was accepted despite the matching order ID.");
+  if (inquiryCorrelatesToAttempt({ order: { id: 45 } }, persistedOrder, id)) throw new Error("Mismatched persisted order ID was accepted.");
 });
 
 Deno.test("active checkout recovery preserves success, review, pending, and ambiguous attempts", () => {
