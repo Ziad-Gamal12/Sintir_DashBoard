@@ -2,9 +2,8 @@
 # This function validates Firebase ID tokens itself; they are not Supabase JWTs.
 verify_jwt = false
 
-[functions.paymob-payout-webhook]
-# Paymob does not send Supabase JWTs. Its signature is verified in the handler.
-verify_jwt = false
+# teacher-withdrawal also accepts a separate secret header for its scheduled
+# unresolved-payout reconciliation action.
 
 [functions.create-video-upload]
 verify_jwt = false
@@ -20,4 +19,29 @@ verify_jwt = false
 
 [functions.mux-webhook]
 # Mux signs webhook requests; this function validates Mux-Signature itself.
+verify_jwt = false
+
+[functions.course-checkout-quote]
+# Firebase ID tokens are verified in the handler.
+verify_jwt = false
+
+[functions.create-course-payment]
+# Firebase ID tokens are verified in the handler.
+verify_jwt = false
+
+[functions.get-course-payment-status]
+# Firebase ID tokens are verified in the handler.
+verify_jwt = false
+
+[functions.check-course-subscription]
+# Firebase ID tokens are verified in the handler.
+verify_jwt = false
+
+[functions.paymob-webhook]
+# The handler authenticates Paymob callbacks with the transaction HMAC.
+verify_jwt = false
+
+[functions.reconcile-course-payments]
+# This server-only function requires a dedicated secret header. Supabase Cron
+# also sends the project API key so the gateway accepts the request.
 verify_jwt = false

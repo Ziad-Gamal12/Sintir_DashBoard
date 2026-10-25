@@ -3,6 +3,10 @@ import { createRemoteJWKSet, importPKCS8, jwtVerify, SignJWT } from "npm:jose@5.
 type FirestoreValue = Record<string, unknown>;
 type FirestoreDocument = { name: string; fields?: Record<string, FirestoreValue>; updateTime?: string };
 
+function encodeDocumentPath(path: string): string {
+  return path.split("/").map((segment) => encodeURIComponent(segment)).join("/");
+}
+
 const tokenKeys = createRemoteJWKSet(
   new URL("https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"),
 );
@@ -78,12 +82,22 @@ export class Firestore {
   }
 
   async get(path: string, transaction?: string): Promise<FirestoreDocument | null> {
-    const url = new URL(`${this.base}/${path}`);
+    const url = new URL(`${this.base}/${encodeDocumentPath(path)}`);
     if (transaction) url.searchParams.set("transaction", transaction);
     const response = await fetch(url, { headers: await this.headers() });
     if (response.status === 404) return null;
     if (!response.ok) throw new Error(`Firestore read failed (${response.status}).`);
     return await response.json();
+  }
+
+  async list(collection: string, pageToken?: string): Promise<{ documents: FirestoreDocument[]; nextPageToken?: string }> {
+    const url = new URL(`${this.base}/${encodeDocumentPath(collection)}`);
+    url.searchParams.set("pageSize", "100");
+    if (pageToken) url.searchParams.set("pageToken", pageToken);
+    const response = await fetch(url, { headers: await this.headers() });
+    if (!response.ok) throw new Error(`Firestore list failed (${response.status}).`);
+    const data = await response.json();
+    return { documents: data.documents ?? [], nextPageToken: data.nextPageToken };
   }
 
   async beginTransaction(): Promise<string> {
@@ -101,13 +115,9 @@ export class Firestore {
       body: JSON.stringify({ transaction, writes }),
     });
     if (!response.ok) {
-      // Preserve the Firebase error details in Supabase logs. Do not return this
-      // provider payload to the mobile client because it can reveal internals.
-      const details = await response.text();
-      console.error("Firestore commit rejected", {
-        status: response.status,
-        details,
-      });
+      // Keep provider bodies out of logs; the status and checkout stage identify
+      // the failure class without exposing document or account details.
+      console.error("Firestore commit rejected", { status: response.status });
       throw new Error(`Firestore transaction could not commit (${response.status}).`);
     }
   }
@@ -156,4 +166,8 @@ export function updateWrite(document: FirestoreDocument, fieldPaths: string[], u
 
 export function createWrite(document: FirestoreDocument): unknown {
   return { update: document, currentDocument: { exists: false } };
+}
+
+export function deleteWrite(document: FirestoreDocument, updateTime?: string): unknown {
+  return { delete: document.name, ...(updateTime ? { currentDocument: { updateTime } } : {}) };
 }

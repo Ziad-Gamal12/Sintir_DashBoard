@@ -4,7 +4,7 @@ const baseUrl = "https://stagingpayouts.paymobsolutions.com/api/secure/";
 
 /** A non-2xx response means Paymob did not accept this payout request. */
 export class PaymobDisbursementRejected extends Error {
-  constructor(message: string) {
+  constructor(message: string, readonly status: number) {
     super(message);
     this.name = "PaymobDisbursementRejected";
   }
@@ -47,11 +47,16 @@ export async function disburse(input: { amount: number; mobileNumber: string; is
   });
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new PaymobDisbursementRejected(
-      typeof body.error_description === "string"
-        ? body.error_description
-        : "Paymob disbursement was rejected.",
-    );
+    const message = typeof body.error_description === "string"
+      ? body.error_description
+      : "Paymob disbursement did not return a successful response.";
+    // A clear client rejection means the payout was not accepted. Timeouts,
+    // throttling, and server errors can happen after acceptance; keep those
+    // ambiguous and retain the wallet reservation.
+    if (response.status >= 400 && response.status < 500 && response.status !== 408 && response.status !== 429) {
+      throw new PaymobDisbursementRejected(message, response.status);
+    }
+    throw new Error(message);
   }
   const transactionId = body.transaction_id?.toString();
   if (!transactionId) throw new Error("Paymob response did not include a transaction ID.");
@@ -59,16 +64,12 @@ export async function disburse(input: { amount: number; mobileNumber: string; is
 }
 
 export async function inquire(transactionId: string): Promise<Record<string, unknown>> {
-  // The Paymob collection describes this as a GET request. Do not attach a
-  // JSON body to GET: standards-compliant fetch implementations (including
-  // Edge Runtime) reject it before the request reaches Paymob.
-  const query = new URLSearchParams({
-    transactions_ids_list: transactionId,
-    bank_transactions: "false",
-  });
-  const response = await fetch(`${baseUrl}transaction/inquire/?${query}`, {
-    method: "GET",
+  // The Paymob Payout API Swagger documents bulk inquiry by transaction ID as
+  // POST. GET is used for its separate budget endpoint.
+  const response = await fetch(`${baseUrl}transaction/inquire/`, {
+    method: "POST",
     headers: { authorization: `Bearer ${await accessToken()}`, "content-type": "application/json" },
+    body: JSON.stringify({ transactions_ids_list: [transactionId], bank_transactions: false }),
   });
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
