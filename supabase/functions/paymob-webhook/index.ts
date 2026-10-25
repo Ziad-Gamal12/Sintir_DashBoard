@@ -1,6 +1,6 @@
 import { Firestore } from "../_shared/firebase.ts";
 import { error, json } from "../_shared/http.ts";
-import { attemptPath, decodeFields, fulfillPayment, readBody, safeError, updateAttempt, verifyPaymobHmac } from "../_shared/course_checkout.ts";
+import { attemptPath, decodeFields, fulfillPayment, readBody, safeError, updateActiveAttempt, updateAttempt, verifyPaymobHmac } from "../_shared/course_checkout.ts";
 Deno.serve(async (request) => {
   if (request.method !== "POST") return error("method_not_allowed", "Use POST.", 405);
   try {
@@ -32,16 +32,16 @@ Deno.serve(async (request) => {
     }
     if (["failed", "creation_failed"].includes(attempt.status)) return json({ ok: true, acknowledged: true, duplicate: true, status: attempt.status });
     if (obj.pending === true) {
-      await updateAttempt(db, attemptId, { status: "pending", lastCallbackAt: new Date() });
-      return json({ ok: true, acknowledged: true, status: "pending" });
+      const status = await updateActiveAttempt(db, attemptId, { status: "pending", lastCallbackAt: new Date() });
+      return json({ ok: true, acknowledged: true, status: status ?? "pending" });
     }
     const terminalSuccess = obj.success === true && obj.error_occured !== true && !paymentAction && (obj.is_auth !== true || obj.is_capture === true || obj.is_captured === true);
     if (!terminalSuccess) {
       // Paymob callbacks can describe follow-up actions and only report the
       // latest transaction. Let the authenticated inquiry job establish a
       // definitive failure before releasing this reservation.
-      await updateAttempt(db, attemptId, { status: "pending", latestPaymobTransactionId: String(obj.id), lastCallbackAt: new Date(), reconciliationResult: paymentAction ? "payment_action_requires_review" : "callback_non_success_pending_inquiry" });
-      return json({ ok: true, acknowledged: true, status: "pending" });
+      const status = await updateActiveAttempt(db, attemptId, { status: "pending", latestPaymobTransactionId: String(obj.id), lastCallbackAt: new Date(), reconciliationResult: paymentAction ? "payment_action_requires_review" : "callback_non_success_pending_inquiry" });
+      return json({ ok: true, acknowledged: true, status: status ?? "pending" });
     }
     const status = await fulfillPayment(db, attemptId, obj);
     return json({ ok: true, acknowledged: true, status });

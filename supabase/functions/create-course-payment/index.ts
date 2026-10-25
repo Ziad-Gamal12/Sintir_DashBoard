@@ -2,7 +2,10 @@ import { Firestore, requiredSecret } from "../_shared/firebase.ts";
 import { corsHeaders } from "../_shared/http.ts";
 import {
   attemptPath,
+  activeCheckoutDisposition,
   decodeFields,
+  findActiveCheckout,
+  findResolvedCheckout,
   failAttemptAndReleaseReservation,
   fulfillFreeEnrollment,
   loadQuote,
@@ -10,10 +13,14 @@ import {
   requiredCourseId,
   requiredId,
   requireCaller,
+  reconcileAttempt,
+  releaseTerminalCheckoutLock,
   reserveAttempt,
   safeError,
+  updateActiveAttempt,
   updateAttempt,
 } from "../_shared/course_checkout.ts";
+import { inquireIntention } from "../_shared/paymob_inquiry.ts";
 import {
   checkoutErrorResponse,
   checkoutRequestId,
@@ -23,11 +30,85 @@ import {
   type CheckoutStage,
 } from "../_shared/course_checkout_diagnostics.ts";
 
+async function recoverLockedCheckout(
+  db: Firestore,
+  uid: string,
+  courseId: string,
+  couponCode: string | undefined,
+  requestId: string,
+): Promise<Response | null> {
+  const active = await findActiveCheckout(db, uid, courseId);
+  if (!active) {
+    const resolved = await findResolvedCheckout(db, uid, courseId);
+    if (!resolved) return null;
+    const status = String(resolved.attempt.status);
+    return checkoutResponse({
+      ok: true,
+      paymentAttemptId: resolved.id,
+      checkoutUrl: "",
+      status,
+      quote: resolved.attempt.quote ?? null,
+      resumedExisting: true,
+      requiresConfirmation: false,
+      ...(status === "paid_requires_review" ? { message: "Payment is being reviewed. Do not pay again." } : {}),
+    }, requestId);
+  }
+  if ("stale" in active) {
+    return checkoutErrorResponse("stale_checkout_lock", "An earlier checkout needs support review before another payment can start.", 409, requestId);
+  }
+
+  let { id, attempt } = active;
+  if (activeCheckoutDisposition(attempt) === "resolved_failure") {
+    await releaseTerminalCheckoutLock(db, id);
+    return null;
+  }
+
+  if (["creating", "creation_unknown", "pending"].includes(String(attempt.status))) {
+    try {
+      const result = await inquireIntention({
+        orderId: attempt.paymobOrderId ? String(attempt.paymobOrderId) : undefined,
+        merchantReference: String(attempt.paymobSpecialReference ?? id),
+      });
+      await reconcileAttempt(db, id, result);
+    } catch (cause) {
+      const code = cause instanceof Error ? cause.message : "unknown";
+      console.error("Active course checkout recovery inquiry failed", { requestId, attemptId: id, code });
+    }
+    const refreshed = await db.get(attemptPath(id));
+    if (refreshed) attempt = decodeFields(refreshed.fields);
+    if (activeCheckoutDisposition(attempt) === "resolved_failure") {
+      await releaseTerminalCheckoutLock(db, id);
+      return null;
+    }
+  }
+
+  if (!attempt.quote || typeof attempt.quote !== "object") {
+    return checkoutErrorResponse("stale_checkout_lock", "An earlier checkout needs support review before another payment can start.", 409, requestId);
+  }
+  const status = String(attempt.status);
+  const checkoutUrl = status === "pending" && typeof attempt.checkoutUrl === "string" ? attempt.checkoutUrl : "";
+  return checkoutResponse({
+    ok: true,
+    paymentAttemptId: id,
+    checkoutUrl,
+    status: status === "pending" && !checkoutUrl ? "verification_required" : status,
+    quote: attempt.quote,
+    resumedExisting: true,
+    requiresConfirmation: !["succeeded", "paid_requires_review"].includes(status),
+    originalCouponCode: attempt.couponCode ?? null,
+    requestedCouponCode: couponCode?.trim() || null,
+    requestDiffers: (attempt.couponCode ?? null) !== (couponCode?.trim() || null),
+  }, requestId);
+}
+
 Deno.serve(async (request) => {
   const requestId = checkoutRequestId();
   let stage: CheckoutStage = "request_received";
   let db: Firestore | undefined;
   let attemptId = "";
+  let callerUid = "";
+  let requestCourseId = "";
+  let requestedCoupon: string | undefined;
   let attemptReserved = false;
   let paymobRequestStarted = false;
   let paymobResponseStatus: number | null = null;
@@ -51,12 +132,15 @@ Deno.serve(async (request) => {
     logCheckoutEvent(requestId, "firestore_client_initialization");
     stage = "firebase_identity_verification";
     const uid = await requireCaller(request);
+    callerUid = uid;
     stage = "firebase_identity_verified";
     logCheckoutEvent(requestId, stage);
 
     stage = "request_parsing";
     const body = await readBody(request);
     const courseId = requiredCourseId(body.courseId);
+    requestCourseId = courseId;
+    requestedCoupon = typeof body.couponCode === "string" ? body.couponCode : undefined;
     attemptId = requiredId(body.idempotencyKey, "idempotencyKey");
     if (body.couponCode !== undefined && typeof body.couponCode !== "string") {
       return checkoutErrorResponse("invalid_couponCode", "Coupon code is invalid.", 400, requestId);
@@ -77,11 +161,12 @@ Deno.serve(async (request) => {
       ) {
         return checkoutErrorResponse("idempotency_conflict", "This checkout key is already in use.", 409, requestId);
       }
+      const recovered = await recoverLockedCheckout(db, uid, courseId, body.couponCode, requestId);
+      if (recovered) return recovered;
+      const refreshedExisting = await db.get(attemptPath(attemptId));
+      if (refreshedExisting) Object.assign(attempt, decodeFields(refreshedExisting.fields));
       if (attempt.status === "succeeded" && attempt.fulfillmentStatus === "free_enrolled") {
-        return checkoutResponse({ ok: true, paymentAttemptId: attemptId, checkoutUrl: "", status: "succeeded", quote: attempt.quote }, requestId);
-      }
-      if (attempt.status === "pending" && attempt.checkoutUrl) {
-        return checkoutResponse({ ok: true, paymentAttemptId: attemptId, checkoutUrl: attempt.checkoutUrl, status: attempt.status, quote: attempt.quote }, requestId);
+        return checkoutResponse({ ok: true, paymentAttemptId: attemptId, checkoutUrl: "", status: "succeeded", quote: attempt.quote, resumedExisting: true }, requestId);
       }
       if (attempt.status === "creating") {
         return checkoutErrorResponse("checkout_processing", "Checkout creation is still processing. Retry shortly.", 409, requestId);
@@ -94,6 +179,11 @@ Deno.serve(async (request) => {
       }
       return checkoutErrorResponse("checkout_creation_failed", "Checkout could not be started. Start a new checkout attempt.", 409, requestId);
     }
+
+    // The server lock outlives the app's in-memory idempotency key. Resolve it
+    // before loading a new quote or reserving another coupon/payment attempt.
+    const recovered = await recoverLockedCheckout(db, uid, courseId, body.couponCode, requestId);
+    if (recovered) return recovered;
 
     stage = "course_quote_loading";
     const { quote, course, user } = await loadQuote(db, uid, courseId, body.couponCode);
@@ -123,6 +213,7 @@ Deno.serve(async (request) => {
         amountCents: 0,
         quote,
         couponCode: quote.couponCode,
+      providerRequestState: "not_sent",
         createdAt: new Date(),
         updatedAt: new Date(),
         paymobSpecialReference: attemptId,
@@ -167,6 +258,7 @@ Deno.serve(async (request) => {
       amountCents: quote.amountCents,
       quote,
       couponCode: quote.couponCode,
+      providerRequestState: "not_sent",
       createdAt: new Date(),
       updatedAt: new Date(),
       paymobSpecialReference: attemptId,
@@ -178,6 +270,7 @@ Deno.serve(async (request) => {
     logCheckoutEvent(requestId, stage, { freeEnrollment: false });
 
     stage = "paymob_intention_requested";
+    await updateAttempt(db, attemptId, { providerRequestState: "may_have_been_sent", providerRequestStartedAt: new Date() });
     paymobRequestStarted = true;
     logCheckoutEvent(requestId, stage);
     const intention = await fetch("https://accept.paymob.com/v1/intention/", {
@@ -217,11 +310,21 @@ Deno.serve(async (request) => {
       stage = "attempt_failure_persistence";
       await failAttemptAndReleaseReservation(db, attemptId, { creationErrorCode: "paymob_rejected" }, "creation_failed");
       attemptReserved = false;
+      const latestAttempt = await db.get(attemptPath(attemptId));
+      const latest = latestAttempt ? decodeFields(latestAttempt.fields) : null;
+      if (latest && ["succeeded", "paid_requires_review"].includes(String(latest.status))) {
+        return checkoutResponse({ ok: true, paymentAttemptId: attemptId, checkoutUrl: "", status: latest.status, quote: latest.quote ?? quote, resumedExisting: true, requiresConfirmation: false }, requestId);
+      }
       return checkoutErrorResponse("paymob_intention_failed", "Paymob could not start checkout. Please retry.", 502, requestId);
     }
     if (!intention.ok || !clientSecret) {
       stage = "payment_attempt_persistence";
-      await updateAttempt(db, attemptId, { status: "creation_unknown", creationErrorCode: "ambiguous_paymob_response", updatedAt: new Date() });
+      await updateActiveAttempt(db, attemptId, { status: "creation_unknown", creationErrorCode: "ambiguous_paymob_response", updatedAt: new Date() });
+      const latestAttempt = await db.get(attemptPath(attemptId));
+      const latest = latestAttempt ? decodeFields(latestAttempt.fields) : null;
+      if (latest && ["succeeded", "paid_requires_review"].includes(String(latest.status))) {
+        return checkoutResponse({ ok: true, paymentAttemptId: attemptId, checkoutUrl: "", status: latest.status, quote: latest.quote ?? quote, resumedExisting: true, requiresConfirmation: false }, requestId);
+      }
       return checkoutErrorResponse("paymob_intention_unknown", "Checkout status is being confirmed. Please check again shortly.", 502, requestId);
     }
 
@@ -232,15 +335,28 @@ Deno.serve(async (request) => {
     });
     const url = `https://accept.paymob.com/unifiedcheckout/?publicKey=${encodeURIComponent(publicKey)}&clientSecret=${encodeURIComponent(clientSecret)}`;
     stage = "payment_attempt_persistence";
-    await updateAttempt(db, attemptId, {
+    const persistedStatus = await updateActiveAttempt(db, attemptId, {
       status: "pending",
       checkoutUrl: url,
       paymobIntentionId: String(response.id ?? ""),
       paymobOrderId: String(response.intention_order_id ?? ""),
       updatedAt: new Date(),
     });
+    const latestAttempt = await db.get(attemptPath(attemptId));
+    const latest = latestAttempt ? decodeFields(latestAttempt.fields) : null;
+    if (latest && ["succeeded", "paid_requires_review", "failed", "creation_failed"].includes(String(latest.status))) {
+      return checkoutResponse({
+        ok: true,
+        paymentAttemptId: attemptId,
+        checkoutUrl: "",
+        status: latest.status,
+        quote: latest.quote ?? quote,
+        resumedExisting: true,
+        requiresConfirmation: false,
+      }, requestId);
+    }
     stage = "payment_attempt_persisted";
-    logCheckoutEvent(requestId, stage, { paymobIntentionCreated: true });
+    logCheckoutEvent(requestId, stage, { paymobIntentionCreated: true, persistedStatus });
     stage = "checkout_response_ready";
     logCheckoutEvent(requestId, stage);
     return checkoutResponse({ ok: true, paymentAttemptId: attemptId, checkoutUrl: url, status: "pending", quote }, requestId);
@@ -282,6 +398,17 @@ Deno.serve(async (request) => {
           paymobResponseStatus,
           paymobIntentionMayExist: paymobIntentionCreated || paymobRequestStarted,
         });
+      }
+    }
+    if (result.code === "checkout_in_progress" && db) {
+      try {
+        if (callerUid && requestCourseId) {
+          const recovered = await recoverLockedCheckout(db, callerUid, requestCourseId, requestedCoupon, requestId);
+          if (recovered) return recovered;
+        }
+      } catch {
+        // Preserve the original safe error if the winning request has already
+        // resolved and released its lock or recovery itself is unavailable.
       }
     }
     if (cause instanceof Error && cause.message === "unauthorized") {

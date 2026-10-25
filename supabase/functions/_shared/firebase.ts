@@ -100,6 +100,23 @@ export class Firestore {
     return { documents: data.documents ?? [], nextPageToken: data.nextPageToken };
   }
 
+  async queryEqual(collection: string, filters: Record<string, string>): Promise<FirestoreDocument[]> {
+    const whereFilters = Object.entries(filters).map(([fieldPath, value]) => ({
+      fieldFilter: { field: { fieldPath }, op: "EQUAL", value: { stringValue: value } },
+    }));
+    const where = whereFilters.length === 1
+      ? whereFilters[0]
+      : { compositeFilter: { op: "AND", filters: whereFilters } };
+    const response = await fetch(`${this.base}:runQuery`, {
+      method: "POST",
+      headers: await this.headers(),
+      body: JSON.stringify({ structuredQuery: { from: [{ collectionId: collection }], where } }),
+    });
+    if (!response.ok) throw new Error(`Firestore query failed (${response.status}).`);
+    const rows = await response.json();
+    return Array.isArray(rows) ? rows.map((row) => row.document).filter(Boolean) : [];
+  }
+
   async beginTransaction(): Promise<string> {
     const response = await fetch(`${this.base}:beginTransaction`, {
       method: "POST", headers: await this.headers(), body: "{}",

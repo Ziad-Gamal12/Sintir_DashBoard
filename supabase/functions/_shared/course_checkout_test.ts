@@ -1,4 +1,36 @@
-import { calculateQuote, classifyPaymobInquiry, coursePath, enrollPath, paymobHmacFields, requiredCourseId, requireCaller, safeError, verifyPaymobHmac } from "./course_checkout.ts";
+import { activeCheckoutDisposition, attemptPath, calculateQuote, checkoutLockPath, couponPath, couponReservationDisposition, coursePath, decodeFields, encode, failAttemptAndReleaseReservation, findActiveCheckout, paymobHmacFields, requiredCourseId, requireCaller, safeError, verifyPaymobHmac } from "./course_checkout.ts";
+import type { Firestore } from "./firebase.ts";
+
+class MemoryFirestore {
+  readonly documents = new Map<string, { name: string; fields: Record<string, any>; updateTime: string }>();
+  private version = 0;
+
+  async beginTransaction(): Promise<string> { return `tx-${this.version}`; }
+  async get(path: string): Promise<any> { return this.documents.get(path) ?? null; }
+  document(path: string, fields: Record<string, any>): any { return { name: path, fields }; }
+  async commit(_transaction: string, writes: any[]): Promise<void> {
+    for (const write of writes) {
+      if (write.delete) {
+        this.documents.delete(write.delete);
+        continue;
+      }
+      const path = write.update.name;
+      const current = this.documents.get(path);
+      if (!current) throw new Error(`Missing fake document: ${path}`);
+      const fields = { ...current.fields };
+      for (const fieldPath of write.updateMask.fieldPaths) fields[fieldPath] = write.update.fields[fieldPath];
+      this.version++;
+      this.documents.set(path, { ...current, fields, updateTime: String(this.version) });
+    }
+  }
+  put(path: string, fields: Record<string, unknown>): void {
+    this.documents.set(path, { name: path, fields: Object.fromEntries(Object.entries(fields).map(([key, value]) => [key, encode(value)])), updateTime: String(++this.version) });
+  }
+  read(path: string): Record<string, any> | null {
+    const document = this.documents.get(path);
+    return document ? decodeFields(document.fields) : null;
+  }
+}
 import { checkoutErrorResponse, diagnosticError } from "./course_checkout_diagnostics.ts";
 
 Deno.test("course document IDs preserve Arabic-Indic and existing formats exactly", () => {
@@ -73,6 +105,99 @@ Deno.test("Paymob reconciliation distinguishes pending, definitive failure, succ
   if (classifyPaymobInquiry({ pending: false, success: true, error_occured: false, is_auth: false }) !== "succeeded") throw new Error("Successful captured transaction was not classified.");
   if (classifyPaymobInquiry({ pending: false, success: true, is_refunded: true }) !== "action") throw new Error("Refund callback was misclassified as a payment.");
   if (classifyPaymobInquiry({ pending: false, success: true, is_auth: true, is_capture: false }) !== "invalid") throw new Error("Auth-only transaction was misclassified as paid.");
+});
+
+Deno.test("active checkout recovery preserves success, review, pending, and ambiguous attempts", () => {
+  if (activeCheckoutDisposition({ status: "succeeded" }) !== "success") throw new Error("A paid attempt was not recognized as fulfilled.");
+  if (activeCheckoutDisposition({ status: "paid_requires_review" }) !== "review") throw new Error("A review-required payment was not protected from a second charge.");
+  if (activeCheckoutDisposition({ status: "pending", checkoutUrl: "https://accept.paymob.com/checkout" }) !== "resume") throw new Error("A usable pending checkout was not resumable.");
+  if (activeCheckoutDisposition({ status: "creation_unknown" }) !== "verify") throw new Error("An ambiguous intention was not retained for verification.");
+  if (activeCheckoutDisposition({ status: "failed" }) !== "resolved_failure") throw new Error("An authoritative terminal failure was not resolved.");
+});
+
+Deno.test("active checkout lock lookup is scoped to the caller and retains stale locks", async () => {
+  const uid = "student-1";
+  const courseId = "course-1";
+  const path = await checkoutLockPath(uid, courseId);
+  const attemptFields = (owner: string, course: string) => ({
+    uid: { stringValue: owner },
+    courseId: { stringValue: course },
+    status: { stringValue: "pending" },
+    quote: { mapValue: { fields: { amountCents: { integerValue: "5000" } } } },
+  });
+  const attemptId = "attempt-1";
+  const db = {
+    get: async (requestedPath: string) => {
+      if (requestedPath === path) return { name: path, fields: { paymentAttemptId: { stringValue: attemptId } } };
+      if (requestedPath === `CoursePaymentAttempts/${attemptId}`) return { name: requestedPath, fields: attemptFields(uid, courseId) };
+      return null;
+    },
+  } as unknown as Firestore;
+  const active = await findActiveCheckout(db, uid, courseId);
+  if (!active || "stale" in active || active.id !== attemptId || active.attempt.uid !== uid) throw new Error("The owner's active attempt was not recovered from its lock.");
+
+  const foreignDb = {
+    get: async (requestedPath: string) => requestedPath === path
+      ? { name: path, fields: { paymentAttemptId: { stringValue: attemptId } } }
+      : requestedPath === `CoursePaymentAttempts/${attemptId}`
+        ? { name: requestedPath, fields: attemptFields("another-student", courseId) }
+        : null,
+  } as unknown as Firestore;
+  const foreign = await findActiveCheckout(foreignDb, uid, courseId);
+  if (!foreign || !("stale" in foreign)) throw new Error("A foreign attempt was exposed or reused.");
+
+  const missingDb = {
+    get: async (requestedPath: string) => requestedPath === path
+      ? { name: path, fields: { paymentAttemptId: { stringValue: "missing-attempt" } } }
+      : null,
+  } as unknown as Firestore;
+  const missing = await findActiveCheckout(missingDb, uid, courseId);
+  if (!missing || !("stale" in missing)) throw new Error("A stale lock was not retained for review.");
+});
+
+Deno.test("coupon reservation cleanup is owned and idempotent per attempt", () => {
+  const pending = { status: "pending", couponCode: "SAVE", couponReservationState: "reserved" };
+  if (couponReservationDisposition(pending) !== "release") throw new Error("The active attempt's reservation was not eligible for one release.");
+  const released = { ...pending, status: "failed", couponReservationState: "released" };
+  if (couponReservationDisposition(released) !== "unchanged") throw new Error("A repeated cleanup could decrement the reservation twice.");
+  if (couponReservationDisposition({ status: "creation_failed", couponCode: "SAVE" }) !== "unchanged") throw new Error("A terminal creation failure could decrement a reservation twice.");
+  if (couponReservationDisposition({ status: "pending", couponCode: "SAVE", couponReservationState: "consumed" }) !== "unchanged") throw new Error("A consumed reservation was eligible for release.");
+});
+
+Deno.test("terminal cleanup releases one coupon reservation and only its own lock", async () => {
+  const db = new MemoryFirestore();
+  const attemptId = "attempt-owned";
+  const uid = "student-cleanup";
+  const courseId = "course-cleanup";
+  const lockPath = await checkoutLockPath(uid, courseId);
+  db.put(attemptPath(attemptId), {
+    uid, courseId, status: "pending", couponCode: "SAVE",
+    couponReservationState: "reserved", createdAt: new Date(),
+  });
+  db.put(couponPath(courseId, "SAVE"), { usedCount: 2, reservedCount: 4 });
+  db.put(lockPath, { paymentAttemptId: attemptId, uid, courseId });
+
+  await failAttemptAndReleaseReservation(db as unknown as Firestore, attemptId, { reconciliationResult: "definitive_failure" });
+  if (db.read(attemptPath(attemptId))?.couponReservationState !== "released") throw new Error("Attempt reservation was not marked released.");
+  if (db.read(couponPath(courseId, "SAVE"))?.reservedCount !== 3) throw new Error("The attempt's reserved coupon count was not released exactly once.");
+  if (db.read(lockPath) !== null) throw new Error("The terminal attempt's owned lock was not deleted.");
+
+  await failAttemptAndReleaseReservation(db as unknown as Firestore, attemptId, { reconciliationResult: "duplicate_cleanup" });
+  if (db.read(couponPath(courseId, "SAVE"))?.reservedCount !== 3) throw new Error("Repeated cleanup decremented another checkout's reservation.");
+});
+
+Deno.test("terminal cleanup does not delete a lock owned by a different attempt", async () => {
+  const db = new MemoryFirestore();
+  const attemptId = "attempt-old";
+  const lockOwner = "attempt-new";
+  const uid = "student-lock-owner";
+  const courseId = "course-lock-owner";
+  const lockPath = await checkoutLockPath(uid, courseId);
+  db.put(attemptPath(attemptId), { uid, courseId, status: "pending", couponReservationState: "none" });
+  db.put(lockPath, { paymentAttemptId: lockOwner, uid, courseId });
+
+  await failAttemptAndReleaseReservation(db as unknown as Firestore, attemptId);
+  if (db.read(lockPath)?.paymentAttemptId !== lockOwner) throw new Error("Cleanup deleted a lock owned by another attempt.");
 });
 
 Deno.test("Paymob transaction HMAC verifies only the official ordered field set", async () => {
