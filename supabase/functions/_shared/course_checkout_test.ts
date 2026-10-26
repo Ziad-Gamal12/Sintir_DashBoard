@@ -1,4 +1,4 @@
-import { activeCheckoutDisposition, attemptPath, calculateQuote, checkoutLockPath, classifyPaymobInquiry, couponPath, couponReservationDisposition, coursePath, decodeFields, encode, enrollPath, failAttemptAndReleaseReservation, findActiveCheckout, inquiryCorrelatesToAttempt, paymobHmacFields, requiredCourseId, requireCaller, reserveWithSingleConflictRecovery, safeError, verifyPaymobHmac } from "./course_checkout.ts";
+import { activeCheckoutDisposition, attemptPath, calculateQuote, checkoutLockPath, classifyPaymobInquiry, couponPath, couponReservationDisposition, coursePath, decodeFields, encode, enrollPath, failAttemptAndReleaseReservation, findActiveCheckout, inquiryCorrelatesToAttempt, inquiryRetryAfterSeconds, paymobHmacFields, requiredCourseId, requireCaller, reserveWithSingleConflictRecovery, safeError, verifyPaymobHmac } from "./course_checkout.ts";
 import type { Firestore } from "./firebase.ts";
 
 class MemoryFirestore {
@@ -105,6 +105,13 @@ Deno.test("Paymob reconciliation distinguishes pending, definitive failure, succ
   if (classifyPaymobInquiry({ pending: false, success: true, error_occured: false, is_auth: false }) !== "succeeded") throw new Error("Successful captured transaction was not classified.");
   if (classifyPaymobInquiry({ pending: false, success: true, is_refunded: true }) !== "action") throw new Error("Refund callback was misclassified as a payment.");
   if (classifyPaymobInquiry({ pending: false, success: true, is_auth: true, is_capture: false }) !== "invalid") throw new Error("Auth-only transaction was misclassified as paid.");
+});
+
+Deno.test("payment status cooldown reports the remaining retry window", () => {
+  const last = new Date("2026-10-26T12:00:00.000Z");
+  if (inquiryRetryAfterSeconds(last, last.getTime() + 5_500) !== 25) throw new Error("Inquiry cooldown did not report the correct remaining seconds.");
+  if (inquiryRetryAfterSeconds(last, last.getTime() + 30_000) !== 0) throw new Error("Elapsed inquiry cooldown continued blocking status checks.");
+  if (inquiryRetryAfterSeconds(null, last.getTime()) !== 0) throw new Error("A missing prior check incorrectly started a cooldown.");
 });
 
 Deno.test("Paymob inquiry must correlate by stable reference or the persisted order ID", () => {

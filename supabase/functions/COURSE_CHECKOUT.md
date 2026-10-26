@@ -12,11 +12,13 @@ Configure these Edge Function secrets in Supabase (use the Firebase service acco
 
 - `FB_PROJECT_ID`, `FB_CLIENT_EMAIL`, `FB_PRIVATE_KEY`
 - `PAYMOB_SECRET_KEY`, `PAYMOB_PUBLIC_KEY`, `PAYMOB_WEBHOOK_HMAC_SECRET`
-- `PAYMOB_API_KEY` (transaction inquiry authentication)
+- `PAYMOB_API_KEY` (transaction inquiry authentication; the runtime logs confirmed this secret is currently missing and inquiry cannot authenticate until it is configured)
 - `PAYMOB_WALLET_INTEGRATION_ID`, `PAYMOB_ONLINE_CARD_INTEGRATION_ID`, `PAYMOB_ACCEPT_KIOSK_INTEGRATION_ID`, `PAYMOB_CASH_COLLECTION_INTEGRATION_ID`
 - `COURSE_PAYMENT_RECONCILIATION_SECRET` (long random secret shared only with the scheduled caller)
 
 For **each** enabled Payment Integration ID in the Paymob dashboard, configure its transaction-processed callback to `https://<project-ref>.supabase.co/functions/v1/paymob-webhook`. Current Paymob docs say intention `notification_url` is supported only with card integration IDs, so its presence in the intention request is a card override, not coverage for wallet/kiosk/cash methods. The app uses the hosted Unified Checkout URL; redirect parameters only resume status polling and never fulfill a payment. The reconciliation fallback uses Paymob's transaction inquiry by order ID or merchant reference for all enabled IDs.
+
+The `PAYMOB_API_KEY` secret is distinct from `PAYMOB_SECRET_KEY`. The status and recovery functions authenticate transaction inquiry with the former. Set it in the Supabase project's Edge Function secrets from the merchant's Paymob dashboard credentials; do not send the key through chat. For every active integration ID, verify that Paymob's **Transaction Processed Callback** points to the webhook URL above. Paymob documents intention `redirection_url` as a customer return for card and wallet only; it is not evidence of payment. Configure the integration callback for payment methods that do not support intention callback overrides.
 
 ## Scheduled reconciliation
 

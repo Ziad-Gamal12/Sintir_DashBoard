@@ -80,8 +80,8 @@ async function recoverLockedCheckout(
     return null;
   }
 
+  let inquiryOutcome = "not_attempted";
   if (["creating", "creation_unknown", "pending"].includes(String(attempt.status))) {
-    let inquiryOutcome = "not_attempted";
     try {
       const result = await inquireIntention({
         orderId: attempt.paymobOrderId ? String(attempt.paymobOrderId) : undefined,
@@ -107,12 +107,14 @@ async function recoverLockedCheckout(
     return checkoutErrorResponse("stale_checkout_lock", "An earlier checkout needs support review before another payment can start.", 409, requestId);
   }
   const status = String(attempt.status);
-  const checkoutUrl = status === "pending" && typeof attempt.checkoutUrl === "string" ? attempt.checkoutUrl : "";
+  const inquiryUnresolved = ["unavailable", "missing", "invalid"].includes(inquiryOutcome);
+  const checkoutUrl = status === "pending" && !inquiryUnresolved && typeof attempt.checkoutUrl === "string" ? attempt.checkoutUrl : "";
   return checkoutResponse({
     ok: true,
     paymentAttemptId: id,
     checkoutUrl,
     status: status === "pending" && !checkoutUrl ? "verification_required" : status,
+    ...(inquiryUnresolved ? { verificationState: inquiryOutcome === "unavailable" ? "provider_unavailable" : "inquiry_inconclusive" } : {}),
     quote: attempt.quote,
     resumedExisting: true,
     requiresConfirmation: !["succeeded", "paid_requires_review"].includes(status),

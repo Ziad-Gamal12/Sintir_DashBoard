@@ -106,6 +106,14 @@ export function isTerminalAttemptStatus(status: unknown): boolean {
   return ["succeeded", "failed", "creation_failed", "paid_requires_review", "expired"].includes(String(status));
 }
 
+export function inquiryRetryAfterSeconds(lastReconciledAt: unknown, now = Date.now(), cooldownMs = 30_000): number {
+  const last = lastReconciledAt instanceof Date
+    ? lastReconciledAt.getTime()
+    : Date.parse(String(lastReconciledAt ?? ""));
+  if (!Number.isFinite(last)) return 0;
+  return Math.max(0, Math.ceil((last + cooldownMs - now) / 1000));
+}
+
 export type ActiveCheckoutDisposition = "success" | "review" | "resolved_failure" | "resume" | "verify";
 export function activeCheckoutDisposition(attempt: Record<string, any>): ActiveCheckoutDisposition {
   if (attempt.status === "succeeded") return "success";
