@@ -1,4 +1,4 @@
-import { activeCheckoutDisposition, attemptPath, calculateQuote, checkoutLockPath, classifyPaymobInquiry, couponPath, couponReservationDisposition, coursePath, decodeFields, encode, enrollPath, failAttemptAndReleaseReservation, findActiveCheckout, inquiryCorrelatesToAttempt, inquiryRetryAfterSeconds, paymobHmacFields, requiredCourseId, requireCaller, reserveWithSingleConflictRecovery, safeError, verifyPaymobHmac } from "./course_checkout.ts";
+import { activeCheckoutDisposition, attemptPath, calculateQuote, canResumeCheckout, checkoutLockPath, classifyPaymobInquiry, couponPath, couponReservationDisposition, coursePath, decodeFields, encode, enrollPath, failAttemptAndReleaseReservation, findActiveCheckout, inquiryCorrelatesToAttempt, inquiryRetryAfterSeconds, paymobHmacFields, requiredCourseId, requireCaller, reserveWithSingleConflictRecovery, safeError, verifyPaymobHmac } from "./course_checkout.ts";
 import type { Firestore } from "./firebase.ts";
 
 class MemoryFirestore {
@@ -132,6 +132,24 @@ Deno.test("active checkout recovery preserves success, review, pending, and ambi
   if (activeCheckoutDisposition({ status: "pending", checkoutUrl: "https://accept.paymob.com/checkout" }) !== "resume") throw new Error("A usable pending checkout was not resumable.");
   if (activeCheckoutDisposition({ status: "creation_unknown" }) !== "verify") throw new Error("An ambiguous intention was not retained for verification.");
   if (activeCheckoutDisposition({ status: "failed" }) !== "resolved_failure") throw new Error("An authoritative terminal failure was not resolved.");
+});
+
+Deno.test("a pending checkout is resumable only when inquiry confirms it remains open", () => {
+  const url = "https://accept.paymob.com/checkout/example";
+  if (!canResumeCheckout({ status: "pending", checkoutUrl: url, reconciliationResult: "pending" })) {
+    throw new Error("A provider-confirmed pending checkout was not resumable.");
+  }
+  if (!canResumeCheckout({ status: "pending", checkoutUrl: url, reconciliationResult: "latest_transaction_failed_order_open" })) {
+    throw new Error("An open order after a retryable failed transaction was not resumable.");
+  }
+  for (const result of ["no_transaction_yet", "provider_unavailable", "invalid", "payment_action_requires_review"]) {
+    if (canResumeCheckout({ status: "pending", checkoutUrl: url, reconciliationResult: result })) {
+      throw new Error(`An unresolved or review-required attempt was incorrectly resumable: ${result}`);
+    }
+  }
+  if (canResumeCheckout({ status: "failed", checkoutUrl: url, reconciliationResult: "pending" })) {
+    throw new Error("A terminal failure was marked resumable.");
+  }
 });
 
 Deno.test("active checkout lock lookup is scoped to the caller and retains stale locks", async () => {

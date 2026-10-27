@@ -3,6 +3,7 @@ import { corsHeaders } from "../_shared/http.ts";
 import {
   attemptPath,
   activeCheckoutDisposition,
+  canResumeCheckout,
   decodeFields,
   findActiveCheckout,
   findResolvedCheckout,
@@ -108,7 +109,7 @@ async function recoverLockedCheckout(
   }
   const status = String(attempt.status);
   const inquiryUnresolved = ["unavailable", "missing", "invalid"].includes(inquiryOutcome);
-  const checkoutUrl = status === "pending" && !inquiryUnresolved && typeof attempt.checkoutUrl === "string" ? attempt.checkoutUrl : "";
+  const checkoutUrl = !inquiryUnresolved && canResumeCheckout(attempt) ? attempt.checkoutUrl : "";
   return checkoutResponse({
     ok: true,
     paymentAttemptId: id,

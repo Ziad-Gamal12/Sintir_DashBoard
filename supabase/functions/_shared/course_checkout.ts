@@ -123,6 +123,13 @@ export function activeCheckoutDisposition(attempt: Record<string, any>): ActiveC
   return "verify";
 }
 
+/** A checkout URL is resumable only after inquiry confirms it remains open. */
+export function canResumeCheckout(attempt: Record<string, any>): boolean {
+  return attempt.status === "pending" &&
+    typeof attempt.checkoutUrl === "string" && attempt.checkoutUrl.length > 0 &&
+    ["pending", "latest_transaction_failed_order_open"].includes(String(attempt.reconciliationResult));
+}
+
 export function couponReservationDisposition(attempt: Record<string, any>): "release" | "unchanged" {
   if (isTerminalAttemptStatus(attempt.status)) return "unchanged";
   return attempt.couponCode && (attempt.couponReservationState === "reserved" || attempt.couponReservationState == null)

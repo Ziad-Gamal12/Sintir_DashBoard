@@ -1,6 +1,6 @@
 import { Firestore } from "../_shared/firebase.ts";
 import { error, json } from "../_shared/http.ts";
-import { attemptPath, classifyPaymobInquiry, decodeFields, enrollPath, inquiryRetryAfterSeconds, isTerminalAttemptStatus, readBody, reconcileAttempt, requiredId, requireCaller, safeError, subscriberPath, updateActiveAttempt } from "../_shared/course_checkout.ts";
+import { attemptPath, canResumeCheckout, classifyPaymobInquiry, decodeFields, enrollPath, inquiryRetryAfterSeconds, isTerminalAttemptStatus, readBody, reconcileAttempt, requiredId, requireCaller, safeError, subscriberPath, updateActiveAttempt } from "../_shared/course_checkout.ts";
 import { inquireIntention } from "../_shared/paymob_inquiry.ts";
 Deno.serve(async (request) => {
   const requestId = crypto.randomUUID();
@@ -88,8 +88,9 @@ Deno.serve(async (request) => {
     retryAfterSeconds = isTerminalAttemptStatus(current.status)
       ? 0
       : inquiryRetryAfterSeconds(current.lastReconciledAt);
+    const canResume = canResumeCheckout(current);
     if (isTerminalAttemptStatus(current.status) && verificationState === "cooldown") verificationState = "terminal";
-    logStatus("response_ready", { status, verificationState, retryAfterSeconds });
+    logStatus("response_ready", { status, verificationState, retryAfterSeconds, canResume });
     return json({
       ok: true,
       paymentAttemptId: id,
@@ -97,6 +98,7 @@ Deno.serve(async (request) => {
       verificationState,
       retryAfterSeconds,
       canRetry: !isTerminalAttemptStatus(status),
+      canResume,
       amountCents: current.amountCents,
       currency: "EGP",
       checkoutUrl: current.checkoutUrl ?? "",
