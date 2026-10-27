@@ -1,4 +1,28 @@
-import { activeCheckoutDisposition, attemptPath, calculateQuote, canResumeCheckout, checkoutLockPath, classifyPaymobInquiry, couponPath, couponReservationDisposition, coursePath, decodeFields, encode, enrollPath, failAttemptAndReleaseReservation, findActiveCheckout, inquiryCorrelatesToAttempt, inquiryRetryAfterSeconds, paymobHmacFields, requiredCourseId, requireCaller, reserveWithSingleConflictRecovery, safeError, verifyPaymobHmac } from "./course_checkout.ts";
+import {
+  activeCheckoutDisposition,
+  attemptPath,
+  calculateQuote,
+  canResumeCheckout,
+  checkoutLockPath,
+  classifyPaymobInquiry,
+  couponPath,
+  couponReservationDisposition,
+  coursePath,
+  decodeFields,
+  encode,
+  enrollPath,
+  failAttemptAndReleaseReservation,
+  findActiveCheckout,
+  inquiryCorrelatesToAttempt,
+  inquiryRetryAfterSeconds,
+  paymobHmacFields,
+  recoverableCheckoutUrl,
+  requiredCourseId,
+  requireCaller,
+  reserveWithSingleConflictRecovery,
+  safeError,
+  verifyPaymobHmac,
+} from "./course_checkout.ts";
 import type { Firestore } from "./firebase.ts";
 
 class MemoryFirestore {
@@ -134,7 +158,7 @@ Deno.test("active checkout recovery preserves success, review, pending, and ambi
   if (activeCheckoutDisposition({ status: "failed" }) !== "resolved_failure") throw new Error("An authoritative terminal failure was not resolved.");
 });
 
-Deno.test("a pending checkout is resumable only when inquiry confirms it remains open", () => {
+Deno.test("a pending checkout can resume its same intention when no transaction exists", () => {
   const url = "https://accept.paymob.com/checkout/example";
   if (!canResumeCheckout({ status: "pending", checkoutUrl: url, reconciliationResult: "pending" })) {
     throw new Error("A provider-confirmed pending checkout was not resumable.");
@@ -142,13 +166,43 @@ Deno.test("a pending checkout is resumable only when inquiry confirms it remains
   if (!canResumeCheckout({ status: "pending", checkoutUrl: url, reconciliationResult: "latest_transaction_failed_order_open" })) {
     throw new Error("An open order after a retryable failed transaction was not resumable.");
   }
-  for (const result of ["no_transaction_yet", "provider_unavailable", "invalid", "payment_action_requires_review"]) {
+  if (!canResumeCheckout({ status: "pending", checkoutUrl: url, reconciliationResult: "no_transaction_yet" })) {
+    throw new Error("A missing transaction was incorrectly treated as proof the intention expired.");
+  }
+  for (const result of ["provider_unavailable", "invalid", "payment_action_requires_review"]) {
     if (canResumeCheckout({ status: "pending", checkoutUrl: url, reconciliationResult: result })) {
       throw new Error(`An unresolved or review-required attempt was incorrectly resumable: ${result}`);
     }
   }
   if (canResumeCheckout({ status: "failed", checkoutUrl: url, reconciliationResult: "pending" })) {
     throw new Error("A terminal failure was marked resumable.");
+  }
+});
+
+Deno.test("no transaction keeps the attempt pending and preserves its original checkout data", async () => {
+  const db = new MemoryFirestore();
+  const attemptId = "attempt-no-transaction";
+  const url = "https://accept.paymob.com/unifiedcheckout/?clientSecret=redacted";
+  const quote = { amountCents: 17000, currency: "EGP", couponCode: null };
+  db.put(attemptPath(attemptId), {
+    uid: "student-1", courseId: "course-1", status: "pending", checkoutUrl: url,
+    quote, reconciliationAttempts: 0,
+  });
+
+  const result = await reconcileAttempt(db as unknown as Firestore, attemptId, null);
+  const attempt = db.read(attemptPath(attemptId));
+  if (result !== "no_transaction_yet" || attempt?.status !== "pending") {
+    throw new Error("An inquiry without a transaction incorrectly terminalized the attempt.");
+  }
+  if (attempt.checkoutUrl !== url || JSON.stringify(attempt.quote) !== JSON.stringify(quote)) {
+    throw new Error("The original Paymob URL or quote changed during reconciliation.");
+  }
+  if (!canResumeCheckout(attempt)) throw new Error("The original intention was not offered for resumption.");
+  if (recoverableCheckoutUrl(attempt, "missing") !== url) {
+    throw new Error("Recovery did not return the original Paymob URL after a missing transaction.");
+  }
+  if (recoverableCheckoutUrl(attempt, "unavailable") !== "") {
+    throw new Error("A transport failure incorrectly returned a checkout URL.");
   }
 });
 

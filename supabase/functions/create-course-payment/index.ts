@@ -3,7 +3,6 @@ import { corsHeaders } from "../_shared/http.ts";
 import {
   attemptPath,
   activeCheckoutDisposition,
-  canResumeCheckout,
   decodeFields,
   findActiveCheckout,
   findResolvedCheckout,
@@ -15,6 +14,7 @@ import {
   requiredId,
   requireCaller,
   reconcileAttempt,
+  recoverableCheckoutUrl,
   releaseTerminalCheckoutLock,
   reserveAttempt,
   reserveWithSingleConflictRecovery,
@@ -108,8 +108,8 @@ async function recoverLockedCheckout(
     return checkoutErrorResponse("stale_checkout_lock", "An earlier checkout needs support review before another payment can start.", 409, requestId);
   }
   const status = String(attempt.status);
-  const inquiryUnresolved = ["unavailable", "missing", "invalid"].includes(inquiryOutcome);
-  const checkoutUrl = !inquiryUnresolved && canResumeCheckout(attempt) ? attempt.checkoutUrl : "";
+  const inquiryUnresolved = ["unavailable", "invalid"].includes(inquiryOutcome);
+  const checkoutUrl = recoverableCheckoutUrl(attempt, inquiryOutcome);
   return checkoutResponse({
     ok: true,
     paymentAttemptId: id,

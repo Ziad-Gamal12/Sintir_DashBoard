@@ -123,11 +123,25 @@ export function activeCheckoutDisposition(attempt: Record<string, any>): ActiveC
   return "verify";
 }
 
-/** A checkout URL is resumable only after inquiry confirms it remains open. */
+/**
+ * A missing transaction is not evidence that Paymob expired or closed the
+ * intention. Keep the attempt locked, but let the customer reopen that same
+ * provider URL. Provider outages, malformed results, and payment actions stay
+ * non-resumable because their state needs a fresh authoritative check/review.
+ */
 export function canResumeCheckout(attempt: Record<string, any>): boolean {
   return attempt.status === "pending" &&
     typeof attempt.checkoutUrl === "string" && attempt.checkoutUrl.length > 0 &&
-    ["pending", "latest_transaction_failed_order_open"].includes(String(attempt.reconciliationResult));
+    ["pending", "no_transaction_yet", "latest_transaction_failed_order_open"].includes(String(attempt.reconciliationResult));
+}
+
+/** Return only the saved URL; never construct a replacement intention. */
+export function recoverableCheckoutUrl(
+  attempt: Record<string, any>,
+  inquiryOutcome: unknown,
+): string {
+  if (["unavailable", "invalid"].includes(String(inquiryOutcome))) return "";
+  return canResumeCheckout(attempt) ? String(attempt.checkoutUrl) : "";
 }
 
 export function couponReservationDisposition(attempt: Record<string, any>): "release" | "unchanged" {
