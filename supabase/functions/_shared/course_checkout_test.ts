@@ -12,16 +12,22 @@ import {
   decodeFields,
   encode,
   enrollPath,
+  FulfillmentRecordsMissingError,
   failAttemptAndReleaseReservation,
+  fulfillPayment,
   findActiveCheckout,
+  hasVerifiedPaymentEvidence,
   inquiryCorrelatesToAttempt,
   inquiryRetryAfterSeconds,
   paymobHmacFields,
   recoverableCheckoutUrl,
   requiredCourseId,
   requireCaller,
+  retryVerifiedPaymentFulfillment,
   reserveWithSingleConflictRecovery,
   safeError,
+  subscriberPath,
+  userPath,
   verifyPaymobHmac,
 } from "./course_checkout.ts";
 import type { Firestore } from "./firebase.ts";
@@ -29,11 +35,18 @@ import type { Firestore } from "./firebase.ts";
 class MemoryFirestore {
   readonly documents = new Map<string, { name: string; fields: Record<string, any>; updateTime: string }>();
   private version = 0;
+  commitCalls = 0;
+  failOnCommitNumber: number | null = null;
 
   async beginTransaction(): Promise<string> { return `tx-${this.version}`; }
   async get(path: string): Promise<any> { return this.documents.get(path) ?? null; }
   document(path: string, fields: Record<string, any>): any { return { name: path, fields }; }
   async commit(_transaction: string, writes: any[]): Promise<void> {
+    this.commitCalls++;
+    if (this.commitCalls === this.failOnCommitNumber) {
+      this.failOnCommitNumber = null;
+      throw new Error("Firestore transaction could not commit (503).");
+    }
     for (const write of writes) {
       if (write.delete) {
         this.documents.delete(write.delete);
@@ -41,11 +54,37 @@ class MemoryFirestore {
       }
       const path = write.update.name;
       const current = this.documents.get(path);
+      if (write.currentDocument?.exists === false) {
+        if (current) throw new Error(`Fake document already exists: ${path}`);
+        this.version++;
+        this.documents.set(path, {
+          name: path,
+          fields: { ...write.update.fields },
+          updateTime: String(this.version),
+        });
+        continue;
+      }
       if (!current) throw new Error(`Missing fake document: ${path}`);
-      const fields = { ...current.fields };
-      for (const fieldPath of write.updateMask.fieldPaths) fields[fieldPath] = write.update.fields[fieldPath];
+      const data = decodeFields(current.fields);
+      const incoming = decodeFields(write.update.fields);
+      for (const fieldPath of write.updateMask.fieldPaths) {
+        const segments = fieldPath.split(".");
+        let source: any = incoming;
+        for (const segment of segments) source = source?.[segment];
+        if (source === undefined) continue;
+        let target = data;
+        for (const segment of segments.slice(0, -1)) {
+          target[segment] ??= {};
+          target = target[segment];
+        }
+        target[segments[segments.length - 1]] = source;
+      }
       this.version++;
-      this.documents.set(path, { ...current, fields, updateTime: String(this.version) });
+      this.documents.set(path, {
+        ...current,
+        fields: Object.fromEntries(Object.entries(data).map(([key, value]) => [key, encode(value)])),
+        updateTime: String(this.version),
+      });
     }
   }
   put(path: string, fields: Record<string, unknown>): void {
@@ -55,6 +94,66 @@ class MemoryFirestore {
     const document = this.documents.get(path);
     return document ? decodeFields(document.fields) : null;
   }
+}
+
+const successfulPaymobResult = (attemptId: string) => ({
+  id: "30001",
+  pending: false,
+  success: true,
+  error_occured: false,
+  is_auth: false,
+  integration_id: 987,
+  amount_cents: 12500,
+  currency: "EGP",
+  merchant_order_id: attemptId,
+  order: { id: 65432, merchant_order_id: attemptId },
+});
+
+async function seedPaidAttempt(
+  db: MemoryFirestore,
+  attemptId: string,
+  missingRecords: string[] = [],
+): Promise<{ uid: string; courseId: string; teacherId: string; lockPath: string }> {
+  Deno.env.set("PAYMOB_WALLET_INTEGRATION_ID", "987");
+  const uid = "student-fulfillment";
+  const courseId = "course-fulfillment";
+  const teacherId = "teacher-fulfillment";
+  if (!missingRecords.includes("course")) {
+    db.put(coursePath(courseId), {
+      state: "Published",
+      contentcreaterentity: { id: teacherId },
+      studentsCount: 0,
+      title: "Payment recovery test course",
+    });
+  }
+  if (!missingRecords.includes("student")) {
+    db.put(userPath(uid), {
+      firstName: "Test student",
+      phoneNumber: "01000000000",
+      teacherExtraData: {},
+    });
+  }
+  if (!missingRecords.includes("teacher")) {
+    db.put(userPath(teacherId), {
+      teacherExtraData: { wallet: { balance: 0, total_earned: 0 } },
+    });
+  }
+  db.put(attemptPath(attemptId), {
+    uid,
+    courseId,
+    teacherId,
+    status: "pending",
+    amountCents: 12500,
+    paymobSpecialReference: attemptId,
+    paymobOrderId: "65432",
+    checkoutUrl: "https://accept.paymob.com/checkout/original",
+    reconciliationResult: "pending",
+    couponReservationState: "none",
+    createdAt: new Date("2026-10-28T12:00:00.000Z"),
+  });
+  const lockPath = await checkoutLockPath(uid, courseId);
+  db.put(lockPath, { paymentAttemptId: attemptId, uid, courseId });
+  return { uid, courseId, teacherId, lockPath };
 }
 import { checkoutErrorResponse, diagnosticError } from "./course_checkout_diagnostics.ts";
 
@@ -217,6 +316,131 @@ Deno.test("no transaction keeps the attempt pending and preserves its original c
   }
   if (recoverableCheckoutUrl(attempt, "unavailable") !== "") {
     throw new Error("A transport failure incorrectly returned a checkout URL.");
+  }
+});
+
+Deno.test("verified payment is persisted before fulfillment and retries without reopening checkout", async () => {
+  const db = new MemoryFirestore();
+  const attemptId = "attempt-verified-payment";
+  const { uid, courseId, teacherId } = await seedPaidAttempt(db, attemptId);
+  const providerResult = successfulPaymobResult(attemptId);
+
+  const firstResult = await fulfillPayment(db as unknown as Firestore, attemptId, providerResult);
+  let attempt = db.read(attemptPath(attemptId));
+  if (firstResult !== "succeeded" || attempt?.status !== "succeeded") {
+    throw new Error("A correlated Paymob success did not complete shared fulfillment.");
+  }
+  if (attempt.paymentVerificationState !== "verified_succeeded" || attempt.paymobTransactionId !== providerResult.id) {
+    throw new Error("Verified transaction evidence was not retained on the payment attempt.");
+  }
+  if (!db.read(enrollPath(uid, courseId)) || !db.read(subscriberPath(courseId, uid))) {
+    throw new Error("Successful fulfillment did not create both enrollment records.");
+  }
+  if (db.read(coursePath(courseId))?.studentsCount !== 1) {
+    throw new Error("Course subscriber count was not incremented exactly once.");
+  }
+  if (db.read(userPath(teacherId))?.teacherExtraData?.wallet?.balance !== 118.75) {
+    throw new Error("Teacher wallet credit did not use the verified payment amount.");
+  }
+  const transactionRecords = [...db.documents.keys()].filter((path) =>
+    path === `Transactions/${providerResult.id}` ||
+    path.endsWith(`/Transactions/${providerResult.id}`)
+  );
+  if (transactionRecords.length !== 3) throw new Error("Financial transaction records were not written exactly once.");
+
+  const recovery = checkoutRecoveryDecision(attempt, "fulfillment_retry_required");
+  if (recovery.canResume || recovery.checkoutUrl !== "" || canResumeCheckout(attempt)) {
+    throw new Error("A confirmed payment was exposed as a resumable unpaid checkout.");
+  }
+  if (await retryVerifiedPaymentFulfillment(db as unknown as Firestore, attemptId) !== "succeeded") {
+    throw new Error("Persisted verified payment evidence did not support a safe retry.");
+  }
+  if (await fulfillPayment(db as unknown as Firestore, attemptId, providerResult) !== "succeeded") {
+    throw new Error("A repeated callback/inquiry did not remain idempotent.");
+  }
+  attempt = db.read(attemptPath(attemptId));
+  if (attempt?.status !== "succeeded" || db.read(coursePath(courseId))?.studentsCount !== 1) {
+    throw new Error("Repeated fulfillment duplicated or changed the completed enrollment.");
+  }
+  const repeatedTransactions = [...db.documents.keys()].filter((path) =>
+    path === `Transactions/${providerResult.id}` ||
+    path.endsWith(`/Transactions/${providerResult.id}`)
+  );
+  if (repeatedTransactions.length !== 3) throw new Error("Repeated fulfillment duplicated financial transaction records.");
+});
+
+Deno.test("missing canonical fulfillment records are classified without fabricating them", async () => {
+  const attemptId = "attempt-missing-canonical-record";
+  const providerResult = successfulPaymobResult(attemptId);
+  for (const missingCategory of ["course", "student", "teacher"]) {
+    const db = new MemoryFirestore();
+    const { uid, courseId, teacherId, lockPath } = await seedPaidAttempt(db, attemptId, [missingCategory]);
+    let failure: unknown;
+    try {
+      await fulfillPayment(db as unknown as Firestore, attemptId, providerResult);
+    } catch (cause) {
+      failure = cause;
+    }
+    if (!(failure instanceof FulfillmentRecordsMissingError) ||
+      failure.missingRecordCategories.join(",") !== missingCategory) {
+      throw new Error(`Missing ${missingCategory} data was not reported as a precise, sanitized prerequisite.`);
+    }
+    const attempt = db.read(attemptPath(attemptId));
+    if (!hasVerifiedPaymentEvidence(attempt ?? {}, attemptId) ||
+      attempt?.status !== "pending" ||
+      attempt?.reconciliationResult !== "fulfillment_records_missing" ||
+      JSON.stringify(attempt?.fulfillmentMissingRecordCategories) !== JSON.stringify([missingCategory])) {
+      throw new Error("A paid attempt did not retain its evidence and actionable missing-record review state.");
+    }
+    if (!db.read(lockPath)) throw new Error("The checkout safety lock was released while payment fulfillment was incomplete.");
+    if (db.read(coursePath(courseId)) === null && missingCategory !== "course") {
+      throw new Error("An unrelated missing course record was not present in the fixture.");
+    }
+    if (db.read(userPath(uid)) === null && missingCategory !== "student") {
+      throw new Error("An unrelated missing student record was not present in the fixture.");
+    }
+    if (db.read(userPath(teacherId)) === null && missingCategory !== "teacher") {
+      throw new Error("An unrelated missing teacher record was not present in the fixture.");
+    }
+    if (db.read(enrollPath(uid, courseId)) || db.read(subscriberPath(courseId, uid))) {
+      throw new Error("Fulfillment fabricated enrollment despite a missing canonical record.");
+    }
+
+    if (missingCategory === "course") {
+      db.put(coursePath(courseId), { state: "Published", contentcreaterentity: { id: teacherId }, studentsCount: 0 });
+    } else if (missingCategory === "student") {
+      db.put(userPath(uid), { firstName: "Restored student", phoneNumber: "01000000000" });
+    } else {
+      db.put(userPath(teacherId), { teacherExtraData: { wallet: { balance: 0, total_earned: 0 } } });
+    }
+    if (await retryVerifiedPaymentFulfillment(db as unknown as Firestore, attemptId) !== "succeeded") {
+      throw new Error(`Restoring canonical ${missingCategory} data did not recover the already-paid attempt.`);
+    }
+  }
+});
+
+Deno.test("transient Firestore fulfillment failure can retry from persisted payment evidence", async () => {
+  const db = new MemoryFirestore();
+  const attemptId = "attempt-transient-fulfillment";
+  const { uid, courseId } = await seedPaidAttempt(db, attemptId);
+  db.failOnCommitNumber = 2; // First commit stores verified payment evidence; second is fulfillment.
+  let failed = false;
+  try {
+    await fulfillPayment(db as unknown as Firestore, attemptId, successfulPaymobResult(attemptId));
+  } catch {
+    failed = true;
+  }
+  const pending = db.read(attemptPath(attemptId));
+  if (!failed || !hasVerifiedPaymentEvidence(pending ?? {}, attemptId) || pending?.status !== "pending") {
+    throw new Error("A transient fulfillment failure lost the verified payment evidence or changed paid state unsafely.");
+  }
+  if (db.read(enrollPath(uid, courseId))) throw new Error("A failed Firestore transaction partially granted enrollment.");
+
+  if (await retryVerifiedPaymentFulfillment(db as unknown as Firestore, attemptId) !== "succeeded") {
+    throw new Error("A later retry did not complete fulfillment from stored evidence.");
+  }
+  if (db.read(coursePath(courseId))?.studentsCount !== 1 || !db.read(enrollPath(uid, courseId))) {
+    throw new Error("The recovered attempt did not create one accessible enrollment.");
   }
 });
 

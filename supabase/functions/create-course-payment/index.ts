@@ -3,6 +3,9 @@ import { corsHeaders } from "../_shared/http.ts";
 import {
   attemptPath,
   activeCheckoutDisposition,
+  FulfillmentRecordsMissingError,
+  hasVerifiedPaymentEvidence,
+  retryVerifiedPaymentFulfillment,
   decodeFields,
   findActiveCheckout,
   findResolvedCheckout,
@@ -82,44 +85,115 @@ async function recoverLockedCheckout(
   }
 
   let inquiryOutcome = "not_attempted";
-  if (["creating", "creation_unknown", "pending"].includes(String(attempt.status))) {
+  let recoveryVerificationState: string | undefined;
+  let paymentConfirmedForThisResponse = hasVerifiedPaymentEvidence(attempt, id);
+
+  if (paymentConfirmedForThisResponse) {
+    inquiryOutcome = "fulfillment_retry_required";
+    logCheckoutEvent(requestId, "verified_payment_fulfillment_retry_started", {
+      paymentAttemptId: id,
+      paymentSuccessVerified: true,
+      providerInquirySkipped: true,
+    });
+    try {
+      const state = await retryVerifiedPaymentFulfillment(db, id);
+      inquiryOutcome = state === "succeeded" ? "succeeded" : "fulfillment_retry_required";
+      if (state !== "succeeded") recoveryVerificationState = "fulfillment_retry_required";
+    } catch (cause) {
+      recoveryVerificationState = cause instanceof FulfillmentRecordsMissingError
+        ? "fulfillment_records_missing"
+        : "fulfillment_retry_required";
+      logCheckoutEvent(requestId, "verified_payment_fulfillment_retry_failed", {
+        paymentAttemptId: id,
+        paymentSuccessVerified: true,
+        errorCode: cause instanceof FulfillmentRecordsMissingError
+          ? "fulfillment_records_missing"
+          : cause instanceof Error && /^[a-z0-9_]+$/.test(cause.message)
+            ? cause.message
+            : "fulfillment_unexpected_error",
+        missingRecordCategories: cause instanceof FulfillmentRecordsMissingError
+          ? cause.missingRecordCategories
+          : [],
+      });
+    }
+  } else if (["creating", "creation_unknown", "pending"].includes(String(attempt.status))) {
+    let providerOutcome = "unavailable";
+    let providerResultReceived = false;
     try {
       const result = await inquireIntention({
         orderId: attempt.paymobOrderId ? String(attempt.paymobOrderId) : undefined,
         merchantReference: String(attempt.paymobSpecialReference ?? id),
       });
-      inquiryOutcome = classifyPaymobInquiry(result);
+      providerResultReceived = true;
+      providerOutcome = classifyPaymobInquiry(result);
+      inquiryOutcome = providerOutcome;
       await reconcileAttempt(db, id, result);
     } catch (cause) {
-      const code = cause instanceof Error ? cause.message : "unknown";
-      inquiryOutcome = "unavailable";
-      console.error("Active course checkout recovery inquiry failed", { requestId, code });
+      const refreshedAfterFailure = await db.get(attemptPath(id));
+      if (refreshedAfterFailure) attempt = decodeFields(refreshedAfterFailure.fields);
+      paymentConfirmedForThisResponse = paymentConfirmedForThisResponse || hasVerifiedPaymentEvidence(attempt, id);
+      if (paymentConfirmedForThisResponse) {
+        inquiryOutcome = "fulfillment_retry_required";
+        recoveryVerificationState = cause instanceof FulfillmentRecordsMissingError
+          ? "fulfillment_records_missing"
+          : "fulfillment_retry_required";
+      } else {
+        inquiryOutcome = providerResultReceived ? "invalid" : "unavailable";
+        recoveryVerificationState = providerResultReceived ? "inquiry_inconclusive" : "provider_unavailable";
+      }
+      logCheckoutEvent(requestId, "checkout_active_attempt_inquiry_failed", {
+        paymentAttemptId: id,
+        outcome: inquiryOutcome,
+        providerOutcome,
+        paymentSuccessVerified: paymentConfirmedForThisResponse,
+        errorCode: cause instanceof FulfillmentRecordsMissingError
+          ? "fulfillment_records_missing"
+          : cause instanceof Error && /^[a-z0-9_]+$/.test(cause.message)
+            ? cause.message
+            : "checkout_recovery_failed",
+        missingRecordCategories: cause instanceof FulfillmentRecordsMissingError
+          ? cause.missingRecordCategories
+          : [],
+      });
     }
-    logCheckoutEvent(requestId, "checkout_active_attempt_inquiry", { attempted: true, outcome: inquiryOutcome });
+    logCheckoutEvent(requestId, "checkout_active_attempt_inquiry", {
+      paymentAttemptId: id,
+      attempted: true,
+      outcome: inquiryOutcome,
+      paymentSuccessVerified: paymentConfirmedForThisResponse,
+    });
     const refreshed = await db.get(attemptPath(id));
     if (refreshed) attempt = decodeFields(refreshed.fields);
     if (activeCheckoutDisposition(attempt) === "resolved_failure") {
       await releaseTerminalCheckoutLock(db, id);
       return null;
     }
+    if (hasVerifiedPaymentEvidence(attempt, id)) paymentConfirmedForThisResponse = true;
   }
 
+  const refreshedAfterRecovery = await db.get(attemptPath(id));
+  if (refreshedAfterRecovery) attempt = decodeFields(refreshedAfterRecovery.fields);
   if (!attempt.quote || typeof attempt.quote !== "object") {
     return checkoutErrorResponse("stale_checkout_lock", "An earlier checkout needs support review before another payment can start.", 409, requestId);
   }
   const status = String(attempt.status);
   const inquiryUnresolved = ["unavailable", "invalid"].includes(inquiryOutcome);
-  const { canResume, checkoutUrl } = checkoutRecoveryDecision(attempt, inquiryOutcome);
+  const paymentConfirmed = paymentConfirmedForThisResponse || hasVerifiedPaymentEvidence(attempt, id);
+  const { canResume, checkoutUrl } = checkoutRecoveryDecision(
+    attempt,
+    paymentConfirmed ? recoveryVerificationState ?? inquiryOutcome : inquiryOutcome,
+  );
   return checkoutResponse({
     ok: true,
     paymentAttemptId: id,
     checkoutUrl,
     canResume,
-    status: status === "pending" && !checkoutUrl ? "verification_required" : status,
-    ...(inquiryUnresolved ? { verificationState: inquiryOutcome === "unavailable" ? "provider_unavailable" : "inquiry_inconclusive" } : {}),
+    paymentConfirmed,
+    status: status === "pending" && (!checkoutUrl || paymentConfirmed) ? "verification_required" : status,
+    ...(recoveryVerificationState ? { verificationState: recoveryVerificationState } : inquiryUnresolved ? { verificationState: inquiryOutcome === "unavailable" ? "provider_unavailable" : "inquiry_inconclusive" } : {}),
     quote: attempt.quote,
     resumedExisting: true,
-    requiresConfirmation: !["succeeded", "paid_requires_review"].includes(status),
+    requiresConfirmation: !paymentConfirmed && !["succeeded", "paid_requires_review"].includes(status),
     originalCouponCode: attempt.couponCode ?? null,
     requestedCouponCode: couponCode?.trim() || null,
     requestDiffers: (attempt.couponCode ?? null) !== (couponCode?.trim() || null),

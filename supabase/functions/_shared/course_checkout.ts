@@ -118,6 +118,7 @@ export type ActiveCheckoutDisposition = "success" | "review" | "resolved_failure
 export function activeCheckoutDisposition(attempt: Record<string, any>): ActiveCheckoutDisposition {
   if (attempt.status === "succeeded") return "success";
   if (attempt.status === "paid_requires_review") return "review";
+  if (hasVerifiedPaymentEvidence(attempt)) return "verify";
   if (["failed", "creation_failed", "expired"].includes(String(attempt.status))) return "resolved_failure";
   if (attempt.status === "pending" && typeof attempt.checkoutUrl === "string" && attempt.checkoutUrl.length > 0) return "resume";
   return "verify";
@@ -129,8 +130,31 @@ export function activeCheckoutDisposition(attempt: Record<string, any>): ActiveC
  * provider URL. Provider outages, malformed results, and payment actions stay
  * non-resumable because their state needs a fresh authoritative check/review.
  */
+export function verifiedPaymentEvidence(
+  attempt: Record<string, any>,
+  attemptId?: string,
+): Record<string, any> | null {
+  if (attempt.paymentVerificationState !== "verified_succeeded") return null;
+  const evidence = attempt.verifiedPayment;
+  if (!evidence || typeof evidence !== "object") return null;
+  const expectedReference = attempt.paymobSpecialReference ?? attemptId;
+  if (typeof expectedReference !== "string" || evidence.merchantReference !== expectedReference) return null;
+  if (attempt.paymobOrderId && String(evidence.orderId) !== String(attempt.paymobOrderId)) return null;
+  if (!/^\d+$/.test(String(evidence.transactionId ?? "")) || Number(evidence.transactionId) <= 0) return null;
+  if (!/^\d+$/.test(String(evidence.orderId ?? "")) || Number(evidence.orderId) <= 0) return null;
+  if (!Number.isSafeInteger(Number(evidence.amountCents)) || Number(evidence.amountCents) !== Number(attempt.amountCents)) return null;
+  if (evidence.currency !== "EGP" || !Number.isSafeInteger(Number(evidence.integrationId)) || Number(evidence.integrationId) <= 0) return null;
+  return evidence;
+}
+
+export function hasVerifiedPaymentEvidence(attempt: Record<string, any>, attemptId?: string): boolean {
+  return verifiedPaymentEvidence(attempt, attemptId) !== null;
+}
+
 export function canResumeCheckout(attempt: Record<string, any>): boolean {
   return attempt.status === "pending" &&
+    !hasVerifiedPaymentEvidence(attempt) &&
+    !["fulfillment_retry_required", "fulfillment_records_missing"].includes(String(attempt.reconciliationResult)) &&
     typeof attempt.checkoutUrl === "string" && attempt.checkoutUrl.length > 0 &&
     ["pending", "no_transaction_yet", "latest_transaction_failed_order_open"].includes(String(attempt.reconciliationResult));
 }
@@ -140,8 +164,14 @@ export function checkoutRecoveryDecision(
   attempt: Record<string, any>,
   inquiryOutcome: unknown,
 ): { canResume: boolean; checkoutUrl: string } {
-  const inquiryUnresolved = ["unavailable", "invalid"].includes(String(inquiryOutcome));
-  const canResume = !inquiryUnresolved && canResumeCheckout(attempt);
+  const outcome = String(inquiryOutcome);
+  const paymentConfirmedOrUnresolved = [
+    "succeeded",
+    "fulfillment_retry_required",
+    "fulfillment_records_missing",
+  ].includes(outcome);
+  const inquiryUnresolved = ["unavailable", "invalid"].includes(outcome);
+  const canResume = !paymentConfirmedOrUnresolved && !inquiryUnresolved && canResumeCheckout(attempt);
   return {
     canResume,
     checkoutUrl: canResume ? String(attempt.checkoutUrl) : "",
@@ -355,7 +385,9 @@ export async function fulfillFreeEnrollment(db: Firestore, attemptId: string): P
     db.get(coursePath(courseId), tx), db.get(userPath(uid), tx), db.get(enrollPath(uid, courseId), tx), db.get(subscriberPath(courseId, uid), tx),
     attempt.couponCode ? db.get(couponPath(courseId, String(attempt.couponCode)), tx) : Promise.resolve(null), db.get(lockPath, tx),
   ]);
-  if (!courseDoc || !studentDoc) throw new Error("fulfillment_records_missing");
+  const missingRecords = [!courseDoc ? "course" : null, !studentDoc ? "student" : null]
+    .filter((value): value is string => value !== null);
+  if (missingRecords.length) throw new FulfillmentRecordsMissingError(missingRecords);
   const course = decodeFields(courseDoc.fields);
   const student = decodeFields(studentDoc.fields);
   if (course.state !== "Published" || course.contentcreaterentity?.id === uid) throw new Error("course_unavailable");
@@ -398,15 +430,168 @@ export async function verifyPaymobHmac(obj: any, signature: string | null): Prom
   return mismatch === 0;
 }
 
+export class FulfillmentRecordsMissingError extends Error {
+  readonly missingRecordCategories: string[];
+
+  constructor(missingRecordCategories: string[]) {
+    super("fulfillment_records_missing");
+    this.name = "FulfillmentRecordsMissingError";
+    this.missingRecordCategories = [...missingRecordCategories];
+  }
+}
+
+function verifiedEvidenceFromProviderResult(
+  attemptId: string,
+  attempt: Record<string, any>,
+  result: Record<string, any>,
+): Record<string, any> {
+  if (classifyPaymobInquiry(result) !== "succeeded") throw new Error("paymob_payment_not_successful");
+  if (!inquiryCorrelatesToAttempt(result, attempt, attemptId)) throw new Error("reconciliation_reference_mismatch");
+  if (!Number.isSafeInteger(Number(result.id)) || Number(result.id) <= 0 ||
+    !Number.isSafeInteger(Number(result.amount_cents)) || Number(result.amount_cents) !== Number(attempt.amountCents) ||
+    result.currency !== "EGP" || !Number.isSafeInteger(Number(result.integration_id))) {
+    throw new Error("reconciliation_payment_mismatch");
+  }
+  const allowedIntegrations = [
+    "PAYMOB_WALLET_INTEGRATION_ID",
+    "PAYMOB_ONLINE_CARD_INTEGRATION_ID",
+    "PAYMOB_ACCEPT_KIOSK_INTEGRATION_ID",
+    "PAYMOB_CASH_COLLECTION_INTEGRATION_ID",
+  ].map((name) => Number(Deno.env.get(name))).filter((value) => Number.isSafeInteger(value) && value > 0);
+  if (!allowedIntegrations.includes(Number(result.integration_id))) throw new Error("reconciliation_integration_mismatch");
+  const merchantReference = String(attempt.paymobSpecialReference ?? attemptId);
+  return {
+    transactionId: String(result.id),
+    orderId: String(result.order.id),
+    merchantReference,
+    amountCents: Number(result.amount_cents),
+    currency: "EGP",
+    integrationId: Number(result.integration_id),
+    verifiedAt: new Date(),
+  };
+}
+
+export async function persistVerifiedPaymentEvidence(
+  db: Firestore,
+  attemptId: string,
+  result: Record<string, any>,
+): Promise<Record<string, any>> {
+  const tx = await db.beginTransaction();
+  const currentDoc = await db.get(attemptPath(attemptId), tx);
+  if (!currentDoc) throw new Error("attempt_not_found");
+  const attempt = decodeFields(currentDoc.fields);
+  const currentEvidence = verifiedEvidenceFromProviderResult(attemptId, attempt, result);
+  if (attempt.status === "succeeded") return currentEvidence;
+  if (isTerminalAttemptStatus(attempt.status)) throw new Error("payment_attempt_not_active");
+  const existingEvidence = attempt.verifiedPayment;
+  if (existingEvidence && String(existingEvidence.transactionId) !== currentEvidence.transactionId) {
+    const updateFields = {
+      status: "paid_requires_review",
+      paymentLifecycleState: "multiple_verified_transactions_requires_review",
+      latestPaymobTransactionId: currentEvidence.transactionId,
+      updatedAt: new Date(),
+    };
+    await db.commit(tx, [updateWrite(
+      db.document(attemptPath(attemptId), Object.fromEntries(Object.entries(updateFields).map(([key, value]) => [key, encode(value)]))),
+      Object.keys(updateFields),
+      currentDoc.updateTime,
+    )]);
+    throw new Error("multiple_verified_transactions_require_review");
+  }
+  if (verifiedPaymentEvidence(attempt, attemptId)) return existingEvidence;
+
+  const updateFields = {
+    paymentVerificationState: "verified_succeeded",
+    verifiedPayment: currentEvidence,
+    paymobTransactionId: currentEvidence.transactionId,
+    paymobOrderId: currentEvidence.orderId,
+    paymentLifecycleState: "verified_payment_fulfillment_pending",
+    fulfillmentStatus: "retry_required",
+    fulfillmentMissingRecordCategories: [],
+    reconciliationResult: "fulfillment_retry_required",
+    lastReconciledAt: new Date(),
+    updatedAt: new Date(),
+  };
+  await db.commit(tx, [updateWrite(
+    db.document(attemptPath(attemptId), Object.fromEntries(Object.entries(updateFields).map(([key, value]) => [key, encode(value)]))),
+    Object.keys(updateFields),
+    currentDoc.updateTime,
+  )]);
+  return currentEvidence;
+}
+
+async function retryPersistedPaymentFulfillment(
+  db: Firestore,
+  attemptId: string,
+  transactionId: string,
+): Promise<string> {
+  try {
+    return await fulfillPersistedPayment(db, attemptId, transactionId);
+  } catch (cause) {
+    const missing = cause instanceof FulfillmentRecordsMissingError ? cause.missingRecordCategories : [];
+    const errorCode = cause instanceof FulfillmentRecordsMissingError
+      ? "fulfillment_records_missing"
+      : cause instanceof Error && /^[a-z0-9_]+$/.test(cause.message)
+        ? cause.message
+        : "fulfillment_unexpected_error";
+    const diagnosticFields = {
+      fulfillmentStatus: missing.length ? "canonical_records_missing_review" : "retry_required",
+      fulfillmentMissingRecordCategories: missing,
+      paymentLifecycleState: missing.length ? "verified_payment_records_missing_review" : "verified_payment_fulfillment_retry",
+      reconciliationResult: missing.length ? "fulfillment_records_missing" : "fulfillment_retry_required",
+      reconciliationLastError: errorCode,
+      lastReconciledAt: new Date(),
+      updatedAt: new Date(),
+    };
+    try {
+      await updateActiveAttempt(db, attemptId, diagnosticFields);
+    } catch (diagnosticCause) {
+      const diagnosticCode = diagnosticCause instanceof Error && /^[a-z0-9_]+$/.test(diagnosticCause.message)
+        ? diagnosticCause.message
+        : "diagnostic_persistence_failed";
+      console.error("Verified course payment failure diagnostics could not be persisted", {
+        paymentAttemptId: attemptId,
+        errorCode: diagnosticCode,
+      });
+    }
+    console.error("Verified course payment fulfillment failed", {
+      paymentAttemptId: attemptId,
+      stage: "fulfillment",
+      paymentSuccessVerified: true,
+      errorCode,
+      missingRecordCategories: missing,
+      recoveryState: missing.length ? "review_required" : "retry_required",
+    });
+    throw cause;
+  }
+}
+
 export async function fulfillPayment(db: Firestore, attemptId: string, obj: any): Promise<string> {
+  const evidence = await persistVerifiedPaymentEvidence(db, attemptId, obj);
+  return retryPersistedPaymentFulfillment(db, attemptId, String(evidence.transactionId));
+}
+
+export async function retryVerifiedPaymentFulfillment(db: Firestore, attemptId: string): Promise<string> {
+  const doc = await db.get(attemptPath(attemptId));
+  if (!doc) throw new Error("attempt_not_found");
+  const attempt = decodeFields(doc.fields);
+  if (attempt.status === "succeeded") return "succeeded";
+  if (attempt.status === "paid_requires_review") return "paid_requires_review";
+  const evidence = verifiedPaymentEvidence(attempt, attemptId);
+  if (!evidence) throw new Error("verified_payment_evidence_missing");
+  return retryPersistedPaymentFulfillment(db, attemptId, String(evidence.transactionId));
+}
+
+async function fulfillPersistedPayment(db: Firestore, attemptId: string, transactionId: string): Promise<string> {
   const tx = await db.beginTransaction();
   const attemptDoc = await db.get(attemptPath(attemptId), tx);
   if (!attemptDoc) throw new Error("attempt_not_found");
   const attempt = decodeFields(attemptDoc.fields);
+  if (attempt.status === "paid_requires_review") return "paid_requires_review";
   if (attempt.status === "succeeded") {
-    if (obj?.id != null && String(obj.id) !== String(attempt.paymobTransactionId ?? "")) {
-      await updateAttempt(db, attemptId, { paymentLifecycleState: "additional_transaction_requires_review", additionalPaymobTransactionId: String(obj.id), updatedAt: new Date() });
-      console.error("Additional Paymob transaction for fulfilled checkout requires review", { attemptId, transactionId: String(obj.id) });
+    if (transactionId != null && transactionId !== String(attempt.paymobTransactionId ?? "")) {
+      await updateAttempt(db, attemptId, { paymentLifecycleState: "additional_transaction_requires_review", additionalPaymobTransactionId: transactionId, updatedAt: new Date() });
+      console.error("Additional Paymob transaction for fulfilled checkout requires review", { attemptId, transactionId: transactionId });
     }
     return "succeeded";
   }
@@ -417,20 +602,21 @@ export async function fulfillPayment(db: Firestore, attemptId: string, obj: any)
     db.get(coursePath(courseId), tx), db.get(userPath(uid), tx), db.get(userPath(String(attempt.teacherId)), tx), db.get(enrollPath(uid, courseId), tx), db.get(subscriberPath(courseId, uid), tx), attempt.couponCode ? db.get(couponPath(courseId, String(attempt.couponCode)), tx) : Promise.resolve(null),
     db.get(lockPath, tx),
   ]);
-  if (!courseDoc || !studentDoc || !teacherDoc) throw new Error("fulfillment_records_missing");
+  const missingRecords = [!courseDoc ? "course" : null, !studentDoc ? "student" : null, !teacherDoc ? "teacher" : null].filter((value): value is string => value !== null);
+  if (missingRecords.length) throw new FulfillmentRecordsMissingError(missingRecords);
   if (enrollmentDoc || subscriberDoc) {
     if (enrollmentDoc && subscriberDoc) {
       const writes: unknown[] = [];
       const ownsReservation = attempt.couponCode && couponDoc && (attempt.couponReservationState === "reserved" || attempt.couponReservationState == null);
-      const update = firestoreDocument(db, attemptPath(attemptId), { status: "paid_requires_review", fulfillmentStatus: "already_enrolled_paid_review", paymobTransactionId: String(obj.id), ...(attempt.couponCode ? { couponReservationState: ownsReservation ? "consumed" : attempt.couponReservationState } : {}), updatedAt: new Date() });
-      writes.push(updateWrite(update, ["status", "fulfillmentStatus", "paymobTransactionId", ...(attempt.couponCode ? ["couponReservationState"] : []), "updatedAt"], attemptDoc.updateTime));
+      const update = firestoreDocument(db, attemptPath(attemptId), { status: "paid_requires_review", paymentVerificationState: "verified_succeeded", fulfillmentStatus: "already_enrolled_paid_review", paymobTransactionId: transactionId, fulfillmentMissingRecordCategories: [], ...(attempt.couponCode ? { couponReservationState: ownsReservation ? "consumed" : attempt.couponReservationState } : {}), updatedAt: new Date() });
+      writes.push(updateWrite(update, ["status", "paymentVerificationState", "fulfillmentStatus", "paymobTransactionId", "fulfillmentMissingRecordCategories", ...(attempt.couponCode ? ["couponReservationState"] : []), "updatedAt"], attemptDoc.updateTime));
       if (ownsReservation) {
         const coupon = decodeFields(couponDoc.fields);
         writes.push(updateWrite(firestoreDocument(db, couponPath(courseId, String(attempt.couponCode)), { usedCount: Number(coupon.usedCount ?? 0) + 1, reservedCount: Math.max(0, Number(coupon.reservedCount ?? 0) - 1) }), ["usedCount", "reservedCount"], couponDoc.updateTime));
       }
       // Keep this attempt's lock while a paid transaction requires manual review.
       await db.commit(tx, writes);
-      console.error("Confirmed payment conflicts with existing enrollment; manual refund review required", { attemptId, transactionId: String(obj.id) });
+      console.error("Confirmed payment conflicts with existing enrollment; manual refund review required", { attemptId, transactionId: transactionId });
       return "paid_requires_review";
     }
     throw new Error("partial_existing_fulfillment");
@@ -442,10 +628,10 @@ export async function fulfillPayment(db: Firestore, attemptId: string, obj: any)
   const grossEgp = amountCents / 100;
   const netCents = Math.round(amountCents * 0.95);
   const wallet = teacher.teacherExtraData?.wallet ?? {};
-  const txId = String(obj.id);
+  const txId = transactionId;
   const transactionRecord = { transaction_id: txId, created_at: new Date(), amount: grossEgp, currency: "EGP", issuer: "Paymob", mobile: student.phoneNumber ?? null, status: "SUCCESS", isReconciled: true, method: "PayMent" };
   const subscriber = { id: uid, name: student.firstName ?? "", joinedDate: new Date(), gender: student.gender ?? "", phone: student.phoneNumber ?? "", educationLevel: student.studentExtraData?.educationLevel ?? "", imageUrl: student.profilePicurl ?? "", address: student.address ?? "" };
-  const attemptUpdate = firestoreDocument(db, attemptPath(attemptId), { status: "succeeded", fulfillmentStatus: "fulfilled", paymobTransactionId: txId, ...(attempt.couponCode ? { couponReservationState: "consumed" } : {}), updatedAt: new Date() });
+  const attemptUpdate = firestoreDocument(db, attemptPath(attemptId), { status: "succeeded", paymentVerificationState: "verified_succeeded", fulfillmentStatus: "fulfilled", paymobTransactionId: txId, fulfillmentMissingRecordCategories: [], ...(attempt.couponCode ? { couponReservationState: "consumed" } : {}), updatedAt: new Date() });
   const writes: unknown[] = [
     createWrite(firestoreDocument(db, enrollPath(uid, courseId), course)),
     createWrite(firestoreDocument(db, subscriberPath(courseId, uid), subscriber)),
@@ -454,7 +640,7 @@ export async function fulfillPayment(db: Firestore, attemptId: string, obj: any)
     createWrite(firestoreDocument(db, `Courses/${courseId}/Transactions/${txId}`, transactionRecord)),
     createWrite(firestoreDocument(db, `Users/${uid}/Transactions/${txId}`, transactionRecord)),
     createWrite(firestoreDocument(db, `Transactions/${txId}`, transactionRecord)),
-    updateWrite(attemptUpdate, ["status", "fulfillmentStatus", "paymobTransactionId", ...(attempt.couponCode ? ["couponReservationState"] : []), "updatedAt"], attemptDoc.updateTime),
+    updateWrite(attemptUpdate, ["status", "paymentVerificationState", "fulfillmentStatus", "paymobTransactionId", "fulfillmentMissingRecordCategories", ...(attempt.couponCode ? ["couponReservationState"] : []), "updatedAt"], attemptDoc.updateTime),
   ];
   if (attempt.couponCode && (attempt.couponReservationState === "reserved" || attempt.couponReservationState == null)) {
     if (!couponDoc) throw new Error("coupon_disappeared");

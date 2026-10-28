@@ -1,6 +1,6 @@
 import { Firestore } from "../_shared/firebase.ts";
 import { error, json } from "../_shared/http.ts";
-import { attemptsCollection, createWrite, decodeFields, firestoreDocument, reconcileAttempt, safeError, updateAttempt, updateWrite } from "../_shared/course_checkout.ts";
+import { attemptsCollection, createWrite, decodeFields, firestoreDocument, FulfillmentRecordsMissingError, hasVerifiedPaymentEvidence, reconcileAttempt, retryVerifiedPaymentFulfillment, safeError, updateAttempt, updateWrite } from "../_shared/course_checkout.ts";
 import { requiredSecret } from "../_shared/firebase.ts";
 import { inquireIntention } from "../_shared/paymob_inquiry.ts";
 
@@ -34,15 +34,38 @@ Deno.serve(async (request) => {
         if (!Number.isFinite(createdAt) || now - createdAt < 2 * 60_000) continue;
         const id = doc.name.split("/").pop()!;
         try {
-          const result = await inquireIntention({ orderId: attempt.paymobOrderId ? String(attempt.paymobOrderId) : undefined, merchantReference: id });
-          const state = await reconcileAttempt(db, id, result);
+          const state = hasVerifiedPaymentEvidence(attempt, id)
+            ? await retryVerifiedPaymentFulfillment(db, id)
+            : await reconcileAttempt(
+              db,
+              id,
+              await inquireIntention({ orderId: attempt.paymobOrderId ? String(attempt.paymobOrderId) : undefined, merchantReference: id }),
+            );
           counts[state] = (counts[state] ?? 0) + 1;
         } catch (cause) {
-          const code = cause instanceof Error ? cause.message : "unknown";
-          console.error("Course payment reconciliation item failed", { attemptId: id, code });
+          const code = cause instanceof FulfillmentRecordsMissingError
+            ? "fulfillment_records_missing"
+            : cause instanceof Error && /^[a-z0-9_]+$/.test(cause.message)
+              ? cause.message
+              : "reconciliation_unexpected_error";
+          console.error("Course payment reconciliation item failed", {
+            paymentAttemptId: id,
+            paymentSuccessVerified: hasVerifiedPaymentEvidence(attempt, id) || cause instanceof FulfillmentRecordsMissingError,
+            errorCode: code,
+            missingRecordCategories: cause instanceof FulfillmentRecordsMissingError ? cause.missingRecordCategories : [],
+          });
           counts.retryable_error = (counts.retryable_error ?? 0) + 1;
           try {
-            await updateAttempt(db, id, { lastReconciledAt: new Date(), reconciliationLastError: code });
+            await updateAttempt(db, id, {
+              lastReconciledAt: new Date(),
+              reconciliationLastError: code,
+              ...(cause instanceof FulfillmentRecordsMissingError ? {
+                reconciliationResult: "fulfillment_records_missing",
+                fulfillmentStatus: "canonical_records_missing_review",
+                fulfillmentMissingRecordCategories: cause.missingRecordCategories,
+                paymentLifecycleState: "verified_payment_records_missing_review",
+              } : {}),
+            });
           } catch { /* The next scheduled run retries the unresolved attempt. */ }
         }
       }

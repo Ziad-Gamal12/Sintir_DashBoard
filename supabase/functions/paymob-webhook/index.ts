@@ -1,6 +1,6 @@
 import { Firestore } from "../_shared/firebase.ts";
 import { error, json } from "../_shared/http.ts";
-import { attemptPath, decodeFields, fulfillPayment, readBody, safeError, updateActiveAttempt, updateAttempt, verifyPaymobHmac } from "../_shared/course_checkout.ts";
+import { attemptPath, decodeFields, FulfillmentRecordsMissingError, fulfillPayment, readBody, safeError, updateActiveAttempt, updateAttempt, verifyPaymobHmac } from "../_shared/course_checkout.ts";
 Deno.serve(async (request) => {
   const requestId = crypto.randomUUID();
   const logCallback = (stage: string, details: Record<string, unknown> = {}) => {
@@ -8,6 +8,8 @@ Deno.serve(async (request) => {
   };
   logCallback("request_received", { method: request.method });
   if (request.method !== "POST") return error("method_not_allowed", "Use POST.", 405);
+  let paymentAttemptId: string | undefined;
+  let paymentSuccessVerified = false;
   try {
     const payload = await readBody(request);
     const obj = payload?.obj;
@@ -26,6 +28,7 @@ Deno.serve(async (request) => {
     }
     const db = new Firestore();
     const attemptId = obj.merchant_order_id ?? obj.order?.merchant_order_id;
+    paymentAttemptId = typeof attemptId === "string" ? attemptId : undefined;
     if (typeof attemptId !== "string" || !/^[A-Za-z0-9_-]{1,160}$/.test(attemptId)) {
       logCallback("callback_rejected", { reason: "invalid_attempt_reference" });
       return error("unmatched_callback", "No matching payment attempt was found.", 404);
@@ -53,7 +56,7 @@ Deno.serve(async (request) => {
       logCallback("callback_rejected", { reason: "integration_mismatch" });
       return error("integration_mismatch", "Callback integration is not configured for checkout.", 409);
     }
-    logCallback("callback_validated", { attemptFound: true, attemptStatus: String(attempt.status ?? "unknown") });
+    logCallback("callback_validated", { paymentAttemptId: attemptId, attemptFound: true, attemptStatus: String(attempt.status ?? "unknown") });
     const paymentAction = obj.is_refunded === true || obj.is_refund === true || Number(obj.refunded_amount_cents ?? 0) > 0 || obj.is_voided === true || obj.is_void === true;
     if (attempt.status === "succeeded") {
       if (paymentAction) await updateAttempt(db, attemptId, { paymentLifecycleState: obj.is_refunded === true || obj.is_refund === true || Number(obj.refunded_amount_cents ?? 0) > 0 ? "refund_requires_review" : "void_requires_review", latestPaymobTransactionId: String(obj.id), lastCallbackAt: new Date() });
@@ -83,12 +86,26 @@ Deno.serve(async (request) => {
       logCallback("callback_acknowledged", { outcome: "non_success_inquiry_required", status: status ?? "pending" });
       return json({ ok: true, acknowledged: true, status: status ?? "pending" });
     }
+    paymentSuccessVerified = true;
+    logCallback("callback_fulfillment_started", { paymentAttemptId: attemptId, paymentSuccessVerified: true });
     const status = await fulfillPayment(db, attemptId, obj);
-    logCallback("callback_fulfillment_completed", { status });
+    logCallback("callback_fulfillment_completed", { paymentAttemptId: attemptId, paymentSuccessVerified: true, status });
     return json({ ok: true, acknowledged: true, status });
   } catch (cause) {
     const result = safeError(cause);
-    logCallback("callback_processing_failed", { errorCode: result.code });
+    const errorCode = cause instanceof FulfillmentRecordsMissingError
+      ? "fulfillment_records_missing"
+      : cause instanceof Error && /^[a-z0-9_]+$/.test(cause.message)
+        ? cause.message
+        : result.code;
+    logCallback("callback_processing_failed", {
+      ...(paymentAttemptId ? { paymentAttemptId } : {}),
+      paymentSuccessVerified,
+      errorCode,
+      missingRecordCategories: cause instanceof FulfillmentRecordsMissingError
+        ? cause.missingRecordCategories
+        : [],
+    });
     return error(result.code, result.message, result.status === 500 ? 500 : result.status);
   }
 });
