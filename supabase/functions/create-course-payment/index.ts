@@ -14,7 +14,7 @@ import {
   requiredId,
   requireCaller,
   reconcileAttempt,
-  recoverableCheckoutUrl,
+  checkoutRecoveryDecision,
   releaseTerminalCheckoutLock,
   reserveAttempt,
   reserveWithSingleConflictRecovery,
@@ -109,11 +109,12 @@ async function recoverLockedCheckout(
   }
   const status = String(attempt.status);
   const inquiryUnresolved = ["unavailable", "invalid"].includes(inquiryOutcome);
-  const checkoutUrl = recoverableCheckoutUrl(attempt, inquiryOutcome);
+  const { canResume, checkoutUrl } = checkoutRecoveryDecision(attempt, inquiryOutcome);
   return checkoutResponse({
     ok: true,
     paymentAttemptId: id,
     checkoutUrl,
+    canResume,
     status: status === "pending" && !checkoutUrl ? "verification_required" : status,
     ...(inquiryUnresolved ? { verificationState: inquiryOutcome === "unavailable" ? "provider_unavailable" : "inquiry_inconclusive" } : {}),
     quote: attempt.quote,

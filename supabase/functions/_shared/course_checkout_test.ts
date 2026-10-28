@@ -3,6 +3,7 @@ import {
   attemptPath,
   calculateQuote,
   canResumeCheckout,
+  checkoutRecoveryDecision,
   checkoutLockPath,
   classifyPaymobInquiry,
   couponPath,
@@ -179,6 +180,19 @@ Deno.test("a pending checkout can resume its same intention when no transaction 
   }
 });
 
+Deno.test("checkout recovery exposes the server-authorized resumability decision", () => {
+  const url = "https://accept.paymob.com/checkout/example";
+  const attempt = { status: "pending", checkoutUrl: url, reconciliationResult: "no_transaction_yet" };
+  const resumable = checkoutRecoveryDecision(attempt, "missing");
+  if (!resumable.canResume || resumable.checkoutUrl !== url) {
+    throw new Error("A recoverable attempt did not expose its server decision and saved URL.");
+  }
+
+  const unavailable = checkoutRecoveryDecision(attempt, "unavailable");
+  if (unavailable.canResume || unavailable.checkoutUrl !== "") {
+    throw new Error("An unavailable provider inquiry incorrectly authorized checkout resumption.");
+  }
+});
 Deno.test("no transaction keeps the attempt pending and preserves its original checkout data", async () => {
   const db = new MemoryFirestore();
   const attemptId = "attempt-no-transaction";

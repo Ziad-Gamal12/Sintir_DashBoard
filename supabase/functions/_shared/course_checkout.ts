@@ -135,13 +135,24 @@ export function canResumeCheckout(attempt: Record<string, any>): boolean {
     ["pending", "no_transaction_yet", "latest_transaction_failed_order_open"].includes(String(attempt.reconciliationResult));
 }
 
+/** Keep the server's resume decision and saved URL together in API responses. */
+export function checkoutRecoveryDecision(
+  attempt: Record<string, any>,
+  inquiryOutcome: unknown,
+): { canResume: boolean; checkoutUrl: string } {
+  const inquiryUnresolved = ["unavailable", "invalid"].includes(String(inquiryOutcome));
+  const canResume = !inquiryUnresolved && canResumeCheckout(attempt);
+  return {
+    canResume,
+    checkoutUrl: canResume ? String(attempt.checkoutUrl) : "",
+  };
+}
 /** Return only the saved URL; never construct a replacement intention. */
 export function recoverableCheckoutUrl(
   attempt: Record<string, any>,
   inquiryOutcome: unknown,
 ): string {
-  if (["unavailable", "invalid"].includes(String(inquiryOutcome))) return "";
-  return canResumeCheckout(attempt) ? String(attempt.checkoutUrl) : "";
+  return checkoutRecoveryDecision(attempt, inquiryOutcome).checkoutUrl;
 }
 
 export function couponReservationDisposition(attempt: Record<string, any>): "release" | "unchanged" {
