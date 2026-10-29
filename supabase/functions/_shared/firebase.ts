@@ -139,6 +139,18 @@ export class Firestore {
     }
   }
 
+  async rollback(transaction: string): Promise<void> {
+    const response = await fetch(`${this.base}:rollback`, {
+      method: "POST",
+      headers: await this.headers(),
+      body: JSON.stringify({ transaction }),
+    });
+    if (!response.ok && response.status !== 404 && response.status !== 409) {
+      console.error("Firestore rollback rejected", { status: response.status });
+      throw new Error(`Firestore transaction could not roll back (${response.status}).`);
+    }
+  }
+
   document(path: string, fields: Record<string, FirestoreValue>): FirestoreDocument {
     return { name: `${this.documentResourceBase}/${path}`, fields };
   }

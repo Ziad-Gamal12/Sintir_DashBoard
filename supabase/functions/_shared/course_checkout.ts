@@ -593,6 +593,23 @@ export async function updateAttempt(
   ]);
 }
 
+async function rollbackTransactionQuietly(
+  db: Firestore,
+  transaction: string,
+): Promise<void> {
+  try {
+    await db.rollback(transaction);
+  } catch (cause) {
+    const status = cause instanceof Error
+      ? cause.message.match(/\((\d{3})\)/)?.[1]
+      : undefined;
+    console.error(
+      "Firestore transaction rollback failed",
+      status ? { status: Number(status) } : { errorCode: "rollback_failed" },
+    );
+  }
+}
+
 /** Apply a reconciliation/callback update only while the attempt remains active. */
 export async function updateActiveAttempt(
   db: Firestore,
@@ -600,21 +617,27 @@ export async function updateActiveAttempt(
   changes: Record<string, any>,
 ): Promise<string | null> {
   const tx = await db.beginTransaction();
-  const current = await db.get(attemptPath(id), tx);
-  if (!current) return null;
-  const attempt = decodeFields(current.fields);
-  if (isTerminalAttemptStatus(attempt.status)) return String(attempt.status);
-  const fields = Object.fromEntries(
-    Object.entries(changes).map(([key, value]) => [key, encode(value)]),
-  );
-  await db.commit(tx, [
-    updateWrite(
-      db.document(attemptPath(id), fields),
-      Object.keys(fields),
-      current.updateTime,
-    ),
-  ]);
-  return String(changes.status ?? attempt.status);
+  let committed = false;
+  try {
+    const current = await db.get(attemptPath(id), tx);
+    if (!current) return null;
+    const attempt = decodeFields(current.fields);
+    if (isTerminalAttemptStatus(attempt.status)) return String(attempt.status);
+    const fields = Object.fromEntries(
+      Object.entries(changes).map(([key, value]) => [key, encode(value)]),
+    );
+    await db.commit(tx, [
+      updateWrite(
+        db.document(attemptPath(id), fields),
+        Object.keys(fields),
+        current.updateTime,
+      ),
+    ]);
+    committed = true;
+    return String(changes.status ?? attempt.status);
+  } finally {
+    if (!committed) await rollbackTransactionQuietly(db, tx);
+  }
 }
 
 export async function reserveAttempt(
@@ -1014,15 +1037,42 @@ export async function persistVerifiedPaymentEvidence(
   result: Record<string, any>,
 ): Promise<Record<string, any>> {
   const tx = await db.beginTransaction();
+  let committed = false;
+  try {
+    return await persistVerifiedPaymentEvidenceInTransaction(
+      db,
+      attemptId,
+      result,
+      tx,
+      () => {
+        committed = true;
+      },
+    );
+  } finally {
+    if (!committed) await rollbackTransactionQuietly(db, tx);
+  }
+}
+
+async function persistVerifiedPaymentEvidenceInTransaction(
+  db: Firestore,
+  attemptId: string,
+  result: Record<string, any>,
+  tx: string,
+  markCommitted: () => void,
+): Promise<Record<string, any>> {
   const currentDoc = await db.get(attemptPath(attemptId), tx);
-  if (!currentDoc) throw new Error("attempt_not_found");
+  if (!currentDoc) {
+    throw new Error("attempt_not_found");
+  }
   const attempt = decodeFields(currentDoc.fields);
   const currentEvidence = verifiedEvidenceFromProviderResult(
     attemptId,
     attempt,
     result,
   );
-  if (attempt.status === "succeeded") return currentEvidence;
+  if (attempt.status === "succeeded") {
+    return currentEvidence;
+  }
   if (isTerminalAttemptStatus(attempt.status)) {
     throw new Error("payment_attempt_not_active");
   }
@@ -1049,9 +1099,12 @@ export async function persistVerifiedPaymentEvidence(
       Object.keys(updateFields),
       currentDoc.updateTime,
     )]);
+    markCommitted();
     throw new Error("multiple_verified_transactions_require_review");
   }
-  if (verifiedPaymentEvidence(attempt, attemptId)) return existingEvidence;
+  if (verifiedPaymentEvidence(attempt, attemptId)) {
+    return existingEvidence;
+  }
 
   const updateFields = {
     paymentVerificationState: "verified_succeeded",
@@ -1077,9 +1130,9 @@ export async function persistVerifiedPaymentEvidence(
     Object.keys(updateFields),
     currentDoc.updateTime,
   )]);
+  markCommitted();
   return currentEvidence;
 }
-
 async function retryPersistedPaymentFulfillment(
   db: Firestore,
   attemptId: string,
@@ -1175,6 +1228,29 @@ async function fulfillPersistedPayment(
   transactionId: string,
 ): Promise<string> {
   const tx = await db.beginTransaction();
+  let committed = false;
+  try {
+    return await fulfillPersistedPaymentInTransaction(
+      db,
+      attemptId,
+      transactionId,
+      tx,
+      () => {
+        committed = true;
+      },
+    );
+  } finally {
+    if (!committed) await rollbackTransactionQuietly(db, tx);
+  }
+}
+
+async function fulfillPersistedPaymentInTransaction(
+  db: Firestore,
+  attemptId: string,
+  transactionId: string,
+  tx: string,
+  markCommitted: () => void,
+): Promise<string> {
   const attemptDoc = await db.get(attemptPath(attemptId), tx);
   if (!attemptDoc) throw new Error("attempt_not_found");
   const attempt = decodeFields(attemptDoc.fields);
@@ -1281,6 +1357,7 @@ async function fulfillPersistedPayment(
       }
       // Keep this attempt's lock while a paid transaction requires manual review.
       await db.commit(tx, writes);
+      markCommitted();
       console.error(
         "Confirmed payment conflicts with existing enrollment; manual refund review required",
         { attemptId, transactionId: transactionId },
@@ -1428,9 +1505,9 @@ async function fulfillPersistedPayment(
     );
   }
   await db.commit(tx, writes);
+  markCommitted();
   return "succeeded";
 }
-
 export function classifyPaymobInquiry(
   obj: Record<string, any> | null,
 ):

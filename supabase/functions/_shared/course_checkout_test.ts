@@ -40,10 +40,14 @@ class MemoryFirestore {
   >();
   private version = 0;
   commitCalls = 0;
+  rollbackCalls = 0;
   failOnCommitNumber: number | null = null;
 
   async beginTransaction(): Promise<string> {
     return `tx-${this.version}`;
+  }
+  async rollback(_transaction: string): Promise<void> {
+    this.rollbackCalls++;
   }
   async get(path: string): Promise<any> {
     return this.documents.get(path) ?? null;
@@ -739,6 +743,19 @@ Deno.test("missing canonical fulfillment records are classified without fabricat
     ) {
       throw new Error(
         "A paid attempt did not retain its evidence and actionable missing-record review state.",
+      );
+    }
+    if (missingCategory === "teacher" && db.rollbackCalls === 0) {
+      throw new Error(
+        "A missing teacher left the fulfillment transaction open.",
+      );
+    }
+    if (
+      missingCategory === "teacher" &&
+      attempt?.reconciliationLastError !== "fulfillment_records_missing"
+    ) {
+      throw new Error(
+        "The missing-teacher diagnostic was not persisted after rollback.",
       );
     }
     if (!db.read(lockPath)) {
