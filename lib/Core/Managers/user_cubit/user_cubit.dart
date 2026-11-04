@@ -12,6 +12,21 @@ import 'package:sintir_dashboard/Features/Auth/Domain/Repos/AuthRepo.dart';
 
 part 'user_state.dart';
 
+@visibleForTesting
+bool isDashboardUserAuthorized(UserEntity user) {
+  if (user.status != BackendEndpoints.activeStatus) {
+    return false;
+  }
+
+  final role = user.role.toLowerCase();
+  return {
+    BackendEndpoints.adminRole.toLowerCase(),
+    BackendEndpoints.coursesManagerrRole.toLowerCase(),
+    BackendEndpoints.usersManagerrRole.toLowerCase(),
+    BackendEndpoints.supportRole.toLowerCase(),
+  }.contains(role);
+}
+
 class UserCubit extends Cubit<UserState> {
   final AuthRepo authRepo;
   StreamSubscription? _userSubscription;
@@ -40,8 +55,7 @@ class UserCubit extends Cubit<UserState> {
           emit(
             UserStateFetchUserFailure(message: "تم حظر حسابك من قبل المسؤول"),
           );
-        } else if (user.role == BackendEndpoints.studentRole ||
-            user.role == BackendEndpoints.teacherRole) {
+        } else if (!isDashboardUserAuthorized(user)) {
           emit(
             UserStateFetchUserFailure(
               message: "غير مصرح لك بالدخول يرجى التواصل من إدارة التطبيق ",
