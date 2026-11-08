@@ -1,6 +1,40 @@
 import { requiredSecret } from "./firebase.ts";
 
-const baseUrl = "https://stagingpayouts.paymobsolutions.com/api/secure/";
+const payoutHosts = new Set([
+  "payouts.paymobsolutions.com",
+  "stagingpayouts.paymobsolutions.com",
+]);
+
+export function configuredPayoutBaseUrl(value: string): string {
+  const url = new URL(value);
+  if (
+    url.protocol !== "https:" || !payoutHosts.has(url.hostname) ||
+    url.port || url.username || url.password || url.pathname !== "/" ||
+    url.search || url.hash
+  ) {
+    throw new Error(
+      "PAYMOB_PAYOUT_BASE_URL is not an approved Egypt payouts origin.",
+    );
+  }
+  return `${url.origin}/api/secure/`;
+}
+
+function payoutBaseUrl(): string {
+  return configuredPayoutBaseUrl(requiredSecret("PAYMOB_PAYOUT_BASE_URL"));
+}
+
+export function payoutConfigurationReady(): boolean {
+  try {
+    payoutBaseUrl();
+    requiredSecret("PAYMOB_PAYOUT_CLIENT_ID");
+    requiredSecret("PAYMOB_PAYOUT_CLIENT_SECRET");
+    requiredSecret("PAYMOB_PAYOUT_USERNAME");
+    requiredSecret("PAYMOB_PAYOUT_PASSWORD");
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 /** A non-2xx response means Paymob did not accept this payout request. */
 export class PaymobDisbursementRejected extends Error {
@@ -11,11 +45,14 @@ export class PaymobDisbursementRejected extends Error {
 }
 
 function basicAuthorization(): string {
-  const credentials = `${requiredSecret("PAYMOB_PAYOUT_CLIENT_ID")}:${requiredSecret("PAYMOB_PAYOUT_CLIENT_SECRET")}`;
+  const credentials = `${requiredSecret("PAYMOB_PAYOUT_CLIENT_ID")}:${
+    requiredSecret("PAYMOB_PAYOUT_CLIENT_SECRET")
+  }`;
   return `Basic ${btoa(credentials)}`;
 }
 
 async function accessToken(): Promise<string> {
+  const baseUrl = payoutBaseUrl();
   const response = await fetch(`${baseUrl}o/token/`, {
     method: "POST",
     headers: {
@@ -30,14 +67,26 @@ async function accessToken(): Promise<string> {
   });
   if (!response.ok) throw new Error("Paymob authentication failed.");
   const body = await response.json();
-  if (typeof body.access_token !== "string") throw new Error("Paymob returned no access token.");
+  if (typeof body.access_token !== "string") {
+    throw new Error("Paymob returned no access token.");
+  }
   return body.access_token;
 }
 
-export async function disburse(input: { amount: number; mobileNumber: string; issuer: string; reference: string }) {
-  const response = await fetch(`${baseUrl}disburse/`, {
+export async function disburse(
+  input: {
+    amount: number;
+    mobileNumber: string;
+    issuer: string;
+    reference: string;
+  },
+) {
+  const response = await fetch(`${payoutBaseUrl()}disburse/`, {
     method: "POST",
-    headers: { authorization: `Bearer ${await accessToken()}`, "content-type": "application/json" },
+    headers: {
+      authorization: `Bearer ${await accessToken()}`,
+      "content-type": "application/json",
+    },
     body: JSON.stringify({
       issuer: input.issuer,
       amount: input.amount,
@@ -53,23 +102,40 @@ export async function disburse(input: { amount: number; mobileNumber: string; is
     // A clear client rejection means the payout was not accepted. Timeouts,
     // throttling, and server errors can happen after acceptance; keep those
     // ambiguous and retain the wallet reservation.
-    if (response.status >= 400 && response.status < 500 && response.status !== 408 && response.status !== 429) {
+    if (
+      response.status >= 400 && response.status < 500 &&
+      response.status !== 408 && response.status !== 429
+    ) {
       throw new PaymobDisbursementRejected(message, response.status);
     }
     throw new Error(message);
   }
   const transactionId = body.transaction_id?.toString();
-  if (!transactionId) throw new Error("Paymob response did not include a transaction ID.");
-  return { transactionId, status: (body.disbursement_status ?? "PENDING").toString().toUpperCase(), raw: body };
+  if (!transactionId) {
+    throw new Error("Paymob response did not include a transaction ID.");
+  }
+  return {
+    transactionId,
+    status: (body.disbursement_status ?? "PENDING").toString().toUpperCase(),
+    raw: body,
+  };
 }
 
-export async function inquire(transactionId: string): Promise<Record<string, unknown>> {
+export async function inquire(
+  transactionId: string,
+): Promise<Record<string, unknown>> {
   // The Paymob Payout API Swagger documents bulk inquiry by transaction ID as
   // POST. GET is used for its separate budget endpoint.
-  const response = await fetch(`${baseUrl}transaction/inquire/`, {
+  const response = await fetch(`${payoutBaseUrl()}transaction/inquire/`, {
     method: "POST",
-    headers: { authorization: `Bearer ${await accessToken()}`, "content-type": "application/json" },
-    body: JSON.stringify({ transactions_ids_list: [transactionId], bank_transactions: false }),
+    headers: {
+      authorization: `Bearer ${await accessToken()}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      transactions_ids_list: [transactionId],
+      bank_transactions: false,
+    }),
   });
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {

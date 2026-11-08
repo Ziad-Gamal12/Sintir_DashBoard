@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sintir_dashboard/constant.dart';
 
 class DioService {
@@ -17,9 +18,11 @@ class DioService {
       ),
     );
 
-    _dio.interceptors.add(
-      LogInterceptor(requestBody: true, responseBody: true, error: true),
-    );
+    if (kDebugMode) {
+      _dio.interceptors.add(
+        LogInterceptor(requestBody: true, responseBody: true, error: true),
+      );
+    }
   }
 
   Future<Response> post(String path, {Map<String, dynamic>? data}) async {

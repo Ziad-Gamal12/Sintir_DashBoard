@@ -23,7 +23,7 @@ void main() async {
 
   await Future.wait([
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
-    Supabase.initialize(url: supaBaseUrl, anonKey: supaAnonKey),
+    Supabase.initialize(url: supaBaseUrl, publishableKey: supaAnonKey),
     _initStorageAndHive(),
   ]);
 
