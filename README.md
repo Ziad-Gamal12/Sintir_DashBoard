@@ -28,14 +28,15 @@
 - **User & Wallet Operations:** Search and filter users with server-side pagination, inspect individual wallets and transaction histories, and manage account statuses.
 - **Real-Time Support Desk:** Triage support tickets, track resolution analytics, and communicate directly with students and teachers in a dedicated support chat interface.
 - **Serverless Media & Payout Backend:** Houses the **Supabase Edge Functions** powering **Mux** direct video uploads/signed playback tokens and **Paymob** instructor withdrawals.
-
 ## 📸 Screenshots
 
-| Light Mode | Dark Mode |
+| **Analytics Dashboard** | **Light & Dark Mode** |
 | :---: | :---: |
-| <img src="docs/screenshots/dashboard-light.png" alt="Dashboard Light Mode" width="420" /> | <img src="docs/screenshots/dashboard-dark.png" alt="Dashboard Dark Mode" width="420" /> |
-| <img src="docs/screenshots/users-light.png" alt="Users Management Light Mode" width="420" /> | <img src="docs/screenshots/users-dark.png" alt="Users Management Dark Mode" width="420" /> |
-| <img src="docs/screenshots/course-details-light.png" alt="Course Details Light Mode" width="420" /> | <img src="docs/screenshots/support-dark.png" alt="Support Chat Dark Mode" width="420" /> |
+| <img src="ScreenShots/Dashboard.png" alt="Analytics Dashboard" width="420" /> | <img src="ScreenShots/LightVSDark.png" alt="Light vs Dark Mode" width="420" /> |
+| **Authentication** | **Courses Control** |
+| <img src="ScreenShots/auth.png" alt="Authentication" width="420" /> | <img src="ScreenShots/course-control.png" alt="Courses Control" width="420" /> |
+| **Users Control** | **Support Control** |
+| <img src="ScreenShots/Users-Control.png" alt="Users Control" width="420" /> | <img src="ScreenShots/Support-Control.png" alt="Support Control" width="420" /> |
 
 ## ✨ Features by Module
 
