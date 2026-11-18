@@ -41,3 +41,5 @@ final class CourseFeedBacksDeleteFeedBackFailure extends CourseFeedBacksState {
   final String errMessage;
   CourseFeedBacksDeleteFeedBackFailure({required this.errMessage});
 }
+
+final class CourseFeedBacksReportsChanged extends CourseFeedBacksState {}

@@ -7,6 +7,9 @@ import 'package:sintir_dashboard/Core/Entities/CourseFeedBackItemEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseFeedBacksResponseEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStorePaginateResponse.dart';
 import 'package:sintir_dashboard/Core/Entities/FireStoreEntities/FireStoreRequirmentsEntity.dart';
+import 'package:sintir_dashboard/Core/Entities/ReviewReportEntity.dart';
+import 'package:sintir_dashboard/Core/Helper/GetUserData.dart';
+import 'package:sintir_dashboard/Core/Services/EdgeFunctionClient.dart';
 import 'package:sintir_dashboard/Core/Errors/Exceptions.dart';
 import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 import 'package:sintir_dashboard/Core/Models/CourseFedBacksModel.dart';
@@ -16,8 +19,14 @@ import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseFeedB
 
 class CourseFeedBacksRepoImpli implements CourseFeedBacksRepo {
   final DataBaseService databaseservice;
+  final EdgeFunctionClient edgeFunctions;
 
-  CourseFeedBacksRepoImpli({required this.databaseservice});
+  CourseFeedBacksRepoImpli({
+    required this.databaseservice,
+    EdgeFunctionClient? edgeFunctions,
+  }) : edgeFunctions = edgeFunctions ?? EdgeFunctionClient();
+
+  static const String reviewReportsCollection = "ReviewReports";
 
   @override
   Future<Either<Failure, void>> addCourseFedBack({
@@ -122,17 +131,78 @@ class CourseFeedBacksRepoImpli implements CourseFeedBacksRepo {
     required String feedBackId,
   }) async {
     try {
-      await databaseservice.deleteDoc(
-        collectionKey: BackendEndpoints.coursesCollection,
-        docId: courseId,
-        subCollectionKey: BackendEndpoints.feedBacksSubCollection,
-        subDocId: feedBackId,
+      await edgeFunctions.invoke('delete-course-feedback', {
+        'courseId': courseId,
+        'feedbackUid': feedBackId,
+      });
+      final reports = await getOpenReviewReports(courseId: courseId);
+      final open = reports.fold(
+        (_) => const <ReviewReportEntity>[],
+        (byReview) => byReview[feedBackId] ?? const <ReviewReportEntity>[],
       );
+      if (open.isNotEmpty) {
+        await closeReviewReports(reports: open, status: 'review_removed');
+      }
       return right(null);
     } on CustomException catch (e) {
       return left(ServerFailure(message: e.message));
     } catch (e) {
       return left(ServerFailure(message: "حدث خطأ ما يرجى المحاولة وقت أخر"));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, List<ReviewReportEntity>>>>
+  getOpenReviewReports({required String courseId}) async {
+    try {
+      final response = await databaseservice.getData(
+        query: {
+          "filters": <Map<String, dynamic>>[
+            {"field": "courseId", "value": courseId},
+            {"field": "status", "value": "open"},
+          ],
+          "limit": 200,
+        },
+        requirements: FireStoreRequirmentsEntity(
+          collection: reviewReportsCollection,
+        ),
+      );
+      final rows = (response.listData ?? const [])
+          .whereType<Map<String, dynamic>>();
+      return right(ReviewReportEntity.groupByReview(rows));
+    } on CustomException catch (e) {
+      return left(ServerFailure(message: e.message));
+    } catch (e) {
+      return left(ServerFailure(message: "تعذر تحميل البلاغات"));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> closeReviewReports({
+    required List<ReviewReportEntity> reports,
+    required String status,
+  }) async {
+    try {
+      final reviewer = getUserData().uid;
+      await Future.wait([
+        for (final report in reports)
+          databaseservice.updateData(
+            requirements: FireStoreRequirmentsEntity(
+              collection: reviewReportsCollection,
+              docId: report.id,
+            ),
+            data: {
+              'status': status,
+              'resolvedBy': reviewer,
+              'resolvedAt': FieldValue.serverTimestamp(),
+            },
+          ),
+      ]);
+      return right(null);
+    } on CustomException catch (e) {
+      return left(ServerFailure(message: e.message));
+    } catch (e) {
+      return left(ServerFailure(message: "تعذر تحديث البلاغات"));
     }
   }
 }

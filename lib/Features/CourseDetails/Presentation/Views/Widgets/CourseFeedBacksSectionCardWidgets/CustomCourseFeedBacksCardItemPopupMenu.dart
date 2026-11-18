@@ -10,9 +10,11 @@ class CustomCourseFeedBacksCardItemPopupMenu extends StatelessWidget {
     required this.theme,
     required this.feedbackId,
     required this.courseId,
+    this.reportsCount = 0,
   });
 
   final String feedbackId, courseId;
+  final int reportsCount;
   final ThemeData theme;
 
   @override
@@ -41,8 +43,29 @@ class CustomCourseFeedBacksCardItemPopupMenu extends StatelessWidget {
                 feedBackId: feedbackId,
               );
         }
+        if (value == 'dismiss') {
+          context.read<CourseFeedBacksCubit>().dismissReports(
+                courseId: courseId,
+                reviewUid: feedbackId,
+              );
+        }
       },
       itemBuilder: (context) => [
+        if (reportsCount > 0)
+          const PopupMenuItem(
+            value: 'dismiss',
+            child: Row(
+              textDirection: TextDirection.rtl,
+              children: [
+                Icon(Icons.flag_outlined, size: 18),
+                SizedBox(width: 8),
+                Text(
+                  'تجاهل البلاغات (التعليق سليم)',
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ),
         const PopupMenuItem(
           value: 'delete',
           child: Row(

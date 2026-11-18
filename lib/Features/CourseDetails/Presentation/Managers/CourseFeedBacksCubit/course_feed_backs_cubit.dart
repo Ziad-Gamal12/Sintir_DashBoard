@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseFeedBackItemEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseFeedBacksResponseEntity.dart';
+import 'package:sintir_dashboard/Core/Entities/ReviewReportEntity.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Domain/Repos/CourseFeedBacksRepo/CourseFeedBacksRepo.dart';
 
 part 'course_feed_backs_state.dart';
@@ -11,7 +12,43 @@ class CourseFeedBacksCubit extends Cubit<CourseFeedBacksState> {
     : super(CourseFeedBacksInitial());
   final CourseFeedBacksRepo courseFeedBacksRepo;
   List<CoursefeedbackItemEntity> feedBacks = [];
+  Map<String, List<ReviewReportEntity>> openReports = {};
   bool hasMore = true;
+
+  List<ReviewReportEntity> reportsFor(String reviewUid) =>
+      openReports[reviewUid] ?? const [];
+
+  Future<void> loadOpenReports({required String courseId}) async {
+    final result = await courseFeedBacksRepo.getOpenReviewReports(
+      courseId: courseId,
+    );
+    result.fold((_) {}, (reports) {
+      openReports = reports;
+      if (!isClosed) emit(CourseFeedBacksReportsChanged());
+    });
+  }
+
+  Future<void> dismissReports({
+    required String courseId,
+    required String reviewUid,
+  }) async {
+    final reports = reportsFor(reviewUid);
+    if (reports.isEmpty) return;
+    emit(CourseFeedBacksDeleteFeedBackLoading(feedBackId: reviewUid));
+    final result = await courseFeedBacksRepo.closeReviewReports(
+      reports: reports,
+      status: 'dismissed',
+    );
+    result.fold(
+      (failure) => emit(
+        CourseFeedBacksDeleteFeedBackFailure(errMessage: failure.message),
+      ),
+      (_) {
+        openReports = Map.of(openReports)..remove(reviewUid);
+        emit(CourseFeedBacksReportsChanged());
+      },
+    );
+  }
   Future<void> getCourseFeedBacks({
     required String courseId,
     required bool isPaginate,
@@ -28,6 +65,7 @@ class CourseFeedBacksCubit extends Cubit<CourseFeedBacksState> {
       (success) {
         handleFetchedFeedBacksSuccessState(success);
         emit(CourseFeedBacksGetFeedBackSuccess(response: success));
+        if (!isPaginate) loadOpenReports(courseId: courseId);
       },
     );
   }
@@ -77,6 +115,8 @@ class CourseFeedBacksCubit extends Cubit<CourseFeedBacksState> {
         emit(CourseFeedBacksDeleteFeedBackFailure(errMessage: failure.message));
       },
       (success) {
+        feedBacks = feedBacks.where((item) => item.uid != feedBackId).toList();
+        openReports = Map.of(openReports)..remove(feedBackId);
         emit(CourseFeedBacksDeleteFeedBackSuccess());
       },
     );

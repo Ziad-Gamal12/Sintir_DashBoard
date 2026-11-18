@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseFeedBackItemEntity.dart';
 import 'package:sintir_dashboard/Core/Entities/FetchDataResponses/GetCourseFeedBacksResponseEntity.dart';
+import 'package:sintir_dashboard/Core/Entities/ReviewReportEntity.dart';
 import 'package:sintir_dashboard/Core/Errors/Failures.dart';
 
 abstract class CourseFeedBacksRepo {
@@ -15,5 +16,11 @@ abstract class CourseFeedBacksRepo {
   Future<Either<Failure, GetCourseFeedBacksResponseEntity>> getCourseFedBacks({
     required String courseId,
     required bool isPaginate,
+  });
+  Future<Either<Failure, Map<String, List<ReviewReportEntity>>>>
+  getOpenReviewReports({required String courseId});
+  Future<Either<Failure, void>> closeReviewReports({
+    required List<ReviewReportEntity> reports,
+    required String status,
   });
 }
