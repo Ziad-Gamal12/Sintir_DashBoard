@@ -7,7 +7,7 @@ const access = (
     role: "Student",
     status: "Active",
     owner: false,
-    coursePublished: true,
+    courseState: "Published",
     hasEnrollment: true,
     hasSubscriber: true,
     ...overrides,
@@ -24,13 +24,22 @@ Deno.test("playback rejects missing enrollment, subscriber, inactive users, and 
       { hasSubscriber: false },
       { status: "Blocked" },
       { status: "Pending" },
-      { coursePublished: false },
+      { courseState: "Archived" },
+      { courseState: "DeletedByAdmin" },
     ]
   ) {
     if (access(overrides)) {
       throw new Error(
         `Unauthorized playback was allowed: ${JSON.stringify(overrides)}`,
       );
+    }
+  }
+});
+
+Deno.test("enrolled students keep playback while the course is archived by its teacher or in review", () => {
+  for (const courseState of ["DeletedByTeacher", "Pending", "Declined"]) {
+    if (!access({ courseState })) {
+      throw new Error(`Enrolled student lost playback in ${courseState}.`);
     }
   }
 });

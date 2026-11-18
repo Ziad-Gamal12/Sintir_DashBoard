@@ -9,6 +9,7 @@ import {
   timestampValue,
 } from "./firebase.ts";
 import { error, json } from "./http.ts";
+import { ADMIN_BLOCKED_STATES, canUseCourseContent } from "./course_access.ts";
 import { importPKCS8, SignJWT } from "npm:jose@5.10.0";
 
 const muxBase = "https://api.mux.com/video/v1";
@@ -362,12 +363,10 @@ async function playback(
   const owner = role === "Teacher" &&
     firestoreString(getField(course.fields, ["contentcreaterentity", "id"])) ===
       uid;
+  const courseState = firestoreString(getField(course.fields, ["state"])) ?? "";
   let hasEnrollment = false;
   let hasSubscriber = false;
-  if (
-    role === "Student" &&
-    firestoreString(getField(course.fields, ["state"])) === "Published"
-  ) {
+  if (role === "Student" && !ADMIN_BLOCKED_STATES.has(courseState)) {
     const [enrollment, subscriber] = await Promise.all([
       db.get(`Users/${uid}/Courses/${courseId}`),
       db.get(`Courses/${courseId}/Subscribers/${uid}`),
@@ -380,8 +379,7 @@ async function playback(
       role,
       status,
       owner,
-      coursePublished:
-        firestoreString(getField(course.fields, ["state"])) === "Published",
+      courseState,
       hasEnrollment,
       hasSubscriber,
     })
@@ -442,16 +440,16 @@ async function playback(
   });
 }
 
+// Students who paid keep playback unless an admin took the course down
+// (see course_access.ts); staff roles are not served video tokens here.
 export function isVideoPlaybackAuthorized(input: {
   role: string;
   status: string;
   owner: boolean;
-  coursePublished: boolean;
+  courseState: string;
   hasEnrollment: boolean;
   hasSubscriber: boolean;
 }): boolean {
-  if (input.status !== "Active") return false;
-  if (input.role === "Teacher") return input.owner;
-  return input.role === "Student" && input.coursePublished &&
-    input.hasEnrollment && input.hasSubscriber;
+  if (input.role !== "Student" && input.role !== "Teacher") return false;
+  return canUseCourseContent(input);
 }

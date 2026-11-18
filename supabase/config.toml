@@ -53,3 +53,15 @@ verify_jwt = false
 [functions.delete-course-feedback]
 # Firebase ID tokens are verified in the handler.
 verify_jwt = false
+
+[functions.submit-test-attempt]
+# Firebase ID tokens are verified in the handler.
+verify_jwt = false
+
+[functions.create-upload-url]
+# Firebase ID tokens are verified in the handler.
+verify_jwt = false
+
+[functions.get-course-file-url]
+# Firebase ID tokens are verified in the handler.
+verify_jwt = false

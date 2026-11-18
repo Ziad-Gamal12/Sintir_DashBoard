@@ -117,6 +117,33 @@ export class Firestore {
     return Array.isArray(rows) ? rows.map((row) => row.document).filter(Boolean) : [];
   }
 
+  /** Counts (up to `limit`) documents in a subcollection whose string field equals `value`. */
+  async countMatching(
+    parentPath: string,
+    collectionId: string,
+    fieldPath: string,
+    value: string,
+    limit: number,
+  ): Promise<number> {
+    const response = await fetch(`${this.base}/${encodeDocumentPath(parentPath)}:runQuery`, {
+      method: "POST",
+      headers: await this.headers(),
+      body: JSON.stringify({
+        structuredQuery: {
+          from: [{ collectionId }],
+          where: {
+            fieldFilter: { field: { fieldPath }, op: "EQUAL", value: { stringValue: value } },
+          },
+          select: { fields: [{ fieldPath: "__name__" }] },
+          limit,
+        },
+      }),
+    });
+    if (!response.ok) throw new Error(`Firestore query failed (${response.status}).`);
+    const rows = await response.json();
+    return Array.isArray(rows) ? rows.filter((row) => row.document).length : 0;
+  }
+
   async beginTransaction(): Promise<string> {
     const response = await fetch(`${this.base}:beginTransaction`, {
       method: "POST", headers: await this.headers(), body: "{}",
