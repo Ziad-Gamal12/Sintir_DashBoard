@@ -1,0 +1,15 @@
+{
+  "name": "course-counters-backfill",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dry-run": "node backfill-course-counters.mjs",
+    "apply": "node backfill-course-counters.mjs --apply"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.10.0"
+  }
+}
