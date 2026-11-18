@@ -282,6 +282,97 @@ export class SupabaseStorageSigner implements StorageSigner {
   }
 }
 
+/** Removes stored files with the service role (account deletion). */
+export class SupabaseStorageCleaner {
+  private readonly base: string;
+  private readonly key: string;
+
+  constructor() {
+    this.base = `${requiredSecret("SUPABASE_URL").replace(/\/+$/, "")}/storage/v1`;
+    this.key = requiredSecret("SUPABASE_SERVICE_ROLE_KEY");
+  }
+
+  private headers(): Record<string, string> {
+    return {
+      authorization: `Bearer ${this.key}`,
+      apikey: this.key,
+      "content-type": "application/json",
+    };
+  }
+
+  /** Deletes every object under `folder/`, sub-folders included. */
+  async removeFolder(bucket: string, folder: string): Promise<number> {
+    let removed = 0;
+    for (let round = 0; round < 100; round++) {
+      const response = await fetch(
+        `${this.base}/object/list/${encodePath(bucket)}`,
+        {
+          method: "POST",
+          headers: this.headers(),
+          body: JSON.stringify({ prefix: folder, limit: 100, offset: 0 }),
+        },
+      );
+      if (!response.ok) {
+        console.error("storage list failed", { status: response.status });
+        throw new Error("storage_unavailable");
+      }
+      const items = await response.json();
+      if (!Array.isArray(items) || items.length === 0) return removed;
+      const files: string[] = [];
+      for (const item of items) {
+        const name = typeof item?.name === "string" ? item.name : "";
+        if (!name || name === ".emptyFolderPlaceholder") continue;
+        if (item.id === null || item.id === undefined) {
+          removed += await this.removeFolder(bucket, `${folder}/${name}`);
+        } else {
+          files.push(`${folder}/${name}`);
+        }
+      }
+      if (files.length === 0) return removed;
+      await this.removeObjects(bucket, files);
+      removed += files.length;
+    }
+    return removed;
+  }
+
+  async removeObjects(bucket: string, paths: string[]): Promise<void> {
+    if (paths.length === 0) return;
+    const response = await fetch(`${this.base}/object/${encodePath(bucket)}`, {
+      method: "DELETE",
+      headers: this.headers(),
+      body: JSON.stringify({ prefixes: paths }),
+    });
+    if (!response.ok) {
+      console.error("storage delete failed", { status: response.status });
+      throw new Error("storage_unavailable");
+    }
+  }
+}
+
+/**
+ * Bucket and object path of a public URL from this project's storage, or
+ * null for any other URL.
+ */
+export function storageObjectFromUrl(
+  url: unknown,
+  supabaseUrl: string,
+): { bucket: string; path: string } | null {
+  if (typeof url !== "string" || url.length === 0) return null;
+  const base = `${supabaseUrl.replace(/\/+$/, "")}/storage/v1/object/public/`;
+  if (!url.startsWith(base)) return null;
+  const rest = url.slice(base.length).split("?")[0];
+  const slash = rest.indexOf("/");
+  if (slash <= 0 || slash === rest.length - 1) return null;
+  try {
+    return {
+      bucket: decodeURIComponent(rest.slice(0, slash)),
+      path: rest.slice(slash + 1).split("/").map(decodeURIComponent).join("/"),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function storageSafeError(cause: unknown): SafeError {
   const code = cause instanceof Error ? cause.message : "internal_error";
   const known: Record<string, [number, string]> = {

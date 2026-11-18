@@ -65,3 +65,7 @@ verify_jwt = false
 [functions.get-course-file-url]
 # Firebase ID tokens are verified in the handler.
 verify_jwt = false
+
+[functions.delete-account]
+# Firebase ID tokens are verified in the handler (recent sign-in required).
+verify_jwt = false

@@ -173,6 +173,17 @@ async function muxFetch(path: string, init: RequestInit = {}) {
   return await response.json();
 }
 
+/** Deletes a Mux asset; an asset that is already gone counts as deleted. */
+export async function deleteMuxAsset(assetId: string): Promise<void> {
+  const response = await fetch(
+    `${muxBase}/assets/${encodeURIComponent(assetId)}`,
+    { method: "DELETE", headers: muxHeaders() },
+  );
+  if (response.ok || response.status === 404) return;
+  console.error("Mux asset delete failed", { status: response.status });
+  throw new Error("mux_delete_failed");
+}
+
 export async function handleVideoRequest(
   request: Request,
   action: "create" | "resume" | "cancel" | "playback",

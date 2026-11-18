@@ -11,7 +11,10 @@ const tokenKeys = createRemoteJWKSet(
   new URL("https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"),
 );
 
-export async function firebaseUid(request: Request): Promise<string> {
+export type FirebaseIdentity = { uid: string; authTime: number | null };
+
+/** Verifies the caller's Firebase ID token. `authTime` is the last sign-in, in seconds. */
+export async function firebaseIdentity(request: Request): Promise<FirebaseIdentity> {
   const authorization = request.headers.get("authorization");
   const token = authorization?.match(/^Bearer\s+(.+)$/i)?.[1];
   if (!token) throw new Error("Missing Firebase ID token.");
@@ -24,7 +27,12 @@ export async function firebaseUid(request: Request): Promise<string> {
   if (typeof payload.sub !== "string" || payload.sub.length === 0) {
     throw new Error("Firebase token has no subject.");
   }
-  return payload.sub;
+  const authTime = typeof payload.auth_time === "number" ? payload.auth_time : null;
+  return { uid: payload.sub, authTime };
+}
+
+export async function firebaseUid(request: Request): Promise<string> {
+  return (await firebaseIdentity(request)).uid;
 }
 
 export function requiredSecret(name: string): string {
@@ -33,14 +41,16 @@ export function requiredSecret(name: string): string {
   return value;
 }
 
-async function firebaseAccessToken(): Promise<string> {
+const DATASTORE_SCOPE = "https://www.googleapis.com/auth/datastore";
+const AUTH_ADMIN_SCOPE =
+  "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/identitytoolkit";
+
+async function firebaseAccessToken(scope = DATASTORE_SCOPE): Promise<string> {
   const clientEmail = requiredSecret("FB_CLIENT_EMAIL");
   const privateKey = requiredSecret("FB_PRIVATE_KEY").replace(/\\n/g, "\n");
   const now = Math.floor(Date.now() / 1000);
   const key = await importPKCS8(privateKey, "RS256");
-  const assertion = await new SignJWT({
-    scope: "https://www.googleapis.com/auth/datastore",
-  })
+  const assertion = await new SignJWT({ scope })
     .setProtectedHeader({ alg: "RS256", typ: "JWT" })
     .setIssuer(clientEmail)
     .setSubject(clientEmail)
@@ -90,14 +100,115 @@ export class Firestore {
     return await response.json();
   }
 
-  async list(collection: string, pageToken?: string): Promise<{ documents: FirestoreDocument[]; nextPageToken?: string }> {
+  async list(
+    collection: string,
+    pageToken?: string,
+    options: { showMissing?: boolean; pageSize?: number } = {},
+  ): Promise<{ documents: FirestoreDocument[]; nextPageToken?: string }> {
     const url = new URL(`${this.base}/${encodeDocumentPath(collection)}`);
-    url.searchParams.set("pageSize", "100");
+    url.searchParams.set("pageSize", String(options.pageSize ?? 100));
     if (pageToken) url.searchParams.set("pageToken", pageToken);
+    if (options.showMissing) url.searchParams.set("showMissing", "true");
     const response = await fetch(url, { headers: await this.headers() });
     if (!response.ok) throw new Error(`Firestore list failed (${response.status}).`);
     const data = await response.json();
     return { documents: data.documents ?? [], nextPageToken: data.nextPageToken };
+  }
+
+  /** One page of a collection, including documents that only have subcollections. */
+  listPage(
+    collection: string,
+    pageToken?: string,
+  ): Promise<{ documents: FirestoreDocument[]; nextPageToken?: string }> {
+    return this.list(collection, pageToken, { showMissing: true, pageSize: 300 });
+  }
+
+  /** IDs of the subcollections directly under a document. */
+  async listCollectionIds(documentPath: string): Promise<string[]> {
+    const ids: string[] = [];
+    let pageToken: string | undefined;
+    do {
+      const response = await fetch(
+        `${this.base}/${encodeDocumentPath(documentPath)}:listCollectionIds`,
+        {
+          method: "POST",
+          headers: await this.headers(),
+          body: JSON.stringify({ pageSize: 100, ...(pageToken ? { pageToken } : {}) }),
+        },
+      );
+      if (!response.ok) throw new Error(`Firestore list failed (${response.status}).`);
+      const data = await response.json();
+      ids.push(...(data.collectionIds ?? []));
+      pageToken = data.nextPageToken;
+    } while (pageToken);
+    return ids;
+  }
+
+  /**
+   * Every document whose string field equals `value`, in pages ordered by name.
+   * `parent` null means the database root; `allDescendants` makes it a
+   * collection-group query (needs the single-field index exemption).
+   */
+  async queryWhereEqual(input: {
+    parent?: string | null;
+    collectionId: string;
+    fieldPath: string;
+    value: string;
+    allDescendants?: boolean;
+    pageSize?: number;
+  }): Promise<FirestoreDocument[]> {
+    const pageSize = input.pageSize ?? 300;
+    const url = input.parent
+      ? `${this.base}/${encodeDocumentPath(input.parent)}:runQuery`
+      : `${this.base}:runQuery`;
+    const documents: FirestoreDocument[] = [];
+    let cursor: string | null = null;
+    while (true) {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: await this.headers(),
+        body: JSON.stringify({
+          structuredQuery: {
+            from: [{ collectionId: input.collectionId, allDescendants: input.allDescendants === true }],
+            where: {
+              fieldFilter: {
+                field: { fieldPath: input.fieldPath },
+                op: "EQUAL",
+                value: { stringValue: input.value },
+              },
+            },
+            orderBy: [{ field: { fieldPath: "__name__" }, direction: "ASCENDING" }],
+            ...(cursor ? { startAt: { values: [{ referenceValue: cursor }], before: false } } : {}),
+            limit: pageSize,
+          },
+        }),
+      });
+      if (response.status === 400 || response.status === 412) {
+        throw new Error("query_index_missing");
+      }
+      if (!response.ok) throw new Error(`Firestore query failed (${response.status}).`);
+      const rows = await response.json();
+      const page: FirestoreDocument[] = Array.isArray(rows)
+        ? rows.map((row) => row.document).filter(Boolean)
+        : [];
+      documents.push(...page);
+      if (page.length < pageSize) return documents;
+      cursor = page[page.length - 1].name;
+    }
+  }
+
+  /** Commits writes atomically without a transaction (no read checks). */
+  async commitWrites(writes: unknown[]): Promise<void> {
+    if (writes.length === 0) return;
+    const response = await fetch(`${this.base}:commit`, {
+      method: "POST",
+      headers: await this.headers(),
+      body: JSON.stringify({ writes }),
+    });
+    if (!response.ok) {
+      console.error("Firestore batch commit rejected", { status: response.status });
+      throw new Error(`Firestore batch could not commit (${response.status}).`);
+    }
   }
 
   async queryEqual(collection: string, filters: Record<string, string>): Promise<FirestoreDocument[]> {
@@ -222,6 +333,30 @@ export function updateWrite(document: FirestoreDocument, fieldPaths: string[], u
 
 export function createWrite(document: FirestoreDocument): unknown {
   return { update: document, currentDocument: { exists: false } };
+}
+
+/** Creates or replaces the whole document. */
+export function upsertWrite(document: FirestoreDocument): unknown {
+  return { update: document };
+}
+
+/** Deletes the Firebase Auth account. A missing account counts as deleted. */
+export async function deleteFirebaseAuthUser(uid: string): Promise<void> {
+  const projectId = requiredSecret("FB_PROJECT_ID");
+  const token = await firebaseAccessToken(AUTH_ADMIN_SCOPE);
+  const response = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/accounts:delete`,
+    {
+      method: "POST",
+      headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+      body: JSON.stringify({ localId: uid }),
+    },
+  );
+  if (response.ok) return;
+  const body = await response.text().catch(() => "");
+  if (response.status === 400 && body.includes("USER_NOT_FOUND")) return;
+  console.error("Firebase Auth delete rejected", { status: response.status });
+  throw new Error("auth_delete_failed");
 }
 
 export function deleteWrite(document: FirestoreDocument, updateTime?: string): unknown {

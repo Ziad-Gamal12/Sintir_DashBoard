@@ -32,7 +32,7 @@ const commitFailure = (status: number) =>
   new Error(`Firestore transaction could not commit (${status}).`);
 
 export class FakeFirestore implements FeedbackStore {
-  private docs = new Map<string, Doc>();
+  protected docs = new Map<string, Doc>();
   private clock = 0;
   private transactions = 0;
   private open = new Map<string, Map<string, number | null>>();

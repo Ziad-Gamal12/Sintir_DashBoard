@@ -372,11 +372,56 @@ export async function deleteCourseFeedback(
       ? uid
       : requiredId(body.feedbackUid, "feedback_id");
   const teacherHint = optionalId(body.teacherId);
+  return await removeFeedback(db, {
+    courseId,
+    feedbackUid,
+    teacherHint,
+    callerUid: uid,
+  }, options);
+}
 
+/**
+ * Removes a review and its rating from the course stats as the server itself
+ * (account deletion). A missing review is not an error.
+ */
+export async function removeFeedbackAsSystem(
+  db: FeedbackStore,
+  courseId: string,
+  feedbackUid: string,
+  options: FeedbackOptions = {},
+): Promise<DeleteFeedbackResult | null> {
+  try {
+    return await removeFeedback(db, {
+      courseId: requiredCourseId(courseId),
+      feedbackUid: requiredId(feedbackUid, "feedback_id"),
+      teacherHint: null,
+      callerUid: null,
+    }, options);
+  } catch (cause) {
+    if (cause instanceof Error && cause.message === "feedback_not_found") {
+      return null;
+    }
+    throw cause;
+  }
+}
+
+async function removeFeedback(
+  db: FeedbackStore,
+  input: {
+    courseId: string;
+    feedbackUid: string;
+    teacherHint: string | null;
+    callerUid: string | null;
+  },
+  options: FeedbackOptions,
+): Promise<DeleteFeedbackResult> {
+  const { courseId, feedbackUid, teacherHint, callerUid } = input;
   return await runInTransaction(db, async (transaction) => {
     const [callerDoc, courseDoc, feedbackDoc, enrollmentDoc, hintedCopy] =
       await Promise.all([
-        db.get(userPath(uid), transaction),
+        callerUid === null
+          ? Promise.resolve(null)
+          : db.get(userPath(callerUid), transaction),
         db.get(coursePath(courseId), transaction),
         db.get(feedbackPath(courseId, feedbackUid), transaction),
         db.get(enrollPath(feedbackUid, courseId), transaction),
@@ -388,18 +433,19 @@ export async function deleteCourseFeedback(
           feedbackUid,
         ),
       ]);
-    if (!callerDoc) throw new Error("not_found");
-
-    // Authorize before revealing whether the feedback exists.
-    const caller = decodeFields(callerDoc.fields);
-    if (
-      !canDeleteFeedback({
-        callerUid: uid,
-        callerRole: String(caller.role ?? ""),
-        callerStatus: String(caller.status ?? ""),
-        feedbackUid,
-      })
-    ) throw new Error("forbidden");
+    if (callerUid !== null) {
+      if (!callerDoc) throw new Error("not_found");
+      // Authorize before revealing whether the feedback exists.
+      const caller = decodeFields(callerDoc.fields);
+      if (
+        !canDeleteFeedback({
+          callerUid,
+          callerRole: String(caller.role ?? ""),
+          callerStatus: String(caller.status ?? ""),
+          feedbackUid,
+        })
+      ) throw new Error("forbidden");
+    }
     if (!feedbackDoc) throw new Error("feedback_not_found");
 
     const removed = storedFeedbackFrom(decodeFields(feedbackDoc.fields))!;
