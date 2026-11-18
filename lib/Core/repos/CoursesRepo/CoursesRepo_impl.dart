@@ -239,28 +239,30 @@ class CoursesrepoImpl implements Coursesrepo {
   @override
   Future<Either<Failure, void>> updateCourse({
     required CourseEntity courseEntity,
+    String? previousState,
   }) async {
     try {
-      final data = CourseModel.fromEntity(courseEntity: courseEntity).toJson();
-
-      await Future.wait([
-        databaseservice.setData(
-          requirements: FireStoreRequirmentsEntity(
-            collection: BackendEndpoints.coursesCollection,
-            docId: courseEntity.id,
-          ),
-          data: data,
+      final data = courseUpdateData(
+        courseEntity,
+        reviewerId: getUserData().uid,
+        previousState: previousState,
+      );
+      await databaseservice.updateData(
+        requirements: FireStoreRequirmentsEntity(
+          collection: BackendEndpoints.coursesCollection,
+          docId: courseEntity.id,
         ),
-        databaseservice.setData(
-          requirements: FireStoreRequirmentsEntity(
-            collection: BackendEndpoints.usersCollectionName,
-            docId: courseEntity.contentcreaterentity!.id,
-            subCollection: BackendEndpoints.coursesCollection,
-            subDocId: courseEntity.id,
-          ),
-          data: data,
+        data: data,
+      );
+      await databaseservice.updateData(
+        requirements: FireStoreRequirmentsEntity(
+          collection: BackendEndpoints.usersCollectionName,
+          docId: courseEntity.contentcreaterentity!.id,
+          subCollection: BackendEndpoints.coursesCollection,
+          subDocId: courseEntity.id,
         ),
-      ]);
+        data: data,
+      );
       return right(null);
     } on CustomException catch (e) {
       return left(ServerFailure(message: e.message));
@@ -269,6 +271,39 @@ class CoursesrepoImpl implements Coursesrepo {
         ServerFailure(message: "فشل تحديث بيانات الدورة، يرجى المحاولة لاحقاً"),
       );
     }
+  }
+
+  /// Only the fields an admin edits, so counters, rating stats and other
+  /// server-maintained values survive. Declining records the reason the
+  /// teacher sees; approving clears it.
+  static Map<String, dynamic> courseUpdateData(
+    CourseEntity course, {
+    required String reviewerId,
+    String? previousState,
+  }) {
+    final data = <String, dynamic>{
+      'title': course.title,
+      'description': course.description,
+      'posterUrl': course.posterUrl ?? '',
+      'price': course.price,
+      'language': course.language,
+      'subject': course.subject,
+      'level': course.level,
+      'state': course.state,
+    };
+    if (course.state == BackendEndpoints.coursedeclinedState) {
+      data['declineReason'] = (course.declineReason ?? '').trim();
+      data['declinedAt'] = FieldValue.serverTimestamp();
+      data['reviewedBy'] = reviewerId;
+      data['reviewedAt'] = FieldValue.serverTimestamp();
+    } else if (course.state == BackendEndpoints.coursePublishedState &&
+        previousState != BackendEndpoints.coursePublishedState) {
+      data['declineReason'] = FieldValue.delete();
+      data['declinedAt'] = FieldValue.delete();
+      data['reviewedBy'] = reviewerId;
+      data['reviewedAt'] = FieldValue.serverTimestamp();
+    }
+    return data;
   }
 
   @override
@@ -358,7 +393,7 @@ class CoursesrepoImpl implements Coursesrepo {
     required String teacherId,
   }) async {
     try {
-      Future.wait([
+      await Future.wait([
         databaseservice.updateData(
           requirements: FireStoreRequirmentsEntity(
             collection: BackendEndpoints.coursesCollection,

@@ -37,6 +37,7 @@ abstract class Coursesrepo {
   });
   Future<Either<Failure, void>> updateCourse({
     required CourseEntity courseEntity,
+    String? previousState,
   });
   Future<Either<Failure, GetCoursesResonseEntity>>
   getTeaceherInterestedCourses({

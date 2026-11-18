@@ -12,6 +12,9 @@ class CourseModel {
   final String level;
   final DateTime postedDate;
   final Map contentcreaterentity;
+  final String? declineReason;
+  final DateTime? declinedAt;
+  final DateTime? resubmittedAt;
 
   CourseModel({
     required this.id,
@@ -26,7 +29,13 @@ class CourseModel {
     required this.state,
     required this.postedDate,
     required this.contentcreaterentity,
+    this.declineReason,
+    this.declinedAt,
+    this.resubmittedAt,
   });
+
+  static DateTime? dateOrNull(Object? value) =>
+      value is Timestamp ? value.toDate() : (value is DateTime ? value : null);
 
   factory CourseModel.fromEntity({required CourseEntity courseEntity}) {
     return CourseModel(
@@ -46,6 +55,9 @@ class CourseModel {
               entity: courseEntity.contentcreaterentity!,
             ).toJson()
           : {},
+      declineReason: courseEntity.declineReason,
+      declinedAt: courseEntity.declinedAt,
+      resubmittedAt: courseEntity.resubmittedAt,
     );
   }
   factory CourseModel.fromJson(Map<String, dynamic> json) {
@@ -62,6 +74,11 @@ class CourseModel {
       state: json['state'],
       postedDate: (json['postedDate'] as Timestamp).toDate(),
       contentcreaterentity: json['contentcreaterentity'],
+      declineReason: json['declineReason'] is String
+          ? json['declineReason'] as String
+          : null,
+      declinedAt: dateOrNull(json['declinedAt']),
+      resubmittedAt: dateOrNull(json['resubmittedAt']),
     );
   }
   CourseEntity toEntity() {
@@ -80,6 +97,9 @@ class CourseModel {
       contentcreaterentity: Contentcreatermodel.fromJson(
         data: contentcreaterentity,
       ).toEntity(),
+      declineReason: declineReason,
+      declinedAt: declinedAt,
+      resubmittedAt: resubmittedAt,
     );
   }
 

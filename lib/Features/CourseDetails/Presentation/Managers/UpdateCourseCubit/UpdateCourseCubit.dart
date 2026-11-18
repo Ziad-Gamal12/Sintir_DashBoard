@@ -21,7 +21,10 @@ class UpdateCourseCubit extends Cubit<UpdateCourseCubitState> {
 
   Uint8List? coursePosterImage;
 
-  Future<void> update({required CourseEntity courseEntity}) async {
+  Future<void> update({
+    required CourseEntity courseEntity,
+    String? previousState,
+  }) async {
     emit(UpdateCourseCubitLoading());
     try {
       String? uploadedUrl;
@@ -45,7 +48,10 @@ class UpdateCourseCubit extends Cubit<UpdateCourseCubitState> {
         courseEntity.posterUrl = uploadedUrl!;
       }
 
-      final result = await coursesrepo.updateCourse(courseEntity: courseEntity);
+      final result = await coursesrepo.updateCourse(
+        courseEntity: courseEntity,
+        previousState: previousState,
+      );
 
       result.fold(
         (failure) => emit(UpdateCourseCubitFailure(failure.message)),

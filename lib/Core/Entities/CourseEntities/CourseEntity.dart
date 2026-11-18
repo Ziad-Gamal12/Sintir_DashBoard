@@ -12,6 +12,10 @@ class CourseEntity {
   final String level;
   ContentCreatorEntity? contentcreaterentity;
 
+  String? declineReason;
+  final DateTime? declinedAt;
+  final DateTime? resubmittedAt;
+
   CourseEntity({
     required this.id,
     required this.state,
@@ -25,6 +29,9 @@ class CourseEntity {
     required this.language,
     required this.postedDate,
     this.contentcreaterentity,
+    this.declineReason,
+    this.declinedAt,
+    this.resubmittedAt,
   });
   factory CourseEntity.empty() => CourseEntity(
     id: '41421231414',

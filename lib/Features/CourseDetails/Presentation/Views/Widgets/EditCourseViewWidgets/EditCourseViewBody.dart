@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
 import 'package:sintir_dashboard/Core/Helper/ShowSnackBar.dart';
+import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Managers/UpdateCourseCubit/UpdateCourseCubit.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/EditCourseViewWidgets/CourseInputsCard.dart';
 import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/EditCourseViewWidgets/CustomAddCourseActionButton.dart';
+import 'package:sintir_dashboard/Features/CourseDetails/Presentation/Views/Widgets/EditCourseViewWidgets/course_decline_reason_input.dart';
 
 class EditCourseViewBody extends StatefulWidget {
   const EditCourseViewBody({super.key, required this.currentCourse});
@@ -20,6 +22,7 @@ class _EditCourseViewBodyState extends State<EditCourseViewBody> {
   final codeController = TextEditingController();
   final descriptionController = TextEditingController();
   final priceController = TextEditingController();
+  final declineReasonController = TextEditingController();
   String? selectedLanguage;
   String? selectedLevel;
   String? selectedSubject;
@@ -35,7 +38,11 @@ class _EditCourseViewBodyState extends State<EditCourseViewBody> {
     selectedLevel = widget.currentCourse.level;
     selectedSubject = widget.currentCourse.subject;
     selectedState = widget.currentCourse.state;
+    declineReasonController.text = widget.currentCourse.declineReason ?? '';
   }
+
+  bool get isDeclining =>
+      selectedState == BackendEndpoints.coursedeclinedState;
 
   @override
   void dispose() {
@@ -43,6 +50,7 @@ class _EditCourseViewBodyState extends State<EditCourseViewBody> {
     codeController.dispose();
     descriptionController.dispose();
     priceController.dispose();
+    declineReasonController.dispose();
     super.dispose();
   }
 
@@ -88,6 +96,12 @@ class _EditCourseViewBodyState extends State<EditCourseViewBody> {
                   onSubjectChange: (v) => setState(() => selectedSubject = v),
                   onLanguageChange: (v) => setState(() => selectedLanguage = v),
                 ),
+                if (isDeclining) ...[
+                  const SizedBox(height: 20),
+                  CourseDeclineReasonInput(
+                    controller: declineReasonController,
+                  ),
+                ],
                 const SizedBox(height: 50),
                 CustomAddCourseActionButton(
                   formKey: formKey,
@@ -100,6 +114,7 @@ class _EditCourseViewBodyState extends State<EditCourseViewBody> {
                   selectedSubject: selectedSubject,
                   currentCourse: widget.currentCourse,
                   selectedState: selectedState,
+                  declineReasonController: declineReasonController,
                 ),
                 const SizedBox(height: 50),
               ],

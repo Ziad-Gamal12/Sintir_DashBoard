@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sintir_dashboard/Core/Entities/CourseEntities/CourseEntity.dart';
+import 'package:sintir_dashboard/Core/Utils/Backend_EndPoints.dart';
 import 'package:sintir_dashboard/Core/widgets/AppDialogs.dart';
 import 'package:sintir_dashboard/Core/widgets/CustomButton.dart';
 import 'package:sintir_dashboard/Core/widgets/Custom_Loading_Widget.dart';
@@ -20,6 +21,7 @@ class CustomAddCourseActionButton extends StatelessWidget {
     required this.priceController,
     required this.selectedLanguage,
     required this.selectedState,
+    required this.declineReasonController,
   });
   final GlobalKey<FormState> formKey;
   final TextEditingController titleController;
@@ -31,6 +33,7 @@ class CustomAddCourseActionButton extends StatelessWidget {
   final String? selectedSubject;
   final String? selectedLanguage;
   final String? selectedState;
+  final TextEditingController declineReasonController;
 
   @override
   Widget build(BuildContext context) {
@@ -90,12 +93,13 @@ class CustomAddCourseActionButton extends StatelessWidget {
       _showInvalidPriceDialog(context);
       return;
     }
+    final declining = selectedState == BackendEndpoints.coursedeclinedState;
     final course = CourseEntity(
       studentsCount: currentCourse.studentsCount,
       contentcreaterentity: currentCourse.contentcreaterentity,
       posterUrl: currentCourse.posterUrl,
       subject: selectedSubject!,
-      id: codeController.text.trim(),
+      id: currentCourse.id,
       level: selectedLevel!,
       state: selectedState!,
       title: titleController.text.trim(),
@@ -103,7 +107,8 @@ class CustomAddCourseActionButton extends StatelessWidget {
       price: price,
       language: selectedLanguage!,
       postedDate: currentCourse.postedDate,
+      declineReason: declining ? declineReasonController.text.trim() : null,
     );
-    cubit.update(courseEntity: course);
+    cubit.update(courseEntity: course, previousState: currentCourse.state);
   }
 }
