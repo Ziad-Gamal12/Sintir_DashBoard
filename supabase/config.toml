@@ -45,3 +45,11 @@ verify_jwt = false
 # This server-only function requires a dedicated secret header. Supabase Cron
 # also sends the project API key so the gateway accepts the request.
 verify_jwt = false
+
+[functions.upsert-course-feedback]
+# Firebase ID tokens are verified in the handler.
+verify_jwt = false
+
+[functions.delete-course-feedback]
+# Firebase ID tokens are verified in the handler.
+verify_jwt = false

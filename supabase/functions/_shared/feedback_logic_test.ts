@@ -5,8 +5,10 @@ import {
   buildFeedbackWrite,
   canDeleteFeedback,
   type CourseRatingStats,
+  FEEDBACK_EDIT_COOLDOWN_MS,
   feedbackAuthorFromUser,
   feedbackSafeError,
+  isEditTooSoon,
   isRetryableTransactionError,
   MAX_FEEDBACK_TEXT_LENGTH,
   parseFeedbackText,
@@ -678,4 +680,43 @@ Deno.test("error codes map to safe responses and unknown errors stay generic", (
     "unknown error hidden",
   );
   expectEqual(feedbackSafeError("boom").code, "internal_error", "non-Error");
+});
+
+Deno.test("saves closer than the cooldown are throttled using stored timestamps", () => {
+  const t0 = new Date("2026-11-17T10:00:00Z");
+  const at = (ms: number) => new Date(t0.getTime() + ms);
+  if (!isEditTooSoon({ updatedAt: t0 }, at(FEEDBACK_EDIT_COOLDOWN_MS - 1))) {
+    throw new Error("Save inside the cooldown was allowed.");
+  }
+  if (isEditTooSoon({ updatedAt: t0 }, at(FEEDBACK_EDIT_COOLDOWN_MS))) {
+    throw new Error("Save after the cooldown was throttled.");
+  }
+  if (!isEditTooSoon({ datePosted: t0 }, at(1000))) {
+    throw new Error("Legacy doc without updatedAt was not throttled.");
+  }
+  for (
+    const previous of [null, undefined, {}, { updatedAt: "2026-11-17" }, {
+      updatedAt: new Date(Number.NaN),
+    }]
+  ) {
+    if (isEditTooSoon(previous, t0)) {
+      throw new Error(
+        `Throttled without a valid timestamp: ${String(previous)}`,
+      );
+    }
+  }
+  // A server clock behind the stored time must not lock the student out.
+  if (isEditTooSoon({ updatedAt: at(60_000) }, t0)) {
+    throw new Error("Clock skew locked the student out.");
+  }
+  expectEqual(
+    feedbackSafeError(new Error("too_many_requests")).status,
+    429,
+    "429",
+  );
+  expectEqual(
+    feedbackSafeError(new Error("payload_too_large")).status,
+    413,
+    "413",
+  );
 });

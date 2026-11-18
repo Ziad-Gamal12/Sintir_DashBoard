@@ -20,6 +20,9 @@ export type RatingDistribution = Record<RatingKey, number>;
 
 export const MAX_FEEDBACK_TEXT_LENGTH = 500;
 
+/** Minimum time between two saves of the same student's feedback. */
+export const FEEDBACK_EDIT_COOLDOWN_MS = 3_000;
+
 /**
  * Fields on the course document (and the teacher's copy) that only the edge
  * functions may write. Use as the commit updateMask and in Firestore rules.
@@ -354,6 +357,21 @@ export function buildFeedbackWrite(input: {
   return { data: editable, updateMask: Object.keys(editable) };
 }
 
+/**
+ * Throttles repeated saves (double taps, scripted spam) using the timestamp
+ * already on the feedback doc, so it costs no extra read. Legacy docs without
+ * `updatedAt` fall back to `datePosted`.
+ */
+export function isEditTooSoon(
+  previous: Record<string, unknown> | null | undefined,
+  now: Date,
+): boolean {
+  const last = previous?.updatedAt ?? previous?.datePosted;
+  if (!(last instanceof Date) || Number.isNaN(last.getTime())) return false;
+  const elapsed = now.getTime() - last.getTime();
+  return elapsed >= 0 && elapsed < FEEDBACK_EDIT_COOLDOWN_MS;
+}
+
 // ---------------------------------------------------------------------------
 // Errors
 // ---------------------------------------------------------------------------
@@ -371,6 +389,8 @@ export function feedbackSafeError(
   const known: Record<string, [number, string]> = {
     unauthorized: [401, "Authentication is required."],
     invalid_body: [400, "Request body is invalid."],
+    payload_too_large: [413, "Request body is too large."],
+    method_not_allowed: [405, "Use POST."],
     invalid_course_id: [400, "Course ID is invalid."],
     invalid_feedback_id: [400, "Feedback ID is invalid."],
     invalid_rating: [400, "Rating must be a whole number from 1 to 5."],
@@ -388,6 +408,7 @@ export function feedbackSafeError(
     not_subscribed: [403, "Subscribe to the course to rate it."],
     forbidden: [403, "You cannot delete this feedback."],
     busy: [409, "The course is busy right now. Try again."],
+    too_many_requests: [429, "Please wait a few seconds before saving again."],
   };
   const [status, message] = known[code] ??
     [500, "Feedback could not be saved."];
