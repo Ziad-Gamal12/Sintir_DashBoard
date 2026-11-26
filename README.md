@@ -14,7 +14,7 @@
 ![Firebase](https://img.shields.io/badge/Firebase-Auth%20%7C%20Firestore%20%7C%20Storage-FFCA28?logo=firebase&logoColor=black)
 ![Supabase](https://img.shields.io/badge/Supabase-Edge%20Functions-3ECF8E?logo=supabase&logoColor=white)
 
-[**Live Demo**](https://sintir-2f0be.web.app/) · [**Companion Mobile App Repo**](https://github.com/Ziad-Gamal12/Sintir)
+[**Live Demo**](https://sintir-dashboard.vercel.app/) · [**Companion Mobile App Repo**](https://github.com/Ziad-Gamal12/Sintir)
 
 </div>
 
